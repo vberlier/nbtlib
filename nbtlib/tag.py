@@ -1,5 +1,6 @@
 
 import struct
+from array import array
 
 
 __all__ = ['Byte', 'Short', 'Int', 'Long', 'Float', 'Double', 'ByteArray',
@@ -118,19 +119,25 @@ class Double(Numeric, float):
     fmt = DOUBLE
 
 
-class ByteArray(Base, list):
+class ByteArray(Base, array):
     __slots__ = ()
     id = 7
 
+    def __new__(cls, *args, **kwargs):
+        return super().__new__(cls, 'b', *args, **kwargs)
+
     @classmethod
     def parse(cls, buff):
-        length = read_numeric(INT, buff)
-        return cls(read_numeric(BYTE, buff) for _ in range(length))
+        byte_array = cls()
+        byte_array.fromfile(buff, read_numeric(INT, buff))
+        return byte_array
 
     def write(self, buff):
         write_numeric(INT, len(self), buff)
-        for elem in self:
-            write_numeric(BYTE, elem, buff)
+        self.tofile(buff)
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}([{", ".join(map(str, self))}])'
 
 
 class String(Base, str):
