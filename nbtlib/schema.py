@@ -1,5 +1,6 @@
 
 from itertools import chain
+
 from .tag import Compound
 
 
