@@ -1,4 +1,5 @@
 
+import sys
 import struct
 from array import array
 
@@ -238,14 +239,18 @@ class IntArray(Base, array):
     def parse(cls, buff):
         int_array = cls()
         int_array.fromfile(buff, read_numeric(INT, buff))
-        int_array.byteswap()
+        int_array._swap_little_endian()
         return int_array
 
     def write(self, buff):
         write_numeric(INT, len(self), buff)
-        self.byteswap()
+        self._swap_little_endian()
         self.tofile(buff)
-        self.byteswap()
+        self._swap_little_endian()
+
+    def _swap_little_endian(self):
+        if sys.byteorder == 'little':
+            self.byteswap()
 
     def __repr__(self):
         return f'{self.__class__.__name__}([{", ".join(map(str, self))}])'
