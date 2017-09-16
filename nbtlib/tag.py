@@ -227,16 +227,25 @@ class Compound(Base, dict):
         write_numeric(BYTE, End.id, buff)
 
 
-class IntArray(Base, list):
+class IntArray(Base, array):
     __slots__ = ()
     id = 11
 
+    def __new__(cls, *args, **kwargs):
+        return super().__new__(cls, 'i', *args, **kwargs)
+
     @classmethod
     def parse(cls, buff):
-        length = read_numeric(INT, buff)
-        return cls(read_numeric(INT, buff) for _ in range(length))
+        int_array = cls()
+        int_array.fromfile(buff, read_numeric(INT, buff))
+        int_array.byteswap()
+        return int_array
 
     def write(self, buff):
         write_numeric(INT, len(self), buff)
-        for elem in self:
-            write_numeric(INT, elem, buff)
+        self.byteswap()
+        self.tofile(buff)
+        self.byteswap()
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}([{", ".join(map(str, self))}])'
