@@ -1,9 +1,11 @@
 
 # nbtlib
 
-> A python library to read and edit nbt data.
+[![Build Status](https://travis-ci.org/vberlier/nbtlib.svg?branch=master)](https://travis-ci.org/vberlier/nbtlib)
 
-:warning: In early development, use at your own risk.
+:warning: **In early development, use at your own risk!**
+
+A python library to read and edit [nbt data](http://wiki.vg/NBT). Also provides an api to define schemas for recuring tag hierarchies. Requires python 3.6.
 
 ## Basic usage
 
