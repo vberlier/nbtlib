@@ -209,6 +209,7 @@ class List(Base, list, metaclass=ListMeta):
 class Compound(Base, dict):
     __slots__ = ()
     id = 10
+    end_tag = BYTE.pack(End.id)
 
     @classmethod
     def parse(cls, buff):
@@ -225,7 +226,7 @@ class Compound(Base, dict):
             write_numeric(BYTE, tag.id, buff)
             write_string(name, buff)
             tag.write(buff)
-        write_numeric(BYTE, End.id, buff)
+        buff.write(self.end_tag)
 
 
 class IntArray(Base, array):
