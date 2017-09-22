@@ -2,6 +2,9 @@
 from nbtlib.tag import *
 
 
+__all__ = ['bytes_for_valid_tags']
+
+
 bytes_for_valid_tags = [
 
     # Byte tag
