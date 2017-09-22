@@ -18,10 +18,10 @@ def load(filename, *, gzipped=None):
 class File(Compound):
     end_tag = b''
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, gzipped=False):
+        super().__init__(*args)
         self.filename = None
-        self.gzipped = False
+        self.gzipped = gzipped
 
     @property
     def root_name(self):
