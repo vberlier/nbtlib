@@ -1,8 +1,9 @@
 
+from nbtlib.nbt import File
 from nbtlib.tag import *
 
 
-__all__ = ['bytes_for_valid_tags']
+__all__ = ['bytes_for_valid_tags', 'nbt_files']
 
 
 bytes_for_valid_tags = [
@@ -65,5 +66,50 @@ bytes_for_valid_tags = [
     (b'\x00\x00\x00\x00',                                 IntArray([])),
     (b'\x00\x00\x00\x01\xff\xff\xff\xff',                 IntArray([-1])),
     (b'\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x02', IntArray([1, 2])),
+
+]
+
+
+nbt_files = [
+
+    (
+        'tests/nbt_files/hello_world.nbt', File({'hello world': Compound({
+            'name': String('Bananrama')
+        })})
+    ),
+
+    (
+        'tests/nbt_files/bigtest.nbt', File({'Level': Compound({
+            'nested compound test': Compound({
+                'egg': Compound({
+                    'name': String('Eggbert'), 'value': Float(0.5)
+                }),
+                'ham': Compound({
+                    'name': String('Hampus'), 'value': Float(0.75)
+                })
+            }),
+            'intTest': Int(2147483647),
+            'byteTest': Byte(127),
+            'stringTest': String('HELLO WORLD THIS IS A TEST STRING ÅÄÖ!'),
+            'listTest (long)': List[Long]([11, 12, 13, 14, 15]),
+            'doubleTest': Double(0.49312871321823148),
+            'floatTest': Float(0.49823147058486938),
+            'longTest': Long(9223372036854775807),
+            'listTest (compound)': List[Compound]([
+                Compound({
+                    'created-on': Long(1264099775885),
+                    'name': String('Compound tag #0')
+                }),
+                Compound({
+                    'created-on': Long(1264099775885),
+                    'name': String('Compound tag #1')
+                })
+            ]),
+            'byteArrayTest (the first 1000 values of (n*n*255+n*7)%100, starting with n=0 (0, 62, 34, 16, 8, ...))': ByteArray(
+                (n**2 * 255 + n*7) % 100 for n in range(1000)
+            ),
+            'shortTest': Short(32767)
+        })}, gzipped=True)
+    ),
 
 ]
