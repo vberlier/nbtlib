@@ -6,7 +6,7 @@ import pytest
 from nbtlib.tag import *
 
 
-tag_parsing_inputs = [
+tag_data = [
 
     # Byte tag
     (b'\x00', Byte(0)),
@@ -70,9 +70,17 @@ tag_parsing_inputs = [
 ]
 
 
-@pytest.mark.parametrize('bytes_input, expected_tag', tag_parsing_inputs)
+@pytest.mark.parametrize('bytes_input, expected_tag', tag_data)
 def test_tag_parsing(bytes_input, expected_tag):
     tag_type = type(expected_tag)
     parsed_tag = tag_type.parse(BytesIO(bytes_input))
     assert parsed_tag == expected_tag
 
+
+@pytest.mark.parametrize('expected_bytes, tag_input', tag_data)
+def test_tag_serialization(expected_bytes, tag_input):
+    buff = BytesIO()
+    tag_input.write(buff)
+    buff.seek(0)
+    serialized_bytes = buff.read()
+    assert serialized_bytes == expected_bytes
