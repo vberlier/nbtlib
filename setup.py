@@ -1,5 +1,5 @@
 
-from setuptools import setup, find_packages
+from setuptools import setup
 from os import path
 
 
@@ -11,7 +11,7 @@ with open(path.join(here, 'README.rst')) as f:
 
 setup(
     name='nbtlib',
-    version='0.1.3',
+    version='0.1.6',
     description='A python package to read and edit nbt data',
     long_description=long_description,
     url='https://github.com/vberlier/nbtlib',
@@ -26,5 +26,6 @@ setup(
         'Programming Language :: Python :: 3.6',
     ],
     keywords='nbt schema minecraft package library parser reader module',
+    packages=['nbtlib'],
     python_requires='>=3.6',
 )
