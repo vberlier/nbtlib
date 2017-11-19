@@ -61,5 +61,19 @@ Using schemas
     my_object = MySchema({'foo': 'hello world', 'bar': 21})
     assert isinstance(my_object['foo'], String)
 
+Contributing
+------------
+
+Contributions are welcome. Unit tests are built with ``pytest``. You can
+run the test suite with:
+
+.. code::
+
+    $ python -m pytest tests
+
+----
+
+License: `MIT <https://github.com/vberlier/nbtlib/blob/master/LICENSE>`__
+
 .. |Build Status| image:: https://travis-ci.org/vberlier/nbtlib.svg?branch=master
    :target: https://travis-ci.org/vberlier/nbtlib
