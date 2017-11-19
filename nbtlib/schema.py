@@ -32,7 +32,7 @@ class CompoundSchema(Compound):
     """Class that extends the base `Compound` tag by enforcing a schema.
 
     Defining a custom schema is really useful if you're dealing with
-    recuring data structures. Subclassing the `CompoundSchema` class
+    recurring data structures. Subclassing the `CompoundSchema` class
     with your own schema will save you some typing by casting all the
     keys defined in the schema to the appropriate tag type.
 
