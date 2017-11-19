@@ -7,6 +7,15 @@ A python library to read and edit `nbt data <http://wiki.vg/NBT>`__.
 Also provides an api to define compound tag schemas in order to save
 some typing with recurring tag hierarchies. Requires python 3.6.
 
+Installation
+------------
+
+The package can be installed with ``pip``.
+
+.. code::
+
+    $ pip install nbtlib
+
 Basic usage
 -----------
 
