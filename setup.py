@@ -18,6 +18,7 @@ setup(
     url='https://github.com/vberlier/nbtlib',
     author='Valentin Berlier',
     author_email='berlier.v@mail.com',
+    platforms=['any'],
     license='MIT',
     classifiers=[
         'Development Status :: 3 - Alpha',
