@@ -21,11 +21,16 @@ Basic usage
 
 The following examples will give you a very basic overview of what you
 can do. For more advanced examples, check out the
-`Usage <https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb>`__
+"`Usage <https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb>`__"
 notebook in the docs folder.
 
 Reading files
 ~~~~~~~~~~~~~
+
+Reading files can be done directly with the ``load()`` function. The
+``root`` property contains the root nbt tag. Every nbt tag inherits from
+its python counterpart so you can use all the usual builtin operations
+on nbt tags.
 
 .. code:: py
 
@@ -37,6 +42,9 @@ Reading files
 Editing files
 ~~~~~~~~~~~~~
 
+You can use Nbt files as context managers in order to save modifications
+automatically at the end of the ``with`` block.
+
 .. code:: py
 
     from nbtlib import nbt
@@ -45,8 +53,25 @@ Editing files
     with nbt.load('demo.nbt') as demo:
         demo.root['counter'] = Int(demo.root['counter'] + 1)
 
+You can also use the ``save()`` method.
+
+.. code:: py
+
+    from nbtlib import nbt
+    from nbtlib.tag import *
+
+    demo = nbt.load('demo.nbt')
+    demo.root['counter'] = Int(demo.root['counter'] + 1)
+    demo.save()
+
+For more details check out the "`Usage <https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb>`__"
+notebook.
+
 Using schemas
 ~~~~~~~~~~~~~
+
+A schema lets you create compound tags that enforce a specific tag type
+for any given key.
 
 .. code:: py
 
