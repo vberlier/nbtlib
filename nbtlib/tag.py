@@ -288,7 +288,7 @@ class List(Base, list, metaclass=ListMeta):
     subtype = Base
 
     def __init__(self, iterable=()):
-        super().__init__(map(self._ensure_subtype, iterable))
+        super().__init__(map(self._cast, iterable))
 
     @classmethod
     def parse(cls, buff):
@@ -303,18 +303,18 @@ class List(Base, list, metaclass=ListMeta):
             elem.write(buff)
 
     def __setitem__(self, key, value):
-        super().__setitem__(key, self._ensure_subtype(value))
+        super().__setitem__(key, self._cast(value))
 
     def append(self, value):
-        super().append(self._ensure_subtype(value))
+        super().append(self._cast(value))
 
     def extend(self, iterable):
-        super().extend(map(self._ensure_subtype, iterable))
+        super().extend(map(self._cast, iterable))
 
     def insert(self, index, value):
-        super().insert(index, self._ensure_subtype(value))
+        super().insert(index, self._cast(value))
 
-    def _ensure_subtype(self, value):
+    def _cast(self, value):
         if not isinstance(value, self.subtype):
             return self.subtype(value)
         return value
