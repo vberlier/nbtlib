@@ -42,7 +42,7 @@ on nbt tags.
 Editing files
 ~~~~~~~~~~~~~
 
-You can use Nbt files as context managers in order to save modifications
+You can use nbt files as context managers in order to save modifications
 automatically at the end of the ``with`` block.
 
 .. code:: py
