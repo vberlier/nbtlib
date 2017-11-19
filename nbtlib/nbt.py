@@ -1,14 +1,29 @@
 
-import gzip
+"""This module contains utilities for loading and creating nbt files.
 
-from .tag import Compound
+Exported items:
+    load -- Helper function to load nbt files
+    File -- Class that represents an nbt file, inherits from `Compound`
+"""
 
 
 __all__ = ['load', 'File']
 
 
+import gzip
+
+from .tag import Compound
+
+
 def load(filename, *, gzipped=None):
-    if gzipped is None:
+    """Load the nbt file at the specified location.
+
+    By default, the function will figure out by itself if the file is
+    gzipped before loading it. You can pass a boolean to the `gzipped`
+    keyword only argument to specify explicitly whether the file is
+    compressed or not.
+    """
+    if gzipped is None:  # if we don't know we read the magic number
         with open(filename, 'rb') as buff:
             magic_number = buff.read(2)
             gzipped = magic_number == b'\x1f\x8b'
@@ -16,6 +31,27 @@ def load(filename, *, gzipped=None):
 
 
 class File(Compound):
+    """Class representing a compound nbt file.
+
+    The class inherits from `Compound`, so all of the dict operations
+    inherited by `Compound` are also available on `File` instances.
+
+    The `load` class method can be use to load files from disk. If
+    you need to create the file from a file-like object you can use the
+    inherited `parse` method. Getting the root tag of the file can be
+    done with the `root` property. You can use the `save` method to save
+    modifications.
+
+    Using the `File` instance as a context manager will automatically
+    save modifications when the `__exit__` method is called.
+
+    Attributes:
+        filename -- The name of the file
+        gzipped  -- Boolean indicating if the file is gzipped
+    """
+
+    # We remove the inherited end tag as the end of nbt files is
+    # specified by the end of the file buffer
     end_tag = b''
 
     def __init__(self, *args, gzipped=False):
@@ -25,6 +61,7 @@ class File(Compound):
 
     @property
     def root_name(self):
+        """The name of the root nbt tag."""
         return next(iter(self), None)
 
     @root_name.setter
@@ -33,6 +70,7 @@ class File(Compound):
 
     @property
     def root(self):
+        """The root nbt tag of the file."""
         return self[self.root_name]
 
     @root.setter
@@ -41,6 +79,11 @@ class File(Compound):
 
     @classmethod
     def load(cls, filename, gzipped):
+        """Read, parse and return the file at the specified location.
+
+        The `gzipped` argument is used to indicate if the specified
+        file is gzipped.
+        """
         open_file = gzip.open if gzipped else open
         with open_file(filename, 'rb') as buff:
             self = cls.parse(buff)
@@ -50,6 +93,15 @@ class File(Compound):
         return self
 
     def save(self, filename=None, *, gzipped=None):
+        """Write the file at the specified location.
+
+        The `gzipped` keyword only argument indicates if the file should
+        be gzipped.
+
+        If the method is called without any argument, it will default to
+        the instance attributes and use the file's `filename` and
+        `gzipped` attributes.
+        """
         if gzipped is None:
             gzipped = self.gzipped
         if filename is None:
