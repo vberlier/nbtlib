@@ -1,5 +1,5 @@
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 setup(
@@ -21,6 +21,6 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     keywords='nbt schema minecraft package library parser reader module',
-    packages=['nbtlib'],
+    packages=find_packages(),
     python_requires='>=3.6',
 )
