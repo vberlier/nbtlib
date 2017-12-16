@@ -112,9 +112,6 @@ class Base:
     def __repr__(self):
         return f'{self.__class__.__name__}({super().__repr__()})'
 
-    def __str__(self):
-        return repr(self)
-
 
 class End(Base):
     """Nbt tag used to mark the end of a compound tag."""
