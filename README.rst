@@ -1,7 +1,7 @@
 nbtlib
 ======
 
-|Build Status|
+|Build Status| |PyPI Version| |Python Version|
 
 A python library to read and edit `nbt data <http://wiki.vg/NBT>`__.
 Also provides an api to define compound tag schemas in order to save
@@ -102,3 +102,9 @@ License: `MIT <https://github.com/vberlier/nbtlib/blob/master/LICENSE>`__
 
 .. |Build Status| image:: https://travis-ci.org/vberlier/nbtlib.svg?branch=master
    :target: https://travis-ci.org/vberlier/nbtlib
+   
+.. |PyPI Version| image:: https://img.shields.io/pypi/v/nbtlib.svg
+   :target: https://pypi.python.org/pypi/nbtlib
+   
+.. |Python Version| image:: https://img.shields.io/pypi/pyversions/nbtlib.svg
+   :target: https://pypi.python.org/pypi/nbtlib
