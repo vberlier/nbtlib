@@ -31,8 +31,15 @@ __all__ = ['Byte', 'Short', 'Int', 'Long', 'Float', 'Double', 'ByteArray',
 
 
 import sys
+import re
+import json
 import struct
 from array import array
+
+
+# Regex to detect if a string can be represented unquoted
+
+UNQUOTED_STRING = re.compile(r'^[a-zA-Z0-9._+-]+$')
 
 
 # Struct formats used to pack and unpack numeric values
@@ -43,6 +50,13 @@ INT = struct.Struct('>i')
 LONG = struct.Struct('>q')
 FLOAT = struct.Struct('>f')
 DOUBLE = struct.Struct('>d')
+
+
+# Escape nbt strings that must be quoted
+
+def escape_string(string):
+    """Escape nbt strings that cannot be written unquoted in nbt literals."""
+    return json.dumps(string).replace('\\', r'\\').replace(r'\\"', r'\"')
 
 
 # Read/write helpers for numeric and string values
@@ -138,6 +152,7 @@ class Numeric(Base):
 
     __slots__ = ()
     fmt = None
+    suffix = ''
 
     @classmethod
     def parse(cls, buff):
@@ -146,6 +161,9 @@ class Numeric(Base):
     def write(self, buff):
         write_numeric(self.fmt, self, buff)
 
+    def __str__(self):
+        return super().__str__() + self.suffix
+
 
 class Byte(Numeric, int):
     """Nbt tag representing a signed byte."""
@@ -153,6 +171,7 @@ class Byte(Numeric, int):
     __slots__ = ()
     tag_id = 1
     fmt = BYTE
+    suffix = 'b'
 
 
 class Short(Numeric, int):
@@ -161,6 +180,7 @@ class Short(Numeric, int):
     __slots__ = ()
     tag_id = 2
     fmt = SHORT
+    suffix = 's'
 
 
 class Int(Numeric, int):
@@ -177,6 +197,7 @@ class Long(Numeric, int):
     __slots__ = ()
     tag_id = 4
     fmt = LONG
+    suffix = 'l'
 
 
 class Float(Numeric, float):
@@ -185,6 +206,7 @@ class Float(Numeric, float):
     __slots__ = ()
     tag_id = 5
     fmt = FLOAT
+    suffix = 'f'
 
 
 class Double(Numeric, float):
@@ -193,6 +215,7 @@ class Double(Numeric, float):
     __slots__ = ()
     tag_id = 6
     fmt = DOUBLE
+    suffix = 'd'
 
 
 class ByteArray(Base, array):
@@ -222,6 +245,10 @@ class ByteArray(Base, array):
     def __repr__(self):
         return f'{self.__class__.__name__}([{", ".join(map(str, self))}])'
 
+    def __str__(self):
+        elements = ','.join(f'{el}b' for el in self)
+        return f'[B;{elements}]'
+
 
 class String(Base, str):
     """Nbt tag representing a string."""
@@ -235,6 +262,12 @@ class String(Base, str):
 
     def write(self, buff):
         write_string(self, buff)
+
+    def __str__(self):
+        if UNQUOTED_STRING.match(self):
+            return super().__str__()
+        else:
+            return escape_string(self)
 
 
 class ListMeta(type):
@@ -316,6 +349,9 @@ class List(Base, list, metaclass=ListMeta):
             return self.subtype(value)
         return value
 
+    def __str__(self):
+        return f'[{",".join(map(str, self))}]'
+
 
 class Compound(Base, dict):
     """Nbt tag that represents a mapping of strings to other nbt tags.
@@ -348,6 +384,18 @@ class Compound(Base, dict):
             write_string(name, buff)
             tag.write(buff)
         buff.write(self.end_tag)
+
+    def __str__(self):
+        pairs = ','.join(f'{self.stringify_key(key)}:{value}'
+                         for key, value in self.items())
+        return '{' + pairs + '}'
+
+    @staticmethod
+    def stringify_key(key):
+        if UNQUOTED_STRING.match(key):
+            return key
+        else:
+            return escape_string(key)
 
 
 class IntArray(Base, array):
@@ -383,3 +431,6 @@ class IntArray(Base, array):
 
     def __repr__(self):
         return f'{self.__class__.__name__}([{", ".join(map(str, self))}])'
+
+    def __str__(self):
+        return f'[I;{",".join(map(str, self))}]'

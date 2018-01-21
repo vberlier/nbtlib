@@ -3,7 +3,7 @@ from nbtlib.nbt import File
 from nbtlib.tag import *
 
 
-__all__ = ['bytes_for_valid_tags', 'nbt_files']
+__all__ = ['bytes_for_valid_tags', 'literal_values_for_tags', 'nbt_files']
 
 
 bytes_for_valid_tags = [
@@ -66,6 +66,74 @@ bytes_for_valid_tags = [
     (b'\x00\x00\x00\x00',                                 IntArray([])),
     (b'\x00\x00\x00\x01\xff\xff\xff\xff',                 IntArray([-1])),
     (b'\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x02', IntArray([1, 2])),
+
+]
+
+
+literal_values_for_tags = [
+
+    # Byte tag
+    ('0b', Byte(0)),
+    ('-1b', Byte(-1)),
+    ('127b', Byte(127)),
+    ('-128b', Byte(-128)),
+
+    # Short tag
+    ('0s', Short(0)),
+    ('-1s', Short(-1)),
+    ('32767s', Short(32767)),
+    ('-32768s', Short(-32768)),
+
+    # Int tag
+    ('0', Int(0)),
+    ('-1', Int(-1)),
+    ('2147483647', Int(2147483647)),
+    ('-2147483648', Int(-2147483648)),
+
+    # Long tag
+    ('0l', Long(0)),
+    ('-1l', Long(-1)),
+    ('9223372036854775807l', Long(9223372036854775807)),
+    ('-9223372036854775808l', Long(-9223372036854775808)),
+
+    # Float tag
+    ('0.0f', Float(0)),
+    ('-1.0f', Float(-1)),
+    ('56.487f', Float(56.487)),
+
+    # Double tag
+    ('0.0d', Double(0)),
+    ('-1.0d', Double(-1)),
+    ('0.493128713218d', Double(0.493128713218)),
+
+    # ByteArray tag
+    ('[B;]', ByteArray([])),
+    ('[B;-1b]', ByteArray([-1])),
+    ('[B;1b,2b,3b]', ByteArray([1, 2, 3])),
+
+    # String tag
+    ('""', String('')),
+    ('foo-bar.', String('foo-bar.')),
+    ('"hello world"', String('hello world')),
+    ('"\\\\u00c5\\\\u00c4\\\\u00d6\\\\n"', String('ÅÄÖ\n')),
+    ('"\\"\\\\\\\\n"', String('"\\n')),
+
+    # List tag
+    ('[]', List[Short]([])),
+    ('[5b,-9b,18b,64b]', List[Byte]([5, -9, 18, 64])),
+    ('[hello,world,"\\"\\\\n"]', List[String](['hello', 'world', '"\n'])),
+
+    # Compound tag
+    ('{}', Compound({})),
+    ('{foo:42}', Compound({'foo': Int(42)})),
+    ('{a:0b,b:1b}', Compound({'a': Byte(0), 'b': Byte(1)})),
+    ('{"hello world":foo}', Compound({'hello world': String('foo')})),
+    ('{"\\"blah\\\\n\\"":1.2d}', Compound({'"blah\n"': Double(1.2)})),
+
+    # IntArray tag
+    ('[I;]', IntArray([])),
+    ('[I;-1]', IntArray([-1])),
+    ('[I;1,2]', IntArray([1, 2])),
 
 ]
 
