@@ -1,7 +1,4 @@
 
-# JetBrains
-.idea
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -91,3 +88,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# JetBrains
+.idea
+
+# Visual Studio Code
+.vscode
