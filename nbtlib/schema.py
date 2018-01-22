@@ -15,7 +15,7 @@ from itertools import chain
 from .tag import Compound
 
 
-def schema(name, dct):
+def schema(name, dct, *, strict=False):
     """Create a compound tag schema.
 
     This function is a short convenience function that makes it easy to
@@ -24,8 +24,13 @@ def schema(name, dct):
     The `name` argument is the name of the class and `dct` should be a
     dictionnary containing the actual schema. The schema should map keys
     to tag types or other compound schemas.
+
+    If the `strict` keyword only argument is set to True, interacting
+    with keys that are not defined in the schema will raise a
+    `TypeError`.
     """
-    return type(name, (CompoundSchema,), {'__slots__': (), 'schema': dct})
+    return type(name, (CompoundSchema,), {'__slots__': (), 'schema': dct,
+                                          'strict': strict})
 
 
 class CompoundSchema(Compound):
@@ -41,10 +46,12 @@ class CompoundSchema(Compound):
 
     Class attributes:
         schema -- Dictionnary mapping keys to tag types or other schemas
+        strict -- Boolean enabling strict schema validation
     """
 
     __slots__ = ()
     schema = {}
+    strict = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -65,6 +72,9 @@ class CompoundSchema(Compound):
 
     def _cast(self, key, value):
         schema_type = self.schema.get(key, None)
-        if schema_type and not isinstance(value, schema_type):
+        if schema_type is None:
+            if self.strict:
+                raise TypeError(f'Invalid key {key!r}')
+        elif not isinstance(value, schema_type):
             return schema_type(value)
         return value
