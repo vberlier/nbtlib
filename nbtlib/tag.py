@@ -12,6 +12,7 @@ that all the operations that are commonly used on the base types are
 available on nbt tags.
 
 Exported classes:
+    End       -- Represents the end of a compound tag
     Byte      -- Represents a byte tag, inherits from `int`
     Short     -- Represents a short tag, inherits from `int`
     Int       -- Represents an int tag, inherits from `int`
@@ -26,8 +27,8 @@ Exported classes:
 """
 
 
-__all__ = ['Byte', 'Short', 'Int', 'Long', 'Float', 'Double', 'ByteArray',
-           'String', 'List', 'Compound', 'IntArray']
+__all__ = ['End', 'Byte', 'Short', 'Int', 'Long', 'Float', 'Double',
+           'ByteArray', 'String', 'List', 'Compound', 'IntArray']
 
 
 import sys
