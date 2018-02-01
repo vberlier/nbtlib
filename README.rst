@@ -86,6 +86,23 @@ for any given key.
     my_object = MySchema({'foo': 'hello world', 'bar': 21})
     assert isinstance(my_object['foo'], String)
 
+Nbt literals
+~~~~~~~~~~~~
+
+``nbtlib`` also defines utilities to deal with literal nbt data. For
+instance, you can parse nbt literals using the ``parse_nbt()`` function.
+
+.. code:: py
+
+    from nbtlib import parse_nbt
+    from nbtlib.tag import *
+
+    my_compound = parse_nbt('{foo:[hello,world],bar:[I;1,2,3]}')
+    assert my_compound == Compound({
+        'foo': List[String](['hello', 'world']),
+        'bar': IntArray([1, 2, 3])
+    })
+
 Contributing
 ------------
 
@@ -102,9 +119,9 @@ License: `MIT <https://github.com/vberlier/nbtlib/blob/master/LICENSE>`__
 
 .. |Build Status| image:: https://travis-ci.org/vberlier/nbtlib.svg?branch=master
    :target: https://travis-ci.org/vberlier/nbtlib
-   
+
 .. |PyPI Version| image:: https://img.shields.io/pypi/v/nbtlib.svg
    :target: https://pypi.python.org/pypi/nbtlib
-   
+
 .. |Python Version| image:: https://img.shields.io/pypi/pyversions/nbtlib.svg
    :target: https://pypi.python.org/pypi/nbtlib
