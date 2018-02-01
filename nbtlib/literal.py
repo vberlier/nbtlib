@@ -85,6 +85,9 @@ class NbtParser:
 
     The parser needs to be instanciated with a token stream as argument.
     Using the `parse` method will return the corresponding nbt tag.
+
+    The parser will raise an InvalidLiteral exception if it encounters
+    an invalid nbt literal while parsing.
     """
 
     def __init__(self, token_stream):
