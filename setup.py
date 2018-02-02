@@ -23,4 +23,9 @@ setup(
     keywords='nbt schema minecraft package library parser reader module',
     packages=find_packages(),
     python_requires='>=3.6',
+    entry_points={
+        'console_scripts': [
+            'nbt=nbtlib.cli:main',
+        ],
+    }
 )
