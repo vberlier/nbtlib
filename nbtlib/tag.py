@@ -387,6 +387,7 @@ class Compound(Base, dict):
         buff.write(self.end_tag)
 
     def merge(self, other):
+        """Recursively merge tags from another compound."""
         for key, value in other.items():
             if key in self and (isinstance(self[key], Compound)
                                 and isinstance(value, dict)):
