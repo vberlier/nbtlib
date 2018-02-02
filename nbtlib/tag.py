@@ -386,6 +386,14 @@ class Compound(Base, dict):
             tag.write(buff)
         buff.write(self.end_tag)
 
+    def merge(self, other):
+        for key, value in other.items():
+            if key in self and (isinstance(self[key], Compound)
+                                and isinstance(value, dict)):
+                self[key].merge(value)
+            else:
+                self[key] = value
+
     def __str__(self):
         pairs = ','.join(f'{self.stringify_key(key)}:{value}'
                          for key, value in self.items())
