@@ -23,11 +23,18 @@ def load(filename, *, gzipped=None):
     keyword only argument to specify explicitly whether the file is
     compressed or not.
     """
-    if gzipped is None:  # if we don't know we read the magic number
-        with open(filename, 'rb') as buff:
-            magic_number = buff.read(2)
-            gzipped = magic_number == b'\x1f\x8b'
-    return File.load(filename, gzipped)
+    if gzipped is not None:
+        return File.load(filename, gzipped)
+
+    # if we don't know we read the magic number
+    with open(filename, 'rb') as buff:
+        magic_number = buff.read(2)
+        buff.seek(0)
+
+        if magic_number == b'\x1f\x8b':
+            buff = gzip.GzipFile(fileobj=buff)
+
+        return File.from_buffer(buff)
 
 
 class File(Compound):
@@ -78,6 +85,18 @@ class File(Compound):
         self[self.root_name] = value
 
     @classmethod
+    def from_buffer(cls, buff):
+        """Load nbt file from a file-like object.
+
+        The `buff` argument can be either a standard `io.BufferedReader`
+        for uncompressed nbt or a `gzip.GzipFile` for gzipped nbt data.
+        """
+        self = cls.parse(buff)
+        self.filename = buff.name
+        self.gzipped = isinstance(buff, gzip.GzipFile)
+        return self
+
+    @classmethod
     def load(cls, filename, gzipped):
         """Read, parse and return the file at the specified location.
 
@@ -86,11 +105,7 @@ class File(Compound):
         """
         open_file = gzip.open if gzipped else open
         with open_file(filename, 'rb') as buff:
-            self = cls.parse(buff)
-
-        self.filename = filename
-        self.gzipped = gzipped
-        return self
+            return cls.from_buffer(buff)
 
     def save(self, filename=None, *, gzipped=None):
         """Write the file at the specified location.
