@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='nbtlib',
-    version='0.1.13',
+    version='0.1.14',
     description='A python package to read and edit nbt data',
     long_description=open('README.rst').read(),
     url='https://github.com/vberlier/nbtlib',
