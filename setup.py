@@ -7,7 +7,7 @@ with open('README.md') as readme:
 
 setup(
     name='nbtlib',
-    version='0.1.14',
+    version='1.0.1',
     license='MIT',
     description='A python package to read and edit nbt data',
     long_description=long_description,
