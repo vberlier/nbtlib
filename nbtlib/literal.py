@@ -68,7 +68,7 @@ class InvalidLiteral(ValueError):
     """
 
     def __str__(self):
-        return f'{self.args[1]} at postion {self.args[0][0]}'
+        return f'{self.args[1]} at position {self.args[0][0]}'
 
 
 Token = namedtuple('Token', ['type', 'value', 'span'])
