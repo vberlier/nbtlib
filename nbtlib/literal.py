@@ -38,7 +38,7 @@ TOKENS = {
 # Build the regex
 
 TOKENS_REGEX = re.compile(
-    '|'.join(f'(?P<{key}>{value})' for key, value in TOKENS.items())
+    '|'.join(f'\s*(?P<{key}>{value})\s*' for key, value in TOKENS.items())
 )
 
 
@@ -77,7 +77,7 @@ Token = namedtuple('Token', ['type', 'value', 'span'])
 def tokenize(string):
     """Match and yield all the tokens of the input string."""
     for match in TOKENS_REGEX.finditer(string):
-        yield Token(match.lastgroup, match.group(), match.span())
+        yield Token(match.lastgroup, match.group().strip(), match.span())
 
 
 class NbtParser:
