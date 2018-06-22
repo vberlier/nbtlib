@@ -61,7 +61,7 @@ def parse_nbt(literal):
 class InvalidLiteral(ValueError):
     """Exception raised when parsing invalid nbt literals.
 
-    The exception must be instanciated with two parameters. The first
+    The exception must be instantiated with two parameters. The first
     one needs to be a tuple representing the location of the error in
     the nbt string (start_index, end_index). The second argument is the
     actual error message.
@@ -83,7 +83,7 @@ def tokenize(string):
 class NbtParser:
     """Nbt literal parser.
 
-    The parser needs to be instanciated with a token stream as argument.
+    The parser needs to be instantiated with a token stream as argument.
     Using the `parse` method will return the corresponding nbt tag.
 
     The parser will raise an InvalidLiteral exception if it encounters
