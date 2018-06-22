@@ -96,14 +96,14 @@ assert isinstance(my_object['foo'], String)
 instance, you can parse nbt literals using the `parse_nbt()` function.
 
 ```python
-    from nbtlib import parse_nbt
-    from nbtlib.tag import *
+from nbtlib import parse_nbt
+from nbtlib.tag import *
 
-    my_compound = parse_nbt('{foo:[hello,world],bar:[I;1,2,3]}')
-    assert my_compound == Compound({
-        'foo': List[String](['hello', 'world']),
-        'bar': IntArray([1, 2, 3])
-    })
+my_compound = parse_nbt('{foo:[hello,world],bar:[I;1,2,3]}')
+assert my_compound == Compound({
+    'foo': List[String](['hello', 'world']),
+    'bar': IntArray([1, 2, 3])
+})
 ```
 
 ## Command-line interface
