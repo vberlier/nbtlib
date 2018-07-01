@@ -2,6 +2,6 @@ language: python
 python:
   - "3.6"
 install:
-  - python -m pip install -U pytest
+  - pip install tox
 script:
-  - python -m pytest tests/
+  - tox -v
