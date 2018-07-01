@@ -194,13 +194,13 @@ $ nbt -r my_file.nbt --plain
 **Writing**
 
 ```bash
-$ nbt -w '{name:"Writing in an uncompressed file"} my_file.nbt --plain
+$ nbt -w '{name:"Writing in an uncompressed file"}' my_file.nbt --plain
 ```
 
 **Merging**
 
 ```bash
-$ nbt -m '{name:"Merging in an uncompressed file"} my_file.nbt --plain
+$ nbt -m '{name:"Merging in an uncompressed file"}' my_file.nbt --plain
 ```
 
 ## Contributing
