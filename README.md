@@ -206,10 +206,17 @@ $ nbt -m '{name:"Merging in an uncompressed file"}' my_file.nbt --plain
 ## Contributing
 
 Contributions are welcome. Unit tests are built with `pytest`. You can
-run the test suite with:
+run the test suite with `tox`. First, make sure that `tox` is installed
+in your virtual environment.
 
 ```bash
-$ python -m pytest tests
+$ pip install tox
+```
+
+You should now be able to run the tests with `tox`.
+
+```bash
+$ tox
 ```
 
 ----
