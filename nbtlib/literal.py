@@ -21,7 +21,7 @@ from .tag import *
 
 TOKENS = {
     'QUOTED_STRING': r'""|".*?[^\\]"',
-    'NUMBER': r'-?(?:[0-9]*?\.[0-9]+|[0-9]+\.[0-9]*?|[0-9]+)[bslfdBSLFD]?',
+    'NUMBER': r'[+-]?(?:[0-9]*?\.[0-9]+|[0-9]+\.[0-9]*?|[0-9]+)[bslfdBSLFD]?',
     'STRING': r'[a-zA-Z0-9._+-]+',
     'COMPOUND': r'\{',
     'CLOSE_COMPOUND': r'\}',
