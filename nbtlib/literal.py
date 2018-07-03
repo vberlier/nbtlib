@@ -53,9 +53,12 @@ def parse_nbt(literal):
     parser = NbtParser(tokenize(literal))
     tag = parser.parse()
 
-    leftover = literal[parser.token_span[1]:]
+    cursor = parser.token_span[1]
+    leftover = literal[cursor:]
     if leftover.strip():
+        parser.token_span = cursor, cursor + len(leftover)
         raise parser.error(f'Expected end of string but got {leftover!r}')
+
     return tag
 
 
@@ -106,6 +109,7 @@ class NbtParser:
         """Move to the next token in the token stream."""
         self.current_token = next(self.token_stream, None)
         if self.current_token is None:
+            self.token_span = self.token_span[1], self.token_span[1]
             raise self.error('Unexpected end of input')
         self.token_span = self.current_token.span
         return self
