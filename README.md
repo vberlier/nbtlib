@@ -45,6 +45,13 @@ nbt_file = nbt.load('bigtest.nbt')
 assert nbt_file.root['intTest'] == 2147483647
 ```
 
+Here, we can see that `Compound` tag instances can be used just like
+regular python dictionaries, and that checking equality works out of the
+box.
+
+For more details check out the "[Usage](https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb)"
+notebook.
+
 ### Editing files
 
 You can use nbt files as context managers in order to save modifications
