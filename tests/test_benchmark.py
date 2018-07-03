@@ -1,7 +1,7 @@
 from io import BytesIO
 import pytest
 
-from nbtlib import nbt, ByteArray, IntArray
+from nbtlib import nbt
 
 
 def write_parse(nbt_tag):
@@ -22,7 +22,8 @@ def write_parse(nbt_tag):
     'string.nbt',
     'list.nbt',
     'compound.nbt',
-    'int_array.nbt'
+    'int_array.nbt',
+    'long_array.nbt'
 ])
 def test_tag_bench(benchmark, filename):
     nbt_tag = nbt.load(f'tests/nbt_files/bench/{filename}').root

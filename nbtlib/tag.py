@@ -7,8 +7,8 @@ file-like object and returns a tag instance. Tag instances can write
 their binary representation to file-like objects using the `write`
 method.
 
-Each tag inherits from the equivalent python builtin type. This means
-that all the operations that are commonly used on the base types are
+Each tag inherits from the equivalent python data type. This means that
+all the operations that are commonly used on the base types are
 available on nbt tags.
 
 Exported classes:
@@ -19,16 +19,17 @@ Exported classes:
     Long      -- Represents a long tag, inherits from `int`
     Float     -- Represents a float tag, inherits from `float`
     Double    -- Represents a double tag, inherits from `float`
-    ByteArray -- Represents a byte array tag, inherits from `array`
+    ByteArray -- Represents a byte array tag, inherits from `ndarray`
     String    -- Represents a string tag, inherits from `str`
     List      -- Represents a generic list tag, inherits from `list`
     Compound  -- Represents a compound tag, inherits from `dict`
-    IntArray  -- Represents an int array tag, inherits from `array`
+    IntArray  -- Represents an int array tag, inherits from `ndarray`
+    LongArray -- Represents a long array tag, inherits from `ndarray`
 """
 
 
 __all__ = ['End', 'Byte', 'Short', 'Int', 'Long', 'Float', 'Double',
-           'ByteArray', 'String', 'List', 'Compound', 'IntArray']
+           'ByteArray', 'String', 'List', 'Compound', 'IntArray', 'LongArray']
 
 
 import sys
@@ -436,3 +437,13 @@ class IntArray(Array):
     tag_id = 11
     item_type = np.dtype('>i4')
     array_prefix = 'I'
+
+
+class LongArray(Array):
+    """Nbt tag representing an array of signed longs."""
+
+    __slots__ = ()
+    tag_id = 12
+    item_type = np.dtype('>i8')
+    array_prefix = 'L'
+    item_suffix = 'l'

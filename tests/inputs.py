@@ -67,6 +67,11 @@ bytes_for_valid_tags = [
     (b'\x00\x00\x00\x01\xff\xff\xff\xff',                 IntArray([-1])),
     (b'\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x02', IntArray([1, 2])),
 
+    # LongArray tag
+    (b'\x00\x00\x00\x00', LongArray([])),
+    (b'\x00\x00\x00\x01\xff\xff\xff\xff\xff\xff\xff\xff', LongArray([-1])),
+    (b'\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x02', LongArray([1, 2])),
+
 ]
 
 
@@ -134,6 +139,11 @@ literal_values_for_tags = [
     ('[I;]', IntArray([])),
     ('[I;-1]', IntArray([-1])),
     ('[I;1,2]', IntArray([1, 2])),
+
+    # LongArray tag
+    ('[L;]', LongArray([])),
+    ('[L;-1l]', LongArray([-1])),
+    ('[L;1l,2l]', LongArray([1, 2])),
 
 ]
 

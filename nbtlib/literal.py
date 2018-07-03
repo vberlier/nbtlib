@@ -27,6 +27,7 @@ TOKENS = {
     'CLOSE_COMPOUND': r'\}',
     'BYTE_ARRAY': r'\[B;',
     'INT_ARRAY': r'\[I;',
+    'LONG_ARRAY': r'\[L;',
     'LIST': r'\[',
     'CLOSE_BRACKET': r'\]',
     'COLON': r':',
@@ -175,10 +176,11 @@ class NbtParser:
         """Parse and yield array items from the token stream."""
         for token in self.collect_tokens_until('CLOSE_BRACKET'):
             is_number = token.type == 'NUMBER'
-            if not (is_number and token.value.endswith(number_suffix)):
+            value = token.value.lower()
+            if not (is_number and value.endswith(number_suffix)):
                 raise self.error(f'Invalid {number_type} array element '
                                  f'{token.value!r}')
-            yield int(token.value.replace(number_suffix, ''))
+            yield int(value.replace(number_suffix, ''))
 
     def parse_byte_array(self):
         """Parse a byte array from the token stream."""
@@ -187,6 +189,10 @@ class NbtParser:
     def parse_int_array(self):
         """Parse an int array from the token stream."""
         return IntArray(list(self.array_items('int')))
+
+    def parse_long_array(self):
+        """Parse a long array from the token stream."""
+        return LongArray(list(self.array_items('long', number_suffix='l')))
 
     def parse_list(self):
         """Parse a list from the token stream."""
