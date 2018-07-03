@@ -47,6 +47,7 @@ UNQUOTED_STRING = re.compile(r'^[a-zA-Z0-9._+-]+$')
 
 BYTE = struct.Struct('>b')
 SHORT = struct.Struct('>h')
+USHORT = struct.Struct('>H')
 INT = struct.Struct('>i')
 LONG = struct.Struct('>q')
 FLOAT = struct.Struct('>f')
@@ -77,14 +78,14 @@ def write_numeric(fmt, value, buff):
 
 def read_string(buff):
     """Read a string from a file-like object."""
-    length = read_numeric(SHORT, buff)
+    length = read_numeric(USHORT, buff)
     return buff.read(length).decode('utf-8')
 
 
 def write_string(value, buff):
     """Write a string to a file-like object."""
     data = value.encode('utf-8')
-    write_numeric(SHORT, len(data), buff)
+    write_numeric(USHORT, len(data), buff)
     buff.write(data)
 
 
