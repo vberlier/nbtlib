@@ -5,6 +5,10 @@ with open('README.md') as readme:
     long_description = readme.read()
 
 
+with open('requirements.txt') as requirements:
+    dependencies = [line.strip() for line in requirements]
+
+
 setup(
     name='nbtlib',
     version='1.0.3',
@@ -30,6 +34,8 @@ setup(
     keywords='nbt schema minecraft package library parser reader module',
 
     packages=find_packages(),
+
+    install_requires=dependencies,
 
     entry_points={
         'console_scripts': [
