@@ -133,7 +133,7 @@ class NbtParser:
         if suffix in NUMBER_SUFFIXES:
             return NUMBER_SUFFIXES[suffix](value[:-1])
         else:
-            return Int(value)
+            return Double(value) if '.' in value else Int(value)
 
     def parse_string(self):
         """Parse a regular unquoted string from the token stream."""
