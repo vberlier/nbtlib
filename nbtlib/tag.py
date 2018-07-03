@@ -35,7 +35,7 @@ import sys
 import re
 import json
 import struct
-from array import array
+import numpy as np
 
 
 # Regex to detect if a string can be represented unquoted
@@ -220,36 +220,56 @@ class Double(Numeric, float):
     suffix = 'd'
 
 
-class ByteArray(Base, array):
-    """Nbt tag representing an array of signed bytes.
+class Array(Base, np.ndarray):
+    """Intermediate class that represents an array nbt tag.
 
-    The class inherits from the python array type. It passes the 'b'
-    type code to the parent `__new__` method.
+    This class is not meant to be instantiated. It inherits from the
+    `Base` class and the numpy `ndarray` type.
+
+    Class attributes:
+        item_type    -- The numpy array data type
+        array_prefix -- The literal array prefix
+        item_suffix  -- The literal item suffix
     """
 
     __slots__ = ()
-    tag_id = 7
+    item_type = None
+    array_prefix = None
+    item_suffix = ''
 
-    def __new__(cls, *args, **kwargs):
-        # The `b` type code is used to specify a signed byte
-        return super().__new__(cls, 'b', *args, **kwargs)
+    def __new__(cls, value=None, *, length=0):
+        if value is None:
+            return np.zeros((length,), cls.item_type).view(cls)
+        return np.asarray(value, cls.item_type).view(cls)
 
     @classmethod
     def parse(cls, buff):
-        byte_array = cls()
-        byte_array.fromfile(buff, read_numeric(INT, buff))
-        return byte_array
+        data = buff.read(read_numeric(INT, buff) * cls.item_type.itemsize)
+        return cls(np.frombuffer(data, cls.item_type))
 
     def write(self, buff):
         write_numeric(INT, len(self), buff)
-        self.tofile(buff)
+        buff.write(self.tobytes())
+
+    def __bool__(self):
+        return all(self)
 
     def __repr__(self):
         return f'{self.__class__.__name__}([{", ".join(map(str, self))}])'
 
     def __str__(self):
-        elements = ','.join(f'{el}b' for el in self)
-        return f'[B;{elements}]'
+        elements = ','.join(f'{el}{self.item_suffix}' for el in self)
+        return f'[{self.array_prefix};{elements}]'
+
+
+class ByteArray(Array):
+    """Nbt tag representing an array of signed bytes."""
+
+    __slots__ = ()
+    tag_id = 7
+    item_type = np.dtype('>b')
+    array_prefix = 'B'
+    item_suffix = 'b'
 
 
 class String(Base, str):
@@ -409,39 +429,10 @@ class Compound(Base, dict):
             return escape_string(key)
 
 
-class IntArray(Base, array):
-    """Nbt tag representing an array of signed integers.
-
-    The class inherits from the python array type. It passes the 'i'
-    type code to the parent `__new__` method.
-    """
+class IntArray(Array):
+    """Nbt tag representing an array of signed integers."""
 
     __slots__ = ()
     tag_id = 11
-
-    def __new__(cls, *args, **kwargs):
-        # The `i` type code is used to specify a signed 32 bit integer
-        return super().__new__(cls, 'i', *args, **kwargs)
-
-    @classmethod
-    def parse(cls, buff):
-        int_array = cls()
-        int_array.fromfile(buff, read_numeric(INT, buff))
-        int_array._swap_little_endian()
-        return int_array
-
-    def write(self, buff):
-        write_numeric(INT, len(self), buff)
-        self._swap_little_endian()
-        self.tofile(buff)
-        self._swap_little_endian()
-
-    def _swap_little_endian(self):     # Python arrays use the system's endianness
-        if sys.byteorder == 'little':  # so we need to perform a byteswap if the
-            self.byteswap()            # system doesn't use big-endian integers
-
-    def __repr__(self):
-        return f'{self.__class__.__name__}([{", ".join(map(str, self))}])'
-
-    def __str__(self):
-        return f'[I;{",".join(map(str, self))}]'
+    item_type = np.dtype('>i4')
+    array_prefix = 'I'

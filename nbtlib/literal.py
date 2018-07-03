@@ -171,23 +171,22 @@ class NbtParser:
             compound_tag[item_key] = self.parse()
         return compound_tag
 
-    def fill_generic_array(self, array_tag, number_type, *, number_suffix=''):
-        """Fill an array by parsing its items from the token stream."""
+    def array_items(self, number_type, *, number_suffix=''):
+        """Parse and yield array items from the token stream."""
         for token in self.collect_tokens_until('CLOSE_BRACKET'):
             is_number = token.type == 'NUMBER'
             if not (is_number and token.value.endswith(number_suffix)):
                 raise self.error(f'Invalid {number_type} array element '
                                  f'{token.value!r}')
-            array_tag.append(int(token.value.replace(number_suffix, '')))
-        return array_tag
+            yield int(token.value.replace(number_suffix, ''))
 
     def parse_byte_array(self):
         """Parse a byte array from the token stream."""
-        return self.fill_generic_array(ByteArray(), 'byte', number_suffix='b')
+        return ByteArray(list(self.array_items('byte', number_suffix='b')))
 
     def parse_int_array(self):
         """Parse an int array from the token stream."""
-        return self.fill_generic_array(IntArray(), 'int')
+        return IntArray(list(self.array_items('int')))
 
     def parse_list(self):
         """Parse a list from the token stream."""

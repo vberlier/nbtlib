@@ -173,9 +173,9 @@ nbt_files = [
                     'name': String('Compound tag #1')
                 })
             ]),
-            'byteArrayTest (the first 1000 values of (n*n*255+n*7)%100, starting with n=0 (0, 62, 34, 16, 8, ...))': ByteArray(
+            'byteArrayTest (the first 1000 values of (n*n*255+n*7)%100, starting with n=0 (0, 62, 34, 16, 8, ...))': ByteArray([
                 (n**2 * 255 + n*7) % 100 for n in range(1000)
-            ),
+            ]),
             'shortTest': Short(32767)
         })}, gzipped=True)
     ),
