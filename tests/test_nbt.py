@@ -1,4 +1,3 @@
-
 import pytest
 
 from nbtlib import nbt, Compound

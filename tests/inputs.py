@@ -1,4 +1,3 @@
-
 from nbtlib.nbt import File
 from nbtlib.tag import *
 

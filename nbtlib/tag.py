@@ -1,4 +1,3 @@
-
 """This module contains nbt tag definitions.
 
 All the tag classes defined here can be used to instantiate nbt tags.

@@ -1,4 +1,3 @@
-
 from argparse import ArgumentParser, ArgumentTypeError
 
 from nbtlib import nbt, parse_nbt, InvalidLiteral

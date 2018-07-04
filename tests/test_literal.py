@@ -1,4 +1,3 @@
-
 import pytest
 
 from nbtlib import parse_nbt

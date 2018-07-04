@@ -1,4 +1,3 @@
-
 """This module defines tools for creating tag schemas.
 
 Exported items:

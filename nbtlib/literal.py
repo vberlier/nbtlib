@@ -1,4 +1,3 @@
-
 """This module exposes utilities for parsing literal nbt strings.
 
 Exported items:
