@@ -20,7 +20,8 @@ def load(filename, *, gzipped=None, byteorder='big'):
     By default, the function will figure out by itself if the file is
     gzipped before loading it. You can pass a boolean to the `gzipped`
     keyword only argument to specify explicitly whether the file is
-    compressed or not.
+    compressed or not. You can also use the `byteorder` keyword only
+    argument to specify whether the file is little-endian or big-endian.
     """
     if gzipped is not None:
         return File.load(filename, gzipped, byteorder)
@@ -52,8 +53,9 @@ class File(Compound):
     save modifications when the `__exit__` method is called.
 
     Attributes:
-        filename -- The name of the file
-        gzipped  -- Boolean indicating if the file is gzipped
+        filename  -- The name of the file
+        gzipped   -- Boolean indicating if the file is gzipped
+        byteorder -- The byte order (either 'big' or 'little')
     """
 
     # We remove the inherited end tag as the end of nbt files is
@@ -102,7 +104,8 @@ class File(Compound):
         """Read, parse and return the file at the specified location.
 
         The `gzipped` argument is used to indicate if the specified
-        file is gzipped.
+        file is gzipped. The `byteorder` argument lets you specify
+        whether the file is big-endian or little-endian.
         """
         open_file = gzip.open if gzipped else open
         with open_file(filename, 'rb') as buff:
@@ -112,11 +115,12 @@ class File(Compound):
         """Write the file at the specified location.
 
         The `gzipped` keyword only argument indicates if the file should
-        be gzipped.
+        be gzipped. The `byteorder` keyword only argument lets you
+        specify whether the file should be big-endian or little-endian.
 
         If the method is called without any argument, it will default to
-        the instance attributes and use the file's `filename` and
-        `gzipped` attributes.
+        the instance attributes and use the file's `filename`,
+        `gzipped` and `byteorder` attributes.
         """
         if gzipped is None:
             gzipped = self.gzipped
