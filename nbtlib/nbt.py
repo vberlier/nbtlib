@@ -14,7 +14,7 @@ import gzip
 from .tag import Compound
 
 
-def load(filename, *, gzipped=None):
+def load(filename, *, gzipped=None, byteorder='big'):
     """Load the nbt file at the specified location.
 
     By default, the function will figure out by itself if the file is
@@ -23,7 +23,7 @@ def load(filename, *, gzipped=None):
     compressed or not.
     """
     if gzipped is not None:
-        return File.load(filename, gzipped)
+        return File.load(filename, gzipped, byteorder)
 
     # if we don't know we read the magic number
     with open(filename, 'rb') as buff:
@@ -33,7 +33,7 @@ def load(filename, *, gzipped=None):
         if magic_number == b'\x1f\x8b':
             buff = gzip.GzipFile(fileobj=buff)
 
-        return File.from_buffer(buff)
+        return File.from_buffer(buff, byteorder)
 
 
 class File(Compound):
@@ -60,10 +60,11 @@ class File(Compound):
     # specified by the end of the file buffer
     end_tag = b''
 
-    def __init__(self, *args, gzipped=False):
+    def __init__(self, *args, gzipped=False, byteorder='big'):
         super().__init__(*args)
         self.filename = None
         self.gzipped = gzipped
+        self.byteorder = byteorder
 
     @property
     def root_name(self):
@@ -84,19 +85,20 @@ class File(Compound):
         self[self.root_name] = value
 
     @classmethod
-    def from_buffer(cls, buff):
+    def from_buffer(cls, buff, byteorder='big'):
         """Load nbt file from a file-like object.
 
         The `buff` argument can be either a standard `io.BufferedReader`
         for uncompressed nbt or a `gzip.GzipFile` for gzipped nbt data.
         """
-        self = cls.parse(buff)
+        self = cls.parse(buff, byteorder)
         self.filename = buff.name
         self.gzipped = isinstance(buff, gzip.GzipFile)
+        self.byteorder = byteorder
         return self
 
     @classmethod
-    def load(cls, filename, gzipped):
+    def load(cls, filename, gzipped, byteorder='big'):
         """Read, parse and return the file at the specified location.
 
         The `gzipped` argument is used to indicate if the specified
@@ -104,9 +106,9 @@ class File(Compound):
         """
         open_file = gzip.open if gzipped else open
         with open_file(filename, 'rb') as buff:
-            return cls.from_buffer(buff)
+            return cls.from_buffer(buff, byteorder)
 
-    def save(self, filename=None, *, gzipped=None):
+    def save(self, filename=None, *, gzipped=None, byteorder=None):
         """Write the file at the specified location.
 
         The `gzipped` keyword only argument indicates if the file should
@@ -123,7 +125,7 @@ class File(Compound):
 
         open_file = gzip.open if gzipped else open
         with open_file(filename, 'wb') as buff:
-            self.write(buff)
+            self.write(buff, byteorder or self.byteorder)
 
     def __enter__(self):
         return self

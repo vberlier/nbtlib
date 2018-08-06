@@ -34,7 +34,7 @@ __all__ = ['End', 'Byte', 'Short', 'Int', 'Long', 'Float', 'Double',
 import sys
 import re
 import json
-import struct
+from struct import Struct, error as StructError
 import numpy as np
 
 
@@ -45,13 +45,17 @@ UNQUOTED_STRING = re.compile(r'^[a-zA-Z0-9._+-]+$')
 
 # Struct formats used to pack and unpack numeric values
 
-BYTE = struct.Struct('>b')
-SHORT = struct.Struct('>h')
-USHORT = struct.Struct('>H')
-INT = struct.Struct('>i')
-LONG = struct.Struct('>q')
-FLOAT = struct.Struct('>f')
-DOUBLE = struct.Struct('>d')
+def get_format(fmt, string):
+    """Return a dictionnary containing a format for each byte order."""
+    return {'big': fmt('>' + string), 'little': fmt('<' + string)}
+
+BYTE = get_format(Struct, 'b')
+SHORT = get_format(Struct, 'h')
+USHORT = get_format(Struct, 'H')
+INT = get_format(Struct, 'i')
+LONG = get_format(Struct, 'q')
+FLOAT = get_format(Struct, 'f')
+DOUBLE = get_format(Struct, 'd')
 
 
 # Escape nbt strings that must be quoted
@@ -63,29 +67,35 @@ def escape_string(string):
 
 # Read/write helpers for numeric and string values
 
-def read_numeric(fmt, buff):
+def read_numeric(fmt, buff, byteorder='big'):
     """Read a numeric value from a file-like object."""
     try:
+        fmt = fmt[byteorder]
         return fmt.unpack(buff.read(fmt.size))[0]
-    except struct.error:
+    except StructError:
         return 0
+    except KeyError as exc:
+        raise ValueError('Invalid byte order') from exc
 
 
-def write_numeric(fmt, value, buff):
+def write_numeric(fmt, value, buff, byteorder='big'):
     """Write a numeric value to a file-like object."""
-    buff.write(fmt.pack(value))
+    try:
+        buff.write(fmt[byteorder].pack(value))
+    except KeyError as exc:
+        raise ValueError('Invalid byte order') from exc
 
 
-def read_string(buff):
+def read_string(buff, byteorder='big'):
     """Read a string from a file-like object."""
-    length = read_numeric(USHORT, buff)
+    length = read_numeric(USHORT, buff, byteorder)
     return buff.read(length).decode('utf-8')
 
 
-def write_string(value, buff):
+def write_string(value, buff, byteorder='big'):
     """Write a string to a file-like object."""
     data = value.encode('utf-8')
-    write_numeric(USHORT, len(data), buff)
+    write_numeric(USHORT, len(data), buff, byteorder)
     buff.write(data)
 
 
@@ -117,11 +127,11 @@ class Base:
         return cls.all_tags[tag_id]
 
     @classmethod
-    def parse(cls, buff):
+    def parse(cls, buff, byteorder='big'):
         """Parse data from a file-like object and return a tag instance."""
         pass
 
-    def write(self, buff):
+    def write(self, buff, byteorder='big'):
         """Write the binary representation of the tag to a file-like object."""
         pass
 
@@ -157,11 +167,11 @@ class Numeric(Base):
     suffix = ''
 
     @classmethod
-    def parse(cls, buff):
-        return cls(read_numeric(cls.fmt, buff))
+    def parse(cls, buff, byteorder='big'):
+        return cls(read_numeric(cls.fmt, buff, byteorder))
 
-    def write(self, buff):
-        write_numeric(self.fmt, self, buff)
+    def write(self, buff, byteorder='big'):
+        write_numeric(self.fmt, self, buff, byteorder)
 
     def __str__(self):
         return super().__str__() + self.suffix
@@ -237,19 +247,22 @@ class Array(Base, np.ndarray):
     array_prefix = None
     item_suffix = ''
 
-    def __new__(cls, value=None, *, length=0):
+    def __new__(cls, value=None, *, length=0, byteorder='big'):
+        item_type = cls.item_type[byteorder]
         if value is None:
-            return np.zeros((length,), cls.item_type).view(cls)
-        return np.asarray(value, cls.item_type).view(cls)
+            return np.zeros((length,), item_type).view(cls)
+        return np.asarray(value, item_type).view(cls)
 
     @classmethod
-    def parse(cls, buff):
-        data = buff.read(read_numeric(INT, buff) * cls.item_type.itemsize)
-        return cls(np.frombuffer(data, cls.item_type))
+    def parse(cls, buff, byteorder='big'):
+        item_type = cls.item_type[byteorder]
+        data = buff.read(read_numeric(INT, buff, byteorder) * item_type.itemsize)
+        return cls(np.frombuffer(data, item_type), byteorder=byteorder)
 
-    def write(self, buff):
-        write_numeric(INT, len(self), buff)
-        buff.write(self.tobytes())
+    def write(self, buff, byteorder='big'):
+        write_numeric(INT, len(self), buff, byteorder)
+        array = self if self.item_type[byteorder] is self.dtype else self.byteswap()
+        buff.write(array.tobytes())
 
     def __bool__(self):
         return all(self)
@@ -267,7 +280,7 @@ class ByteArray(Array):
 
     __slots__ = ()
     tag_id = 7
-    item_type = np.dtype('>b')
+    item_type = get_format(np.dtype, 'b')
     array_prefix = 'B'
     item_suffix = 'b'
 
@@ -279,11 +292,11 @@ class String(Base, str):
     tag_id = 8
 
     @classmethod
-    def parse(cls, buff):
-        return cls(read_string(buff))
+    def parse(cls, buff, byteorder='big'):
+        return cls(read_string(buff, byteorder))
 
-    def write(self, buff):
-        write_string(self, buff)
+    def write(self, buff, byteorder='big'):
+        write_string(self, buff, byteorder)
 
     def __str__(self):
         if UNQUOTED_STRING.match(self):
@@ -343,16 +356,16 @@ class List(Base, list, metaclass=ListMeta):
         super().__init__(map(self._cast, iterable))
 
     @classmethod
-    def parse(cls, buff):
-        tag = cls.get_tag(read_numeric(BYTE, buff))
-        length = read_numeric(INT, buff)
-        return cls[tag](tag.parse(buff) for _ in range(length))
+    def parse(cls, buff, byteorder='big'):
+        tag = cls.get_tag(read_numeric(BYTE, buff, byteorder))
+        length = read_numeric(INT, buff, byteorder)
+        return cls[tag](tag.parse(buff, byteorder) for _ in range(length))
 
-    def write(self, buff):
-        write_numeric(BYTE, self.subtype.tag_id, buff)
-        write_numeric(INT, len(self), buff)
+    def write(self, buff, byteorder='big'):
+        write_numeric(BYTE, self.subtype.tag_id, buff, byteorder)
+        write_numeric(INT, len(self), buff, byteorder)
         for elem in self:
-            elem.write(buff)
+            elem.write(buff, byteorder)
 
     def __setitem__(self, key, value):
         super().__setitem__(key, self._cast(value))
@@ -388,23 +401,23 @@ class Compound(Base, dict):
 
     __slots__ = ()
     tag_id = 10
-    end_tag = BYTE.pack(End.tag_id)
+    end_tag = b'\x00'
 
     @classmethod
-    def parse(cls, buff):
+    def parse(cls, buff, byteorder='big'):
         self = cls()
-        tag_id = read_numeric(BYTE, buff)
+        tag_id = read_numeric(BYTE, buff, byteorder)
         while tag_id != 0:
-            name = read_string(buff)
-            self[name] = cls.get_tag(tag_id).parse(buff)
-            tag_id = read_numeric(BYTE, buff)
+            name = read_string(buff, byteorder)
+            self[name] = cls.get_tag(tag_id).parse(buff, byteorder)
+            tag_id = read_numeric(BYTE, buff, byteorder)
         return self
 
-    def write(self, buff):
+    def write(self, buff, byteorder='big'):
         for name, tag in self.items():
-            write_numeric(BYTE, tag.tag_id, buff)
-            write_string(name, buff)
-            tag.write(buff)
+            write_numeric(BYTE, tag.tag_id, buff, byteorder)
+            write_string(name, buff, byteorder)
+            tag.write(buff, byteorder)
         buff.write(self.end_tag)
 
     def merge(self, other):
@@ -434,7 +447,7 @@ class IntArray(Array):
 
     __slots__ = ()
     tag_id = 11
-    item_type = np.dtype('>i4')
+    item_type = get_format(np.dtype, 'i4')
     array_prefix = 'I'
 
 
@@ -443,6 +456,6 @@ class LongArray(Array):
 
     __slots__ = ()
     tag_id = 12
-    item_type = np.dtype('>i8')
+    item_type = get_format(np.dtype, 'i8')
     array_prefix = 'L'
     item_suffix = 'l'
