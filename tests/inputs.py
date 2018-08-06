@@ -8,68 +8,108 @@ __all__ = ['bytes_for_valid_tags', 'literal_values_for_tags', 'nbt_files']
 bytes_for_valid_tags = [
 
     # Byte tag
-    (b'\x00', Byte(0)),
-    (b'\xFF', Byte(-1)),
-    (b'\x7F', Byte(127)),
-    (b'\x80', Byte(-128)),
+    ('big', b'\x00', Byte(0)),
+    ('big', b'\xFF', Byte(-1)),
+    ('big', b'\x7F', Byte(127)),
+    ('big', b'\x80', Byte(-128)),
+    ('little', b'\x00', Byte(0)),
+    ('little', b'\xFF', Byte(-1)),
+    ('little', b'\x7F', Byte(127)),
+    ('little', b'\x80', Byte(-128)),
 
     # Short tag
-    (b'\x00\x00', Short(0)),
-    (b'\xFF\xFF', Short(-1)),
-    (b'\x7F\xFF', Short(32767)),
-    (b'\x80\x00', Short(-32768)),
+    ('big', b'\x00\x00', Short(0)),
+    ('big', b'\xFF\xFF', Short(-1)),
+    ('big', b'\x7F\xFF', Short(32767)),
+    ('big', b'\x80\x00', Short(-32768)),
+    ('little', b'\x00\x00', Short(0)),
+    ('little', b'\xFF\xFF', Short(-1)),
+    ('little', b'\xFF\x7F', Short(32767)),
+    ('little', b'\x00\x80', Short(-32768)),
 
     # Int tag
-    (b'\x00\x00\x00\x00', Int(0)),
-    (b'\xFF\xFF\xFF\xFF', Int(-1)),
-    (b'\x7F\xFF\xFF\xFF', Int(2147483647)),
-    (b'\x80\x00\x00\x00', Int(-2147483648)),
+    ('big', b'\x00\x00\x00\x00', Int(0)),
+    ('big', b'\xFF\xFF\xFF\xFF', Int(-1)),
+    ('big', b'\x7F\xFF\xFF\xFF', Int(2147483647)),
+    ('big', b'\x80\x00\x00\x00', Int(-2147483648)),
+    ('little', b'\x00\x00\x00\x00', Int(0)),
+    ('little', b'\xFF\xFF\xFF\xFF', Int(-1)),
+    ('little', b'\xFF\xFF\xFF\x7F', Int(2147483647)),
+    ('little', b'\x00\x00\x00\x80', Int(-2147483648)),
 
     # Long tag
-    (b'\x00\x00\x00\x00\x00\x00\x00\x00', Long(0)),
-    (b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF', Long(-1)),
-    (b'\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF', Long(9223372036854775807)),
-    (b'\x80\x00\x00\x00\x00\x00\x00\x00', Long(-9223372036854775808)),
+    ('big', b'\x00\x00\x00\x00\x00\x00\x00\x00', Long(0)),
+    ('big', b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF', Long(-1)),
+    ('big', b'\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF', Long(9223372036854775807)),
+    ('big', b'\x80\x00\x00\x00\x00\x00\x00\x00', Long(-9223372036854775808)),
+    ('little', b'\x00\x00\x00\x00\x00\x00\x00\x00', Long(0)),
+    ('little', b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF', Long(-1)),
+    ('little', b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x7F', Long(9223372036854775807)),
+    ('little', b'\x00\x00\x00\x00\x00\x00\x00\x80', Long(-9223372036854775808)),
 
     # Float tag
-    (b'\x00\x00\x00\x00', Float(0)),
-    (b'\xbf\x80\x00\x00', Float(-1)),
-    (b'>\xff\x182', Float(0.49823147058486938)),
+    ('big', b'\x00\x00\x00\x00', Float(0)),
+    ('big', b'\xbf\x80\x00\x00', Float(-1)),
+    ('big', b'>\xff\x182', Float(0.49823147058486938)),
+    ('little', b'\x00\x00\x00\x00', Float(0)),
+    ('little', b'\x00\x00\x80\xbf', Float(-1)),
+    ('little', b'2\x18\xff>', Float(0.49823147058486938)),
 
     # Double tag
-    (b'\x00\x00\x00\x00\x00\x00\x00\x00', Double(0)),
-    (b'\xbf\xf0\x00\x00\x00\x00\x00\x00', Double(-1)),
-    (b'?\xdf\x8fk\xbb\xffj^', Double(0.49312871321823148)),
+    ('big', b'\x00\x00\x00\x00\x00\x00\x00\x00', Double(0)),
+    ('big', b'\xbf\xf0\x00\x00\x00\x00\x00\x00', Double(-1)),
+    ('big', b'?\xdf\x8fk\xbb\xffj^', Double(0.49312871321823148)),
+    ('little', b'\x00\x00\x00\x00\x00\x00\x00\x00', Double(0)),
+    ('little', b'\x00\x00\x00\x00\x00\x00\xf0\xbf', Double(-1)),
+    ('little', b'^j\xff\xbbk\x8f\xdf?', Double(0.49312871321823148)),
 
     # ByteArray tag
-    (b'\x00\x00\x00\x00', ByteArray([])),
-    (b'\x00\x00\x00\x01\xff', ByteArray([-1])),
-    (b'\x00\x00\x00\x03\x01\x02\x03', ByteArray([1, 2, 3])),
+    ('big', b'\x00\x00\x00\x00', ByteArray([])),
+    ('big', b'\x00\x00\x00\x01\xff', ByteArray([-1])),
+    ('big', b'\x00\x00\x00\x03\x01\x02\x03', ByteArray([1, 2, 3])),
+    ('little', b'\x00\x00\x00\x00', ByteArray([])),
+    ('little', b'\x01\x00\x00\x00\xff', ByteArray([-1])),
+    ('little', b'\x03\x00\x00\x00\x01\x02\x03', ByteArray([1, 2, 3])),
 
     # String tag
-    (b'\x00\x00', String('')),
-    (b'\x00\x0bhello world', String('hello world')),
-    (b'\x00\x06\xc3\x85\xc3\x84\xc3\x96', String('ÅÄÖ')),
+    ('big', b'\x00\x00', String('')),
+    ('big', b'\x00\x0bhello world', String('hello world')),
+    ('big', b'\x00\x06\xc3\x85\xc3\x84\xc3\x96', String('ÅÄÖ')),
+    ('little', b'\x00\x00', String('')),
+    ('little', b'\x0b\x00hello world', String('hello world')),
+    ('little', b'\x06\x00\xc3\x85\xc3\x84\xc3\x96', String('ÅÄÖ')),
 
     # List tag
-    (b'\x02\x00\x00\x00\x00', List[Short]([])),
-    (b'\x01\x00\x00\x00\x04\x05\xf7\x12\x40', List[Byte]([Byte(5), Byte(-9), Byte(18), Byte(64)])),
-    (b'\x08\x00\x00\x00\x02\x00\x05hello\x00\x05world', List[String]([String('hello'), String('world')])),
+    ('big', b'\x02\x00\x00\x00\x00', List[Short]([])),
+    ('big', b'\x01\x00\x00\x00\x04\x05\xf7\x12\x40', List[Byte]([Byte(5), Byte(-9), Byte(18), Byte(64)])),
+    ('big', b'\x08\x00\x00\x00\x02\x00\x05hello\x00\x05world', List[String]([String('hello'), String('world')])),
+    ('little', b'\x02\x00\x00\x00\x00', List[Short]([])),
+    ('little', b'\x01\x04\x00\x00\x00\x05\xf7\x12\x40', List[Byte]([Byte(5), Byte(-9), Byte(18), Byte(64)])),
+    ('little', b'\x08\x02\x00\x00\x00\x05\x00hello\x05\x00world', List[String]([String('hello'), String('world')])),
 
     # Compound tag
-    (b'\x00', Compound({})),
-    (b'\x03\x00\x03foo\x00\x00\x00*\x00', Compound({'foo': Int(42)})),
-    (b'\x01\x00\x01a\x00\x01\x00\x01b\x01\x00', Compound({'a': Byte(0), 'b': Byte(1)})),
+    ('big', b'\x00', Compound({})),
+    ('big', b'\x03\x00\x03foo\x00\x00\x00*\x00', Compound({'foo': Int(42)})),
+    ('big', b'\x01\x00\x01a\x00\x01\x00\x01b\x01\x00', Compound({'a': Byte(0), 'b': Byte(1)})),
+    ('little', b'\x00', Compound({})),
+    ('little', b'\x03\x03\x00foo*\x00\x00\x00\x00', Compound({'foo': Int(42)})),
+    ('little', b'\x01\x01\x00a\x00\x01\x01\x00b\x01\x00', Compound({'a': Byte(0), 'b': Byte(1)})),
 
     # IntArray tag
-    (b'\x00\x00\x00\x00', IntArray([])),
-    (b'\x00\x00\x00\x01\xff\xff\xff\xff', IntArray([-1])),
-    (b'\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x02', IntArray([1, 2])),
+    ('big', b'\x00\x00\x00\x00', IntArray([])),
+    ('big', b'\x00\x00\x00\x01\xff\xff\xff\xff', IntArray([-1])),
+    ('big', b'\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x02', IntArray([1, 2])),
+    ('little', b'\x00\x00\x00\x00', IntArray([])),
+    ('little', b'\x01\x00\x00\x00\xff\xff\xff\xff', IntArray([-1])),
+    ('little', b'\x02\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00', IntArray([1, 2])),
 
     # LongArray tag
-    (b'\x00\x00\x00\x00', LongArray([])),
-    (b'\x00\x00\x00\x01\xff\xff\xff\xff\xff\xff\xff\xff', LongArray([-1])),
-    (b'\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x02', LongArray([1, 2])),
+    ('big', b'\x00\x00\x00\x00', LongArray([])),
+    ('big', b'\x00\x00\x00\x01\xff\xff\xff\xff\xff\xff\xff\xff', LongArray([-1])),
+    ('big', b'\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x02', LongArray([1, 2])),
+    ('little', b'\x00\x00\x00\x00', LongArray([])),
+    ('little', b'\x01\x00\x00\x00\xff\xff\xff\xff\xff\xff\xff\xff', LongArray([-1])),
+    ('little', b'\x02\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00', LongArray([1, 2])),
 
 ]
 
