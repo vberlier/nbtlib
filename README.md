@@ -121,19 +121,20 @@ basic operations on nbt files.
 
 ```
 $ nbt --help
-usage: nbt [-h] (-r | -w <nbt> | -m <nbt>) [--plain] <file>
+usage: nbt [-h] (-r | -w <nbt> | -m <nbt>) [--plain] [--little] <file>
 
 Perform basic operations on nbt files.
 
 positional arguments:
-    <file>      the target file
+  <file>      the target file
 
 optional arguments:
-    -h, --help  show this help message and exit
-    -r          read nbt data from a file
-    -w <nbt>    write nbt to a file
-    -m <nbt>    merge nbt into an nbt file
-    --plain     don't use gzip compression
+  -h, --help  show this help message and exit
+  -r          read nbt data from a file
+  -w <nbt>    write nbt to a file
+  -m <nbt>    merge nbt into an nbt file
+  --plain     don't use gzip compression
+  --little    use little-endian format
 ```
 
 ### Read nbt data
@@ -186,29 +187,31 @@ Here, the compound values that aren't present in the input literal are
 left untouched. Using the `-w` option instead of `-m` would
 overwrite the whole file.
 
-### Compression
+### Compression and byte order
 
 By default, the CLI will assume that you're working with gzipped nbt
 files. If you want to read, write or merge uncompressed nbt files, you
-can use the `--plain` option.
+can use the `--plain` option. Similarly, the default byte order is
+big-endian so you'll need to use the `--little` option to perform
+operations on little-endian files.
 
 **Reading**
 
 ```bash
-$ nbt -r my_file.nbt --plain
-{name:"Reading from an uncompressed file"}
+$ nbt -r my_file.nbt --plain --little
+{name:"Reading from an uncompressed little-endian file"}
 ```
 
 **Writing**
 
 ```bash
-$ nbt -w '{name:"Writing in an uncompressed file"}' my_file.nbt --plain
+$ nbt -w '{name:"Writing in an uncompressed little-endian file"}' my_file.nbt --plain --little
 ```
 
 **Merging**
 
 ```bash
-$ nbt -m '{name:"Merging in an uncompressed file"}' my_file.nbt --plain
+$ nbt -m '{name:"Merging in an uncompressed little-endian file"}' my_file.nbt --plain --little
 ```
 
 ## Contributing
