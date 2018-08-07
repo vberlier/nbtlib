@@ -32,6 +32,8 @@ group.add_argument('-m', metavar='<nbt>', type=compound_literal,
 
 parser.add_argument('--plain', action='store_true',
                     help='don\'t use gzip compression')
+parser.add_argument('--little', action='store_true',
+                    help='use little-endian format')
 parser.add_argument('file', metavar='<file>',
                     help='the target file')
 
@@ -40,26 +42,27 @@ parser.add_argument('file', metavar='<file>',
 
 def main():
     args = parser.parse_args()
+    gzipped, byteorder = not args.plain, 'little' if args.little else 'big'
     try:
         if args.r:
-            read(args.file, not args.plain)
+            read(args.file, gzipped, byteorder)
         elif args.w:
-            write(args.w, args.file, not args.plain)
+            write(args.w, args.file, gzipped, byteorder)
         elif args.m:
-            merge(args.m, args.file, not args.plain)
+            merge(args.m, args.file, gzipped, byteorder)
     except IOError as exc:
         parser.exit(1, str(exc) + '\n')
 
 
-def read(filename, compressed):
-    print(nbt.load(filename, gzipped=compressed))
+def read(filename, gzipped, byteorder):
+    print(nbt.load(filename, gzipped=gzipped, byteorder=byteorder))
 
 
-def write(nbt_data, filename, compressed):
-    nbt.File(nbt_data).save(filename, gzipped=compressed)
+def write(nbt_data, filename, gzipped, byteorder):
+    nbt.File(nbt_data).save(filename, gzipped=gzipped, byteorder=byteorder)
 
 
-def merge(nbt_data, filename, compressed):
-    nbt_file = nbt.load(filename, gzipped=compressed)
+def merge(nbt_data, filename, gzipped, byteorder):
+    nbt_file = nbt.load(filename, gzipped=gzipped, byteorder=byteorder)
     nbt_file.merge(nbt_data)
     nbt_file.save()
