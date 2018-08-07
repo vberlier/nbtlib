@@ -11,6 +11,7 @@ python 3.6.
 
 - Create, read and edit nbt files
 - Supports gzipped and uncompressed files
+- Supports big-endian and little-endian files
 - Parse and serialize raw nbt data
 - Define tag schemas that automatically enforce predefined tag types
 - Convert nbt between binary form and literal notation
