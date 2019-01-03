@@ -339,7 +339,7 @@ class List(Base, list, metaclass=ListMeta):
 
     On top of that, List inherits from Base and the python builtin list
     type. This means that all the usual list operations are supported
-    on list tag instances. Mutating operations have been overwrote to
+    on list tag instances. Mutating operations have been overwritten to
     include an isinstance() check. For instance, when calling the
     `append` method, the appended item will be wrapped by the defined
     subtype if isinstance(item, TagName) returns False.
