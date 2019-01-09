@@ -94,7 +94,7 @@ class File(Compound):
         for uncompressed nbt or a `gzip.GzipFile` for gzipped nbt data.
         """
         self = cls.parse(buff, byteorder)
-        self.filename = buff.name
+        self.filename = getattr(buff, 'name', self.filename)
         self.gzipped = isinstance(buff, gzip.GzipFile)
         self.byteorder = byteorder
         return self
@@ -120,12 +120,17 @@ class File(Compound):
 
         If the method is called without any argument, it will default to
         the instance attributes and use the file's `filename`,
-        `gzipped` and `byteorder` attributes.
+        `gzipped` and `byteorder` attributes. Calling the method without
+        a `filename` will raise a `ValueError` if the `filename` of the
+        file is `None`.
         """
         if gzipped is None:
             gzipped = self.gzipped
         if filename is None:
             filename = self.filename
+
+        if filename is None:
+            raise ValueError('No filename specified')
 
         open_file = gzip.open if gzipped else open
         with open_file(filename, 'wb') as buff:
