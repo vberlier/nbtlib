@@ -29,7 +29,7 @@ Exported classes:
 
 __all__ = ['End', 'Byte', 'Short', 'Int', 'Long', 'Float', 'Double',
            'ByteArray', 'String', 'List', 'Compound', 'IntArray', 'LongArray',
-           'OutOfRange']
+           'EndInstantiation', 'OutOfRange', 'IncompatibleItemType']
 
 
 import sys
@@ -54,11 +54,29 @@ FLOAT = get_format(Struct, 'f')
 DOUBLE = get_format(Struct, 'd')
 
 
+# Custom errors
+
+class EndInstantiation(TypeError):
+    """Raised when trying to instantiate an `End` tag."""
+
+    def __init__(self):
+        super().__init__('End tags can\'t be instantiated')
+
+
 class OutOfRange(ValueError):
     """Raised when a numeric value is out of range."""
 
     def __init__(self, value):
         super().__init__(f'{value!r} is out of range')
+
+
+class IncompatibleItemType(TypeError):
+    """Raised when a list item is incompatible with the subtype of the list."""
+
+    def __init__(self, item, subtype):
+        super().__init__(f'{item!r} should be a {subtype.__name__} tag')
+        self.item = item
+        self.subtype = subtype
 
 
 # Regex to detect if a string can be represented unquoted
@@ -152,6 +170,9 @@ class End(Base):
 
     __slots__ = ()
     tag_id = 0
+
+    def __new__(cls, *args, **kwargs):
+        raise EndInstantiation()
 
 
 class Numeric(Base):
@@ -342,6 +363,9 @@ class ListMeta(type):
         cls.variants = {}
 
     def __getitem__(cls, item):
+        if item is End:
+            return cls
+
         try:
             return List.variants[item]
         except KeyError:
@@ -373,10 +397,31 @@ class List(Base, list, metaclass=ListMeta):
 
     __slots__ = ()
     tag_id = 9
-    subtype = Base
+    subtype = End
+
+    def __new__(cls, iterable=()):
+        if cls.subtype is End:
+            subtype = End
+
+            for item in iterable:
+                item_type = type(item)
+                if issubclass(item_type, Base):
+                    subtype = item_type
+                if cls.is_concrete_subtype(subtype):
+                    break
+
+            cls = cls[subtype]
+
+        return super().__new__(cls, iterable)
 
     def __init__(self, iterable=()):
-        super().__init__(map(self._cast, iterable))
+        super().__init__(map(self.cast_item, iterable))
+
+    @staticmethod
+    def is_concrete_subtype(subtype):
+        while issubclass(subtype, List):
+            subtype = subtype.subtype
+        return subtype is not End
 
     @classmethod
     def parse(cls, buff, byteorder='big'):
@@ -391,21 +436,31 @@ class List(Base, list, metaclass=ListMeta):
             elem.write(buff, byteorder)
 
     def __setitem__(self, key, value):
-        super().__setitem__(key, self._cast(value))
+        super().__setitem__(key, self.cast_item(value))
 
     def append(self, value):
-        super().append(self._cast(value))
+        super().append(self.cast_item(value))
 
     def extend(self, iterable):
-        super().extend(map(self._cast, iterable))
+        super().extend(map(self.cast_item, iterable))
 
     def insert(self, index, value):
-        super().insert(index, self._cast(value))
+        super().insert(index, self.cast_item(value))
 
-    def _cast(self, value):
-        if not isinstance(value, self.subtype):
-            return self.subtype(value)
-        return value
+    @classmethod
+    def cast_item(cls, item):
+        if not isinstance(item, cls.subtype):
+            if isinstance(item, Base) and not (issubclass(cls.subtype, List)
+                                               and isinstance(item, List)):
+                raise IncompatibleItemType(item, cls.subtype)
+
+            try:
+                return cls.subtype(item)
+            except EndInstantiation:
+                raise ValueError('List tags without any subtype must either '
+                                 'be empty or instantiated with elements from '
+                                 'which a subtype can be inferred') from None
+        return item
 
     def __str__(self):
         return f'[{",".join(map(str, self))}]'

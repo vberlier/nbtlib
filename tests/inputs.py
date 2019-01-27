@@ -2,7 +2,8 @@ from nbtlib.nbt import File
 from nbtlib.tag import *
 
 
-__all__ = ['bytes_for_valid_tags', 'literal_values_for_tags', 'nbt_files']
+__all__ = ['bytes_for_valid_tags', 'out_of_range_numeric_tags',
+           'literal_values_for_tags', 'invalid_literals', 'nbt_files']
 
 
 bytes_for_valid_tags = [
@@ -114,6 +115,23 @@ bytes_for_valid_tags = [
 ]
 
 
+out_of_range_numeric_tags = [
+
+    (Byte, -129),
+    (Byte, 128),
+
+    (Short, -32769),
+    (Short, 32768),
+
+    (Int, -2147483649),
+    (Int, 2147483648),
+
+    (Long, -9223372036854775809),
+    (Long, 9223372036854775808),
+
+]
+
+
 literal_values_for_tags = [
 
     # Byte tag
@@ -174,6 +192,10 @@ literal_values_for_tags = [
     ('[]', List[Short]([])),
     ('[5b,-9b,18b,64b]', List[Byte]([5, -9, 18, 64])),
     ('[hello,world,"\\"\\\\n"]', List[String](['hello', 'world', '"\n'])),
+    ('[[],[2]]', List[List[Int]]([[], [2]])),
+    ('[[[],[1]],[]]', List[List[List[Int]]]([[[], [1]], []])),
+    ('[[],[[],[]]]', List[List[List]]([[], [[], []]])),
+    ('[[],[[[[[[[[[[],[[[[5,1]],[]]]]]]]]]]],[[[[]]]]]]', List[List[List[List[List[List[List[List[List[List[List[List[List[List[Int]]]]]]]]]]]]]]([[], [[[[[[[[[[], [[[[5, 1]], []]]]]]]]]]], [[[[]]]]]])),
 
     # Compound tag
     ('{}', Compound({})),
@@ -191,6 +213,22 @@ literal_values_for_tags = [
     ('[L;]', LongArray([])),
     ('[L;-1l]', LongArray([-1])),
     ('[L;1l,2l]', LongArray([1, 2])),
+
+]
+
+
+invalid_literals = [
+
+    '[a,1]',
+    '[[],[],1b]',
+    '[[],[],1b]',
+    '[[[[],[[[]]]]],[[[[],[5]]]]]',
+    '[[[],[[]]],[[hello]]]',
+    '[L;5l,4l,3]',
+    '{hello,world}',
+    '{foo: [1,2}',
+    '{error: [test]]}',
+    '[{,{}]',
 
 ]
 
