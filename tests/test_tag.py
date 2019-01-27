@@ -51,3 +51,11 @@ class TestListTagEdgeCases:
     def test_bare_elements_without_subtype(self):
         with pytest.raises(ValueError):
             List(['hello'])
+
+    def test_casting_error_with_subtype(self):
+        with pytest.raises(CastError):
+            List[List[Int]]([[5, 4], [[]]])
+
+    def test_casting_error_without_subtype(self):
+        with pytest.raises(CastError):
+            List([[5, 4], List([List([])])])

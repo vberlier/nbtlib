@@ -29,7 +29,7 @@ Exported classes:
 
 __all__ = ['End', 'Byte', 'Short', 'Int', 'Long', 'Float', 'Double',
            'ByteArray', 'String', 'List', 'Compound', 'IntArray', 'LongArray',
-           'EndInstantiation', 'OutOfRange', 'IncompatibleItemType']
+           'EndInstantiation', 'OutOfRange', 'IncompatibleItemType', 'CastError']
 
 
 import sys
@@ -77,6 +77,15 @@ class IncompatibleItemType(TypeError):
         super().__init__(f'{item!r} should be a {subtype.__name__} tag')
         self.item = item
         self.subtype = subtype
+
+
+class CastError(ValueError):
+    """Raised when an object couldn't be casted to the appropriate tag type."""
+
+    def __init__(self, obj, tag_type):
+        super().__init__(f'Couldn\'t cast {obj!r} to {tag_type.__name__}')
+        self.obj = obj
+        self.tag_type = tag_type
 
 
 # Regex to detect if a string can be represented unquoted
@@ -460,6 +469,10 @@ class List(Base, list, metaclass=ListMeta):
                 raise ValueError('List tags without any subtype must either '
                                  'be empty or instantiated with elements from '
                                  'which a subtype can be inferred') from None
+            except (IncompatibleItemType, CastError):
+                raise
+            except Exception as exc:
+                raise CastError(item, cls.subtype) from exc
         return item
 
     def __str__(self):
