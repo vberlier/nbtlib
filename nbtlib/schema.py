@@ -56,20 +56,20 @@ class CompoundSchema(Compound):
         super().__init__(*args, **kwargs)
 
         for key, value in self.items():
-            correct_value = self._cast(key, value)
+            correct_value = self.cast_item(key, value)
             if correct_value is not value:
                 super().__setitem__(key, correct_value)
 
     def __setitem__(self, key, value):
-        super().__setitem__(key, self._cast(key, value))
+        super().__setitem__(key, self.cast_item(key, value))
 
     def update(self, mapping, **kwargs):
         pairs = chain(mapping.items(), kwargs.items())
         super().update(
-            (key, self._cast(key, value)) for key, value in pairs
+            (key, self.cast_item(key, value)) for key, value in pairs
         )
 
-    def _cast(self, key, value):
+    def cast_item(self, key, value):
         schema_type = self.schema.get(key, None)
         if schema_type is None:
             if self.strict:
