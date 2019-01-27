@@ -11,7 +11,7 @@ with open('requirements.txt') as requirements:
 
 setup(
     name='nbtlib',
-    version='1.2.4',
+    version='1.3.0',
     license='MIT',
     description='A python package to read and edit nbt data',
     long_description=long_description,
