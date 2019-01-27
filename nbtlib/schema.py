@@ -69,10 +69,11 @@ class CompoundSchema(Compound):
             (key, self.cast_item(key, value)) for key, value in pairs
         )
 
-    def cast_item(self, key, value):
-        schema_type = self.schema.get(key, None)
+    @classmethod
+    def cast_item(cls, key, value):
+        schema_type = cls.schema.get(key, None)
         if schema_type is None:
-            if self.strict:
+            if cls.strict:
                 raise TypeError(f'Invalid key {key!r}')
         elif not isinstance(value, schema_type):
             return schema_type(value)
