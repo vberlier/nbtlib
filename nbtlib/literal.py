@@ -129,10 +129,14 @@ class NbtParser:
         """Parse a number from the token stream."""
         value = self.current_token.value
         suffix = value[-1].lower()
-        if suffix in NUMBER_SUFFIXES:
-            return NUMBER_SUFFIXES[suffix](value[:-1])
-        else:
-            return Double(value) if '.' in value else Int(value)
+
+        try:
+            if suffix in NUMBER_SUFFIXES:
+                return NUMBER_SUFFIXES[suffix](value[:-1])
+            else:
+                return Double(value) if '.' in value else Int(value)
+        except OutOfRange:
+            return String(value)
 
     def parse_string(self):
         """Parse a regular unquoted string from the token stream."""

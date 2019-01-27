@@ -28,7 +28,8 @@ Exported classes:
 
 
 __all__ = ['End', 'Byte', 'Short', 'Int', 'Long', 'Float', 'Double',
-           'ByteArray', 'String', 'List', 'Compound', 'IntArray', 'LongArray']
+           'ByteArray', 'String', 'List', 'Compound', 'IntArray', 'LongArray',
+           'OutOfRange']
 
 
 import sys
@@ -56,6 +57,13 @@ INT = get_format(Struct, 'i')
 LONG = get_format(Struct, 'q')
 FLOAT = get_format(Struct, 'f')
 DOUBLE = get_format(Struct, 'd')
+
+
+class OutOfRange(ValueError):
+    """Raised when a numeric value is out of range."""
+
+    def __init__(self, value):
+        super().__init__(f'{value!r} is out of range')
 
 
 # Escape nbt strings that must be quoted
@@ -165,6 +173,21 @@ class Numeric(Base):
     __slots__ = ()
     fmt = None
     suffix = ''
+    range = None
+
+    def __init_subclass__(cls):
+        super().__init_subclass__()
+
+        if issubclass(cls, int):
+            limit = 2 ** (8 * cls.fmt['big'].size - 1)
+            cls.range = range(-limit, limit)
+
+    def __new__(cls, *args, **kwargs):
+        self = super().__new__(cls, *args, **kwargs)
+
+        if cls.range and int(self) not in cls.range:
+            raise OutOfRange(self)
+        return self
 
     @classmethod
     def parse(cls, buff, byteorder='big'):
