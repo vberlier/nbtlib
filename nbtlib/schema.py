@@ -11,7 +11,7 @@ __all__ = ['schema', 'CompoundSchema']
 
 from itertools import chain
 
-from .tag import Compound
+from .tag import Compound, CastError
 
 
 def schema(name, dct, *, strict=False):
@@ -76,5 +76,10 @@ class CompoundSchema(Compound):
             if cls.strict:
                 raise TypeError(f'Invalid key {key!r}')
         elif not isinstance(value, schema_type):
-            return schema_type(value)
+            try:
+                return schema_type(value)
+            except CastError:
+                raise
+            except Exception as exc:
+                raise CastError(value, schema_type) from exc
         return value
