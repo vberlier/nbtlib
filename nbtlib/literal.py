@@ -38,7 +38,7 @@ TOKENS = {
 # Build the regex
 
 TOKENS_REGEX = re.compile(
-    '|'.join(f'\s*(?P<{key}>{value})\s*' for key, value in TOKENS.items())
+    '|'.join(f'\\s*(?P<{key}>{value})\\s*' for key, value in TOKENS.items())
 )
 
 
