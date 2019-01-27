@@ -39,11 +39,6 @@ from struct import Struct, error as StructError
 import numpy as np
 
 
-# Regex to detect if a string can be represented unquoted
-
-UNQUOTED_STRING = re.compile(r'^[a-zA-Z0-9._+-]+$')
-
-
 # Struct formats used to pack and unpack numeric values
 
 def get_format(fmt, string):
@@ -64,6 +59,11 @@ class OutOfRange(ValueError):
 
     def __init__(self, value):
         super().__init__(f'{value!r} is out of range')
+
+
+# Regex to detect if a string can be represented unquoted
+
+UNQUOTED_STRING = re.compile(r'^[a-zA-Z0-9._+-]+$')
 
 
 # Escape nbt strings that must be quoted
