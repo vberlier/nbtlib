@@ -29,12 +29,12 @@ Exported classes:
 
 __all__ = ['End', 'Byte', 'Short', 'Int', 'Long', 'Float', 'Double',
            'ByteArray', 'String', 'List', 'Compound', 'IntArray', 'LongArray',
-           'EndInstantiation', 'OutOfRange', 'IncompatibleItemType', 'CastError']
+           'EndInstantiation', 'OutOfRange', 'IncompatibleItemType',
+           'CastError', 'ESCAPE_SEQUENCES', 'ESCAPE_SUBS']
 
 
 import sys
 import re
-import json
 from struct import Struct, error as StructError
 import numpy as np
 
@@ -95,9 +95,18 @@ UNQUOTED_STRING = re.compile(r'^[a-zA-Z0-9._+-]+$')
 
 # Escape nbt strings that must be quoted
 
+ESCAPE_SEQUENCES = {
+    r'\"': '"',
+    r'\\': '\\',
+}
+
+ESCAPE_SUBS = dict(reversed(tuple(map(reversed, ESCAPE_SEQUENCES.items()))))
+
 def escape_string(string):
-    """Escape nbt strings that cannot be written unquoted in nbt literals."""
-    return json.dumps(string).replace('\\', r'\\').replace(r'\\"', r'\"')
+    """Escape strings that can't be written without quotes in nbt literals."""
+    for match, seq in ESCAPE_SUBS.items():
+        string = string.replace(match, seq)
+    return f'"{string}"'
 
 
 # Read/write helpers for numeric and string values

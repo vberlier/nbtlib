@@ -1,7 +1,7 @@
-"""This module exposes utilities for parsing literal nbt strings.
+"""This module exposes utilities for parsing nbt literals (snbt).
 
 Exported items:
-    parse_nbt      -- Helper function that parses nbt tags
+    parse_nbt      -- Helper function that parses nbt literals
     InvalidLiteral -- Exception raised when parsing invalid nbt literals
 """
 
@@ -10,7 +10,6 @@ __all__ = ['parse_nbt', 'InvalidLiteral']
 
 
 import re
-import json
 from collections import namedtuple
 
 from .tag import *
@@ -18,8 +17,10 @@ from .tag import *
 
 # Token definition
 
+ESCAPE_REGEX = re.compile(r'\\.')
+
 TOKENS = {
-    'QUOTED_STRING': r'""|".*?[^\\]"',
+    'QUOTED_STRING': fr'"(?:{ESCAPE_REGEX.pattern}|[^\\])*?"',
     'NUMBER': r'[+-]?(?:[0-9]*?\.[0-9]+|[0-9]+\.[0-9]*?|[0-9]+)[bslfdBSLFD]?',
     'STRING': r'[a-zA-Z0-9._+-]+',
     'COMPOUND': r'\{',
@@ -38,7 +39,7 @@ TOKENS = {
 # Build the regex
 
 TOKENS_REGEX = re.compile(
-    '|'.join(f'\\s*(?P<{key}>{value})\\s*' for key, value in TOKENS.items())
+    '|'.join(fr'\s*(?P<{key}>{value})\s*' for key, value in TOKENS.items())
 )
 
 
@@ -214,7 +215,15 @@ class NbtParser:
         """Parse an invalid token from the token stream."""
         raise self.error(f'Invalid token {self.current_token.value!r}')
 
-    @staticmethod
-    def unquote_string(string):
+    def unquote_string(self, string):
         """Return the unquoted value of a quoted string."""
-        return json.loads(string.replace(r'\\', '\\'))  # TODO: Fix escaping
+        value = string[1:-1]
+
+        for seq in ESCAPE_REGEX.findall(value):
+            if seq not in ESCAPE_SEQUENCES:
+                raise self.error(f'Invalid escape sequence "{seq}"')
+
+        for seq, sub in ESCAPE_SEQUENCES.items():
+            value = value.replace(seq, sub)
+
+        return value

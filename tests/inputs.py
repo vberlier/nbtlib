@@ -185,13 +185,14 @@ literal_values_for_tags = [
     ('""', String('')),
     ('foo-bar.', String('foo-bar.')),
     ('"hello world"', String('hello world')),
-    ('"\\\\u00c5\\\\u00c4\\\\u00d6\\\\n"', String('ÅÄÖ\n')),
-    ('"\\"\\\\\\\\n"', String('"\\n')),
+    ('"我"', String('我')),
+    ('"Å\\"Ä\\\\Ö"', String('Å"Ä\\Ö')),
+    ('"\\"\\\\"', String('"\\')),
 
     # List tag
     ('[]', List[Short]([])),
     ('[5b,-9b,18b,64b]', List[Byte]([5, -9, 18, 64])),
-    ('[hello,world,"\\"\\\\n"]', List[String](['hello', 'world', '"\n'])),
+    ('[hello,world,"\\"\\\\"]', List[String](['hello', 'world', '"\\'])),
     ('[[],[2]]', List[List[Int]]([[], [2]])),
     ('[[[],[1]],[]]', List[List[List[Int]]]([[[], [1]], []])),
     ('[[],[[],[]]]', List[List[List]]([[], [[], []]])),
@@ -202,7 +203,8 @@ literal_values_for_tags = [
     ('{foo:42}', Compound({'foo': Int(42)})),
     ('{a:0b,b:1b}', Compound({'a': Byte(0), 'b': Byte(1)})),
     ('{"hello world":foo}', Compound({'hello world': String('foo')})),
-    ('{"\\"blah\\\\n\\"":1.2d}', Compound({'"blah\n"': Double(1.2)})),
+    ('{"\\"blah\\\\\\"":1.2d}', Compound({'"blah\\"': Double(1.2)})),
+    ('{"jso\\\\\\\\n":"t\\\\\\\\nest"}', Compound({'jso\\\\n': String('t\\\\nest')})),
 
     # IntArray tag
     ('[I;]', IntArray([])),
@@ -219,6 +221,10 @@ literal_values_for_tags = [
 
 invalid_literals = [
 
+    '"\\"',
+    '"\\n"',
+    '"\\\\\\"',
+    '{"\\":1}',
     '[a,1]',
     '[[],[],1b]',
     '[[],[],1b]',
