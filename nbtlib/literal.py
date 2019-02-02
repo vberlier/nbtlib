@@ -21,7 +21,7 @@ ESCAPE_REGEX = re.compile(r'\\.')
 
 TOKENS = {
     'QUOTED_STRING': fr'"(?:{ESCAPE_REGEX.pattern}|[^\\])*?"',
-    'NUMBER': r'[+-]?(?:[0-9]*?\.[0-9]+|[0-9]+\.[0-9]*?|[0-9]+)[bslfdBSLFD]?',
+    'NUMBER': r'[+-]?(?:[0-9]*?\.[0-9]+|[0-9]+\.[0-9]*?|[0-9]+)[bslfdBSLFD]?(?![a-zA-Z0-9._+-])',
     'STRING': r'[a-zA-Z0-9._+-]+',
     'COMPOUND': r'\{',
     'CLOSE_COMPOUND': r'\}',
