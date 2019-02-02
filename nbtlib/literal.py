@@ -167,7 +167,7 @@ class NbtParser:
 
         for token in self.collect_tokens_until('CLOSE_COMPOUND'):
             item_key = token.value
-            if token.type not in ('STRING', 'QUOTED_STRING'):
+            if token.type not in ('NUMBER', 'STRING', 'QUOTED_STRING'):
                 raise self.error(f'Expected compound key but got {item_key!r}')
 
             if token.type == 'QUOTED_STRING':
