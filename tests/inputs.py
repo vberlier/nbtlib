@@ -1,5 +1,5 @@
-from nbtlib.nbt import File
-from nbtlib.tag import *
+from nbtlib import (Byte, Short, Int, Long, Float, Double, ByteArray, String,
+                    List, Compound, IntArray, LongArray, File)
 
 
 __all__ = ['bytes_for_valid_tags', 'out_of_range_numeric_tags',
