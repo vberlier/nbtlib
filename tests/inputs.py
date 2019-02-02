@@ -188,6 +188,9 @@ literal_values_for_tags = [
     ('"我"', String('我')),
     ('"Å\\"Ä\\\\Ö"', String('Å"Ä\\Ö')),
     ('"\\"\\\\"', String('"\\')),
+    ('2a', String('2a')),
+    ('"3.0f"', String('3.0f')),
+    ('+72foo', String('+72foo')),
 
     # List tag
     ('[]', List[Short]([])),
@@ -205,6 +208,9 @@ literal_values_for_tags = [
     ('{"hello world":foo}', Compound({'hello world': String('foo')})),
     ('{"\\"blah\\\\\\"":1.2d}', Compound({'"blah\\"': Double(1.2)})),
     ('{"jso\\\\\\\\n":"t\\\\\\\\nest"}', Compound({'jso\\\\n': String('t\\\\nest')})),
+    ('{42:bar}', Compound({'42': String('bar')})),
+    ('{-42abc:   thing}', Compound({'-42abc': String('thing')})),
+    ('{+77.7f:[B;1b]}', Compound({'+77.7f': ByteArray([1])})),
 
     # IntArray tag
     ('[I;]', IntArray([])),
