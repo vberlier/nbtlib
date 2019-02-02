@@ -1,12 +1,14 @@
-"""This module exposes utilities for parsing nbt literals (snbt).
+"""This module exposes utilities for parsing snbt.
 
 Exported items:
     parse_nbt      -- Helper function that parses nbt literals
     InvalidLiteral -- Exception raised when parsing invalid nbt literals
+    tokenize       -- Generator that lazily yields tokens from a string
+    NbtParser      -- Class capable of parsing nbt tags from a token stream
 """
 
 
-__all__ = ['parse_nbt', 'InvalidLiteral']
+__all__ = ['parse_nbt', 'InvalidLiteral', 'tokenize', 'NbtParser']
 
 
 import re
