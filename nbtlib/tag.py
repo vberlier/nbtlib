@@ -24,6 +24,12 @@ Exported classes:
     Compound  -- Represents a compound tag, inherits from `dict`
     IntArray  -- Represents an int array tag, inherits from `ndarray`
     LongArray -- Represents a long array tag, inherits from `ndarray`
+
+Exported exceptions:
+    EndEndInstantiation  -- Raised when instantiating an End tag
+    OutOfRange           -- Raised when the value of a numerical tag is out of range
+    IncompatibleItemType -- Raised when the type of a list item is incompatible
+    CastError            -- Raised when casting a value to a tag fails
 """
 
 
