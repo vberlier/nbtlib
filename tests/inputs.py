@@ -238,6 +238,8 @@ invalid_literals = [
     '[[[],[[]]],[[hello]]]',
     '[L;5l,4l,3]',
     '{hello,world}',
+    '{with space: 5}',
+    '{\\": no}',
     '{foo: [1,2}',
     '{error: [test]]}',
     '[{,{}]',
