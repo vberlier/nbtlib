@@ -94,8 +94,6 @@ class Serializer:
             )
         )
 
-        return False
-
     def expand(self, separator, fmt):
         """Return the expanded version of the separator and format string."""
         return (
