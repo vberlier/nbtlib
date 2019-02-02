@@ -361,10 +361,7 @@ class String(Base, str):
         write_string(self, buff, byteorder)
 
     def __str__(self):
-        if UNQUOTED_STRING.match(self):
-            return super().__str__()
-        else:
-            return escape_string(self)
+        return escape_string(self)
 
 
 class ListMeta(type):

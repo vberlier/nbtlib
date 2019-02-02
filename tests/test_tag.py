@@ -3,8 +3,7 @@ import pytest
 
 from nbtlib.tag import *
 
-from inputs import (bytes_for_valid_tags, out_of_range_numeric_tags,
-                    literal_values_for_tags)
+from inputs import bytes_for_valid_tags, out_of_range_numeric_tags
 
 
 @pytest.mark.parametrize('byteorder, bytes_input, expected_tag', bytes_for_valid_tags)
@@ -21,11 +20,6 @@ def test_valid_tag_serialization(byteorder, expected_bytes, tag_input):
     buff.seek(0)
     serialized_bytes = buff.read()
     assert serialized_bytes == expected_bytes
-
-
-@pytest.mark.parametrize('literal_value, tag_input', literal_values_for_tags)
-def test_tag_literal_value(literal_value, tag_input):
-    assert literal_value == str(tag_input)
 
 
 def test_end_tag_instantiation():
