@@ -88,9 +88,9 @@ class CastError(ValueError):
         self.tag_type = tag_type
 
 
-# Regex to detect if a string can be represented unquoted
+# Regex to detect if a compound key can be represented unquoted
 
-UNQUOTED_STRING = re.compile(r'^[a-zA-Z0-9._+-]+$')
+UNQUOTED_COMPOUND_KEY = re.compile(r'^[a-zA-Z0-9._+-]+$')
 
 
 # Escape nbt strings that must be quoted
@@ -533,7 +533,7 @@ class Compound(Base, dict):
 
     @staticmethod
     def stringify_key(key):
-        if UNQUOTED_STRING.match(key):
+        if UNQUOTED_COMPOUND_KEY.match(key):
             return key
         else:
             return escape_string(key)
