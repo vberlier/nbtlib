@@ -451,8 +451,11 @@ class List(Base, list, metaclass=ListMeta):
     def cast_item(cls, item):
         """Cast list item to the appropriate tag type."""
         if not isinstance(item, cls.subtype):
-            if isinstance(item, Base) and not (issubclass(cls.subtype, List)
-                                               and isinstance(item, List)):
+            incompatible = isinstance(item, Base) and not any(
+                issubclass(cls.subtype, tag_type) and isinstance(item, tag_type)
+                for tag_type in cls.all_tags.values()
+            )
+            if incompatible:
                 raise IncompatibleItemType(item, cls.subtype)
 
             try:
