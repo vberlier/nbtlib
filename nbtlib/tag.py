@@ -271,7 +271,7 @@ class Long(Numeric, int):
     __slots__ = ()
     tag_id = 4
     fmt = LONG
-    suffix = 'l'
+    suffix = 'L'
 
 
 class Float(Numeric, float):
@@ -344,7 +344,7 @@ class ByteArray(Array):
     tag_id = 7
     item_type = get_format(np.dtype, 'b')
     array_prefix = 'B'
-    item_suffix = 'b'
+    item_suffix = 'B'
 
 
 class String(Base, str):
@@ -555,4 +555,4 @@ class LongArray(Array):
     tag_id = 12
     item_type = get_format(np.dtype, 'i8')
     array_prefix = 'L'
-    item_suffix = 'l'
+    item_suffix = 'L'
