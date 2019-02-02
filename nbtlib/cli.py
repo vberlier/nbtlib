@@ -1,6 +1,6 @@
 from argparse import ArgumentParser, ArgumentTypeError
 
-from nbtlib import nbt, parse_nbt, InvalidLiteral
+from nbtlib import nbt, parse_nbt, serialize_tag, InvalidLiteral
 from nbtlib.tag import Compound
 
 
@@ -34,6 +34,12 @@ parser.add_argument('--plain', action='store_true',
                     help='don\'t use gzip compression')
 parser.add_argument('--little', action='store_true',
                     help='use little-endian format')
+
+parser.add_argument('--pretty', action='store_true',
+                    help='output indented snbt')
+parser.add_argument('--compact', action='store_true',
+                    help='output compact snbt')
+
 parser.add_argument('file', metavar='<file>',
                     help='the target file')
 
@@ -45,7 +51,7 @@ def main():
     gzipped, byteorder = not args.plain, 'little' if args.little else 'big'
     try:
         if args.r:
-            read(args.file, gzipped, byteorder)
+            read(args.file, gzipped, byteorder, args.pretty, args.compact)
         elif args.w:
             write(args.w, args.file, gzipped, byteorder)
         elif args.m:
@@ -54,8 +60,9 @@ def main():
         parser.exit(1, str(exc) + '\n')
 
 
-def read(filename, gzipped, byteorder):
-    print(nbt.load(filename, gzipped=gzipped, byteorder=byteorder))
+def read(filename, gzipped, byteorder, pretty, compact):
+    nbt_file = nbt.load(filename, gzipped=gzipped, byteorder=byteorder)
+    print(serialize_tag(nbt_file, indent=4 if pretty else None, compact=compact))
 
 
 def write(nbt_data, filename, gzipped, byteorder):
