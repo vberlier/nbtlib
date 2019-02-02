@@ -1,6 +1,7 @@
 from .tag import *
 from .nbt import *
 from .schema import *
-from .literal import *
+from .literal.parser import *
+from .literal.serializer import *
 
 __version__ = '1.3.2'

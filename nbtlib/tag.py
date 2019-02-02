@@ -36,13 +36,13 @@ Exported exceptions:
 __all__ = ['End', 'Byte', 'Short', 'Int', 'Long', 'Float', 'Double',
            'ByteArray', 'String', 'List', 'Compound', 'IntArray', 'LongArray',
            'EndInstantiation', 'OutOfRange', 'IncompatibleItemType',
-           'CastError', 'ESCAPE_SEQUENCES', 'ESCAPE_SUBS']
+           'CastError']
 
 
-import sys
-import re
 from struct import Struct, error as StructError
 import numpy as np
+
+from .literal.serializer import serialize_tag
 
 
 # Struct formats used to pack and unpack numeric values
@@ -92,27 +92,6 @@ class CastError(ValueError):
         super().__init__(f'Couldn\'t cast {obj!r} to {tag_type.__name__}')
         self.obj = obj
         self.tag_type = tag_type
-
-
-# Regex to detect if a compound key can be represented unquoted
-
-UNQUOTED_COMPOUND_KEY = re.compile(r'^[a-zA-Z0-9._+-]+$')
-
-
-# Escape nbt strings that must be quoted
-
-ESCAPE_SEQUENCES = {
-    r'\"': '"',
-    r'\\': '\\',
-}
-
-ESCAPE_SUBS = dict(reversed(tuple(map(reversed, ESCAPE_SEQUENCES.items()))))
-
-def escape_string(string):
-    """Escape strings that can't be written without quotes in nbt literals."""
-    for match, seq in ESCAPE_SUBS.items():
-        string = string.replace(match, seq)
-    return f'"{string}"'
 
 
 # Read/write helpers for numeric and string values
@@ -165,6 +144,7 @@ class Base:
     __slots__ = ()
     all_tags = {}
     tag_id = None
+    serializer = None
 
     def __init_subclass__(cls):
         # Add class to the `all_tags` dictionnary if it has a tag id
@@ -187,6 +167,12 @@ class Base:
 
     def __repr__(self):
         return f'{self.__class__.__name__}({super().__repr__()})'
+
+    def __str__(self):
+        try:
+            return serialize_tag(self)
+        except TypeError:
+            return super().__str__()
 
 
 class End(Base):
@@ -216,6 +202,7 @@ class Numeric(Base):
     """
 
     __slots__ = ()
+    serializer = 'numeric'
     fmt = None
     suffix = ''
     range = None
@@ -240,9 +227,6 @@ class Numeric(Base):
 
     def write(self, buff, byteorder='big'):
         write_numeric(self.fmt, self, buff, byteorder)
-
-    def __str__(self):
-        return super().__str__() + self.suffix
 
 
 class Byte(Numeric, int):
@@ -311,6 +295,7 @@ class Array(Base, np.ndarray):
     """
 
     __slots__ = ()
+    serializer = 'array'
     item_type = None
     array_prefix = None
     item_suffix = ''
@@ -338,10 +323,6 @@ class Array(Base, np.ndarray):
     def __repr__(self):
         return f'{self.__class__.__name__}([{", ".join(map(str, self))}])'
 
-    def __str__(self):
-        elements = ','.join(f'{el}{self.item_suffix}' for el in self)
-        return f'[{self.array_prefix};{elements}]'
-
 
 class ByteArray(Array):
     """Nbt tag representing an array of signed bytes."""
@@ -358,6 +339,7 @@ class String(Base, str):
 
     __slots__ = ()
     tag_id = 8
+    serializer = 'string'
 
     @classmethod
     def parse(cls, buff, byteorder='big'):
@@ -365,9 +347,6 @@ class String(Base, str):
 
     def write(self, buff, byteorder='big'):
         write_string(self, buff, byteorder)
-
-    def __str__(self):
-        return escape_string(self)
 
 
 class ListMeta(type):
@@ -418,6 +397,7 @@ class List(Base, list, metaclass=ListMeta):
 
     __slots__ = ()
     tag_id = 9
+    serializer = 'list'
     subtype = End
 
     def __new__(cls, iterable=()):
@@ -487,9 +467,6 @@ class List(Base, list, metaclass=ListMeta):
                 raise CastError(item, cls.subtype) from exc
         return item
 
-    def __str__(self):
-        return f'[{",".join(map(str, self))}]'
-
 
 class Compound(Base, dict):
     """Nbt tag that represents a mapping of strings to other nbt tags.
@@ -504,6 +481,7 @@ class Compound(Base, dict):
 
     __slots__ = ()
     tag_id = 10
+    serializer = 'compound'
     end_tag = b'\x00'
 
     @classmethod
@@ -531,18 +509,6 @@ class Compound(Base, dict):
                 self[key].merge(value)
             else:
                 self[key] = value
-
-    def __str__(self):
-        pairs = ','.join(f'{self.stringify_key(key)}:{value}'
-                         for key, value in self.items())
-        return '{' + pairs + '}'
-
-    @staticmethod
-    def stringify_key(key):
-        if UNQUOTED_COMPOUND_KEY.match(key):
-            return key
-        else:
-            return escape_string(key)
 
 
 class IntArray(Array):

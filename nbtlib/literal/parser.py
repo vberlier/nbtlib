@@ -1,20 +1,25 @@
 """This module exposes utilities for parsing snbt.
 
-Exported items:
-    parse_nbt      -- Helper function that parses nbt literals
-    InvalidLiteral -- Exception raised when parsing invalid nbt literals
-    tokenize       -- Generator that lazily yields tokens from a string
-    NbtParser      -- Class capable of parsing nbt tags from a token stream
+Exported functions:
+    parse_nbt -- Helper function that parses nbt literals
+    tokenize  -- Generator that lazily yields tokens from a string
+
+Exported classes:
+    Parser -- Class that can parse nbt tags from a literal token stream
+
+Exported exceptions:
+    InvalidLiteral -- Raised when parsing invalid nbt literals
 """
 
 
-__all__ = ['parse_nbt', 'InvalidLiteral', 'tokenize', 'NbtParser']
+__all__ = ['parse_nbt', 'InvalidLiteral', 'tokenize', 'Parser']
 
 
 import re
 from collections import namedtuple
 
 from ..tag import *
+from .serializer import ESCAPE_SEQUENCES
 
 
 # Token definition
@@ -50,19 +55,7 @@ TOKENS_REGEX = re.compile(
 NUMBER_SUFFIXES = {'b': Byte, 's': Short, 'l': Long, 'f': Float, 'd': Double}
 
 
-def parse_nbt(literal):
-    """Parse a literal nbt string and return the resulting tag."""
-    parser = NbtParser(tokenize(literal))
-    tag = parser.parse()
-
-    cursor = parser.token_span[1]
-    leftover = literal[cursor:]
-    if leftover.strip():
-        parser.token_span = cursor, cursor + len(leftover)
-        raise parser.error(f'Expected end of string but got {leftover!r}')
-
-    return tag
-
+# Custom errors
 
 class InvalidLiteral(ValueError):
     """Exception raised when parsing invalid nbt literals.
@@ -77,6 +70,24 @@ class InvalidLiteral(ValueError):
         return f'{self.args[1]} at position {self.args[0][0]}'
 
 
+# User-friendly helper
+
+def parse_nbt(literal):
+    """Parse a literal nbt string and return the resulting tag."""
+    parser = Parser(tokenize(literal))
+    tag = parser.parse()
+
+    cursor = parser.token_span[1]
+    leftover = literal[cursor:]
+    if leftover.strip():
+        parser.token_span = cursor, cursor + len(leftover)
+        raise parser.error(f'Expected end of string but got {leftover!r}')
+
+    return tag
+
+
+# Implement tokenization
+
 Token = namedtuple('Token', ['type', 'value', 'span'])
 
 
@@ -86,7 +97,9 @@ def tokenize(string):
         yield Token(match.lastgroup, match.group().strip(), match.span())
 
 
-class NbtParser:
+# Implement parser
+
+class Parser:
     """Nbt literal parser.
 
     The parser needs to be instantiated with a token stream as argument.
