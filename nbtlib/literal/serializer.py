@@ -44,8 +44,7 @@ def stringify_compound_key(key):
     """Escape the compound key if it can't be represented unquoted."""
     if UNQUOTED_COMPOUND_KEY.match(key):
         return key
-    else:
-        return escape_string(key)
+    return escape_string(key)
 
 
 # User-friendly helper

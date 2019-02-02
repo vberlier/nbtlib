@@ -71,6 +71,7 @@ class CompoundSchema(Compound):
 
     @classmethod
     def cast_item(cls, key, value):
+        """Cast schema item to the appropriate tag type."""
         schema_type = cls.schema.get(key, None)
         if schema_type is None:
             if cls.strict:

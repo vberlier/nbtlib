@@ -18,7 +18,9 @@ __all__ = ['parse_nbt', 'InvalidLiteral', 'tokenize', 'Parser']
 import re
 from collections import namedtuple
 
-from ..tag import *
+from ..tag import (Byte, Short, Int, Long, Float, Double, ByteArray, String,
+                   List, Compound, IntArray, LongArray, OutOfRange,
+                   IncompatibleItemType)
 from .serializer import ESCAPE_SEQUENCES
 
 
@@ -149,8 +151,7 @@ class Parser:
         try:
             if suffix in NUMBER_SUFFIXES:
                 return NUMBER_SUFFIXES[suffix](value[:-1])
-            else:
-                return Double(value) if '.' in value else Int(value)
+            return Double(value) if '.' in value else Int(value)
         except OutOfRange:
             return String(value)
 

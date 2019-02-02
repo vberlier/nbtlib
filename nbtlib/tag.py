@@ -159,11 +159,9 @@ class Base:
     @classmethod
     def parse(cls, buff, byteorder='big'):
         """Parse data from a file-like object and return a tag instance."""
-        pass
 
     def write(self, buff, byteorder='big'):
         """Write the binary representation of the tag to a file-like object."""
-        pass
 
     def __repr__(self):
         return f'{self.__class__.__name__}({super().__repr__()})'
@@ -420,6 +418,7 @@ class List(Base, list, metaclass=ListMeta):
 
     @staticmethod
     def is_concrete_subtype(subtype):
+        """Check if a subtype is concrete or could be casted to something else."""
         while issubclass(subtype, List):
             subtype = subtype.subtype
         return subtype is not End
@@ -450,6 +449,7 @@ class List(Base, list, metaclass=ListMeta):
 
     @classmethod
     def cast_item(cls, item):
+        """Cast list item to the appropriate tag type."""
         if not isinstance(item, cls.subtype):
             if isinstance(item, Base) and not (issubclass(cls.subtype, List)
                                                and isinstance(item, List)):
