@@ -12,7 +12,7 @@ __all__ = ['parse_nbt', 'InvalidLiteral']
 import re
 from collections import namedtuple
 
-from .tag import *
+from ..tag import *
 
 
 # Token definition
