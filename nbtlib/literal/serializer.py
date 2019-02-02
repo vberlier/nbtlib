@@ -16,6 +16,7 @@ __all__ = ['serialize_tag', 'ESCAPE_SEQUENCES', 'ESCAPE_SUBS', 'Serializer']
 
 
 import re
+from contextlib import contextmanager
 
 
 # Escape nbt strings
@@ -49,15 +50,58 @@ def stringify_compound_key(key):
 
 # User-friendly helper
 
-def serialize_tag(tag):
+def serialize_tag(tag, *, indent=None, compact=False):
     """Serialize an nbt tag to its literal representation."""
-    return Serializer().serialize(tag)
+    serializer = Serializer(indent=indent, compact=compact)
+    return serializer.serialize(tag)
 
 
 # Implement serializer
 
 class Serializer:
     """Nbt tag serializer."""
+
+    def __init__(self, *, indent=None, compact=False):
+        self.indentation = indent * ' ' if isinstance(indent, int) else indent
+        self.comma = ',' if compact else ', '
+        self.colon = ':' if compact else ': '
+        self.semicolon = ';' if compact else '; '
+
+        self.indent = ''
+        self.previous_indent = ''
+
+    @contextmanager
+    def depth(self):
+        """Increase the level of indentation by one."""
+        if self.indentation is None:
+            yield
+        else:
+            previous = self.previous_indent
+            self.previous_indent = self.indent
+            self.indent += self.indentation
+            yield
+            self.indent = self.previous_indent
+            self.previous_indent = previous
+
+    def should_expand(self, tag):
+        """Return whether the specified tag should be expanded."""
+        return self.indentation is not None and tag and (
+            not self.previous_indent or (
+                tag.serializer == 'list'
+                and tag.subtype.serializer in ('array', 'list', 'compound')
+            ) or (
+                tag.serializer == 'compound'
+            )
+        )
+
+        return False
+
+    def expand(self, separator, fmt):
+        """Return the expanded version of the separator and format string."""
+        return (
+            f'{separator}\n{self.indent}',
+            fmt.replace('{}', f'\n{self.indent}{{}}\n{self.previous_indent}')
+        )
 
     def serialize(self, tag):
         """Return the literal representation of a tag."""
@@ -73,8 +117,8 @@ class Serializer:
 
     def serialize_array(self, tag):
         """Return the literal representation of an array tag."""
-        elements = ','.join(f'{el}{tag.item_suffix}' for el in tag)
-        return f'[{tag.array_prefix};{elements}]'
+        elements = self.comma.join(f'{el}{tag.item_suffix}' for el in tag)
+        return f'[{tag.array_prefix}{self.semicolon}{elements}]'
 
     def serialize_string(self, tag):
         """Return the literal representation of a string tag."""
@@ -82,10 +126,23 @@ class Serializer:
 
     def serialize_list(self, tag):
         """Return the literal representation of a list tag."""
-        return f'[{",".join(map(self.serialize, tag))}]'
+        separator, fmt = self.comma, '[{}]'
+
+        with self.depth():
+            if self.should_expand(tag):
+                separator, fmt = self.expand(separator, fmt)
+
+            return fmt.format(separator.join(map(self.serialize, tag)))
 
     def serialize_compound(self, tag):
         """Return the literal representation of a compound tag."""
-        pairs = ','.join(f'{stringify_compound_key(key)}:{self.serialize(value)}'
-                         for key, value in tag.items())
-        return '{' + pairs + '}'
+        separator, fmt = self.comma, '{{{}}}'
+
+        with self.depth():
+            if self.should_expand(tag):
+                separator, fmt = self.expand(separator, fmt)
+
+            return fmt.format(separator.join(
+                f'{stringify_compound_key(key)}{self.colon}{self.serialize(value)}'
+                for key, value in tag.items()
+            ))
