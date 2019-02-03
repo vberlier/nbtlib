@@ -121,7 +121,9 @@ basic operations on nbt files.
 
 ```
 $ nbt --help
-usage: nbt [-h] (-r | -w <nbt> | -m <nbt>) [--plain] [--little] <file>
+usage: nbt [-h] (-r | -w <nbt> | -m <nbt>) [--plain] [--little] [--pretty]
+           [--compact]
+           <file>
 
 Perform basic operations on nbt files.
 
@@ -135,6 +137,8 @@ optional arguments:
   -m <nbt>    merge nbt into an nbt file
   --plain     don't use gzip compression
   --little    use little-endian format
+  --pretty    output indented snbt
+  --compact   output compact snbt
 ```
 
 ### Read nbt data
@@ -143,8 +147,8 @@ You can read nbt files by using the `-r` option. This will print the
 literal notation of the binary nbt data.
 
 ```bash
-$ nbt -r demo.nbt
-{counter:42}
+$ nbt -r my_file.nbt
+{foo: [1, 2, 3], bar: "Hello, world!"}
 ```
 
 You can use the following command if you want to save the output into a
@@ -152,6 +156,23 @@ file.
 
 ```bash
 $ nbt -r my_file.nbt > my_file.txt
+```
+
+Using the `--compact` argument will remove all the extra whitespace from the output.
+
+```bash
+$ nbt -r my_file.nbt --compact
+{foo:[1,2,3],bar:"Hello, world!"}
+```
+
+You can use the `--pretty` argument if you want the command to output indented snbt.
+
+```bash
+$ nbt -r my_file.nbt --pretty
+{
+    foo: [1, 2, 3],
+    bar: "Hello, world!"
+}
 ```
 
 ### Write nbt data
@@ -180,7 +201,7 @@ You can check the result by using the `-r` option.
 
 ```bash
 $ nbt -r my_file.nbt
-{foo:[1,2,3],bar:{hello:[B;1b,1b,0b,1b],"new key":56.0f}}
+{foo: [1, 2, 3], bar: {hello: [B; 1B, 1B, 0B, 1B], "new key": 56.0f}}
 ```
 
 Here, the compound values that aren't present in the input literal are
@@ -199,7 +220,7 @@ operations on little-endian files.
 
 ```bash
 $ nbt -r my_file.nbt --plain --little
-{name:"Reading from an uncompressed little-endian file"}
+{name: "Reading an uncompressed little-endian file"}
 ```
 
 **Writing**
