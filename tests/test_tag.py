@@ -4,7 +4,7 @@ import pytest
 from nbtlib import (End, Int, String, List, EndInstantiation, OutOfRange,
                     IncompatibleItemType, CastError)
 
-from inputs import bytes_for_valid_tags, out_of_range_numeric_tags
+from .inputs import bytes_for_valid_tags, out_of_range_numeric_tags
 
 
 @pytest.mark.parametrize('byteorder, bytes_input, expected_tag', bytes_for_valid_tags)

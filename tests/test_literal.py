@@ -2,7 +2,7 @@ import pytest
 
 from nbtlib import parse_nbt, InvalidLiteral
 
-from inputs import literal_values_for_tags, invalid_literals, nbt_files
+from .inputs import literal_values_for_tags, invalid_literals, nbt_files
 
 
 @pytest.mark.parametrize('literal, expected_tag', literal_values_for_tags)

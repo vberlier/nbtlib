@@ -2,7 +2,7 @@ import pytest
 
 from nbtlib import nbt, Compound
 
-from inputs import nbt_files
+from .inputs import nbt_files
 
 
 def validate_types(tag, expected):
