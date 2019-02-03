@@ -1,2 +1,0 @@
-pytest==4.2.0
-pytest-benchmark==3.2.2

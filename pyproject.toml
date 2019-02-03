@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "nbtlib"
+version = "1.3.2"
+description = "A python package to read and edit nbt data"
+authors = ["Valentin Berlier <berlier.v@gmail.com>"]
+license = "MIT"
+
+homepage = "https://github.com/vberlier/nbtlib"
+repository = "https://github.com/vberlier/nbtlib"
+documentation = "https://github.com/vberlier/nbtlib"
+
+readme = "README.md"
+
+keywords = [
+  "nbt",
+  "nbt-parser",
+  "schema",
+  "minecraft",
+  "nbtlib",
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+numpy = "^1.16"
+
+[tool.poetry.dev-dependencies]
+pytest = "^4.2"
+pytest-benchmark = "^3.2"
+tox = "^3.7"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
