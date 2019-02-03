@@ -1,12 +1,16 @@
 sudo: false
 dist: xenial
 language: python
-cache: pip
+cache:
+  pip: true
+  directories:
+    - $HOME/.cache/pypoetry
 python:
   - "3.6"
   - "3.7"
 install:
   - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+  - source $HOME/.poetry/env
   - poetry install -v
   - poetry build -v
 script: poetry run pytest
