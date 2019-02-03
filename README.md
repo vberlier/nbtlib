@@ -34,60 +34,58 @@ notebook in the docs folder.
 
 ### Reading files
 
-Reading files can be done directly with the `load()` function. The
+The `nbtlib.load` function can be used to load nbt files as `nbtlib.File` objects. The
 `root` property contains the root nbt tag. Every nbt tag inherits from
-its python counterpart so you can use all the usual builtin operations
-on nbt tags.
+its python counterpart. This means that all the builtin operations defined on the python counterpart can be used on nbt tags.
+
 
 ```python
-from nbtlib import nbt
+import nbtlib
 
-nbt_file = nbt.load('bigtest.nbt')
+nbt_file = nbtlib.load('bigtest.nbt')
 assert nbt_file.root['intTest'] == 2147483647
 ```
 
-Here, we can see that `Compound` tag instances can be used just like
-regular python dictionaries, and that checking equality works out of the
-box.
+For example, instances of `nbtlib.File` inherit from regular `Compound` tags, which themselves inherit from the builtin python dictionary `dict`. Similarly, instances of `Int` tags inherit from the builtin class `int`.
 
-For more details check out the "[Usage](https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb)"
+For more details on loading nbt files and how to work with nbt tags check out the "[Usage](https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb)"
 notebook.
 
 ### Editing files
 
-You can use nbt files as context managers in order to save modifications
-automatically at the end of the `with` block.
+You can use instances of `nbtlib.File` as context managers in order to save modifications
+automatically at the end of the `with` statement.
 
 ```python
-from nbtlib import nbt
-from nbtlib.tag import *
+import nbtlib
+from nbtlib.tag import Int
 
-with nbt.load('demo.nbt') as demo:
+with nbtlib.load('demo.nbt') as demo:
     demo.root['counter'] = Int(demo.root['counter'] + 1)
 ```
 
-You can also use the `save()` method.
+You can also call the `save` method manually.
 
 ```python
-from nbtlib import nbt
-from nbtlib.tag import *
+import nbtlib
+from nbtlib.tag import Int
 
-demo = nbt.load('demo.nbt')
+demo = nbtlib.load('demo.nbt')
 demo.root['counter'] = Int(demo.root['counter'] + 1)
 demo.save()
 ```
 
-For more details check out the "[Usage](https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb)"
+For more details on the `save` method check out the "[Usage](https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb)"
 notebook.
 
 ### Using schemas
 
-A schema lets you create compound tags that enforce a specific tag type
+`nbtlib` allows you to define `Compound` schemas that enforce a specific tag type
 for any given key.
 
 ```python
 from nbtlib import schema
-from nbtlib.tag import *
+from nbtlib.tag import Short, String
 
 MySchema = schema('MySchema', {
     'foo': String,
@@ -95,24 +93,44 @@ MySchema = schema('MySchema', {
 })
 
 my_object = MySchema({'foo': 'hello world', 'bar': 21})
+
+assert isinstance(my_object, MySchema)
 assert isinstance(my_object['foo'], String)
 ```
 
+For more details on schemas check out the "[Usage](https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb)"
+notebook.
+
 ### Nbt literals
 
-`nbtlib` also defines utilities to deal with literal nbt data. For
-instance, you can parse nbt literals using the `parse_nbt()` function.
+You can parse nbt literals using the `nbtlib.parse_nbt` function.
 
 ```python
 from nbtlib import parse_nbt
-from nbtlib.tag import *
+from nbtlib.tag import String, List, Compound, IntArray
 
-my_compound = parse_nbt('{foo:[hello,world],bar:[I;1,2,3]}')
+my_compound = parse_nbt('{foo: [hello, world], bar: [I; 1, 2, 3]}')
 assert my_compound == Compound({
     'foo': List[String](['hello', 'world']),
     'bar': IntArray([1, 2, 3])
 })
 ```
+
+Nbt tags can be serialized to their literal representation with the `nbtlib.serialize_tag` function.
+
+```python
+from nbtlib import serialize_tag
+from nbtlib.tag import String, List, Compound, IntArray
+
+my_compound = Compound({
+    'foo': List[String](['hello', 'world']),
+    'bar': IntArray([1, 2, 3])
+})
+assert serialize_tag(my_compound) == '{foo: ["hello", "world"], bar: [I; 1, 2, 3]}'
+```
+
+For more details on nbt literals check out the "[Usage](https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb)"
+notebook.
 
 ## Command-line interface
 
