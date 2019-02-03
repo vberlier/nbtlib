@@ -255,18 +255,22 @@ $ nbt -m '{name:"Merging in an uncompressed little-endian file"}' my_file.nbt --
 
 ## Contributing
 
-Contributions are welcome. Unit tests are built with `pytest`. You can
-run the test suite with `tox`. First, make sure that `tox` is installed
-in your virtual environment.
+Contributions are welcome. This project uses [`poetry`](https://poetry.eustace.io/) so you'll need to install it first if you want to be able to work with the project locally.
 
-```bash
-$ pip install tox
+```sh
+$ curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
 ```
 
-You should now be able to run the tests with `tox`.
+You should now be able to install the required dependencies.
 
-```bash
-$ tox
+```sh
+$ poetry install
+```
+
+You can run the tests with `poetry run pytest`.
+
+```sh
+$ poetry run pytest
 ```
 
 ----
