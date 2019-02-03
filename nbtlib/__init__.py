@@ -4,4 +4,4 @@ from .schema import *
 from .literal.parser import *
 from .literal.serializer import *
 
-__version__ = '1.3.2'
+__version__ = '1.4.0-alpha.0'
