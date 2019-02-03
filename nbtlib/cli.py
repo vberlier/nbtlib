@@ -35,10 +35,10 @@ parser.add_argument('--plain', action='store_true',
 parser.add_argument('--little', action='store_true',
                     help='use little-endian format')
 
-parser.add_argument('--pretty', action='store_true',
-                    help='output indented snbt')
 parser.add_argument('--compact', action='store_true',
                     help='output compact snbt')
+parser.add_argument('--pretty', action='store_true',
+                    help='output indented snbt')
 
 parser.add_argument('file', metavar='<file>',
                     help='the target file')
@@ -51,7 +51,7 @@ def main():
     gzipped, byteorder = not args.plain, 'little' if args.little else 'big'
     try:
         if args.r:
-            read(args.file, gzipped, byteorder, args.pretty, args.compact)
+            read(args.file, gzipped, byteorder, args.compact, args.pretty)
         elif args.w:
             write(args.w, args.file, gzipped, byteorder)
         elif args.m:
@@ -60,7 +60,7 @@ def main():
         parser.exit(1, str(exc) + '\n')
 
 
-def read(filename, gzipped, byteorder, pretty, compact):
+def read(filename, gzipped, byteorder, compact, pretty):
     nbt_file = nbt.load(filename, gzipped=gzipped, byteorder=byteorder)
     print(serialize_tag(nbt_file, indent=4 if pretty else None, compact=compact))
 
