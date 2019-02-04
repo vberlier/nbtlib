@@ -1,6 +1,6 @@
 # nbtlib
 
-[![Build Status](https://travis-ci.org/vberlier/nbtlib.svg?branch=master)](https://travis-ci.org/vberlier/nbtlib)
+[![Build Status](https://travis-ci.com/vberlier/nbtlib.svg?branch=master)](https://travis-ci.com/vberlier/nbtlib)
 [![PyPI](https://img.shields.io/pypi/v/nbtlib.svg)](https://pypi.org/project/nbtlib/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/nbtlib.svg)](https://pypi.org/project/nbtlib/)
 
