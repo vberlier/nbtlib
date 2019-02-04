@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 
 published () {
-  echo -e "\nComparing built distributions with published releases"
+  echo -e "\nComparing built distributions with published releases\n"
 
   local releases=$(curl -sSL "https://pypi.org/simple/nbtlib/")
 
+  echo "$releases"
+
   for build in $(ls dist); do
-    echo "Checking $build"
+    echo "Checking \033[1;33m$build\033[0m"
 
     if ! echo "$releases" | grep -Fq "$build"; then
-      echo -e "\n\033[1;31mCouldn't find build $build in the published releases\033[0m"
+      echo -e "\n\033[1;31mCouldn't find distribution $build in the published releases\033[0m"
       return 1
     fi
   done
@@ -21,7 +23,10 @@ deploy () {
   local username=$1
   local password=$2
 
-  poetry publish --username="$username" --password="$password" || return 1
+  poetry publish \
+    --username="$username" \
+    --password="$password" \
+    --no-interactive || return 1
 }
 
 if published; then
