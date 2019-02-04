@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 toml-string () {
-  grep -Po "^\s*$2\s*=\s*".+"\s*$" $1 | sed -r 's!.*"(.+)".*!\1!'
+  grep -Po "^\s*$2\s*=\s*".+"\s*$" "$1" | sed -r 's!.*"(.+)".*!\1!'
 }
 
 published () {
