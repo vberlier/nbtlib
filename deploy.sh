@@ -8,7 +8,7 @@ published () {
   echo "$releases"
 
   for build in $(ls dist); do
-    echo "Checking \033[1;33m$build\033[0m"
+    echo -e "Checking \033[1;33m$build\033[0m"
 
     if ! echo "$releases" | grep -Fq "$build"; then
       echo -e "\n\033[1;31mCouldn't find distribution $build in the published releases\033[0m"
@@ -26,7 +26,7 @@ deploy () {
   poetry publish \
     --username="$username" \
     --password="$password" \
-    --no-interactive || return 1
+    --no-interaction || return 1
 }
 
 if published; then
