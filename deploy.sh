@@ -9,7 +9,7 @@ published () {
     echo "Checking $build"
 
     if ! echo "$releases" | grep -Fq "$build"; then
-      echo -e "\n\033[0;31mCouldn't find build $build in the published releases\033[0m"
+      echo -e "\n\033[1;31mCouldn't find build $build in the published releases\033[0m"
       return 1
     fi
   done
@@ -21,7 +21,7 @@ deploy () {
   local username=$1
   local password=$2
 
-  return $(poetry publish --username="$username" --password="$password")
+  poetry publish --username="$username" --password="$password" || return 1
 }
 
 if published; then
