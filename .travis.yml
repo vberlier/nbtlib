@@ -20,6 +20,8 @@ jobs:
   include:
     - python: 3.6
     - python: 3.7
+
     - stage: publish
+      python: 3.7
       if: tag IS present
       script: ./deploy.sh
