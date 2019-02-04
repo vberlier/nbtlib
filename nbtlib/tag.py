@@ -164,7 +164,9 @@ class Base:
         """Write the binary representation of the tag to a file-like object."""
 
     def __repr__(self):
-        return f'{self.__class__.__name__}({super().__repr__()})'
+        if self.tag_id is not None:
+            return f'{self.__class__.__name__}({super().__repr__()})'
+        return super().__repr__()
 
     def __str__(self):
         try:
