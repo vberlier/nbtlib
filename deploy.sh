@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 
 published () {
+  echo -e "\nComparing built distributions with published releases"
+
   local releases=$(curl -sSL "https://pypi.org/simple/${PWD##*/}/")
 
   for build in $(ls dist); do
+    echo "Checking $build"
+
     if ! echo $releases | grep -Fq "$build"; then
+      echo "Couldn't find build $build in the published releases"
       return 1
     fi
   done
@@ -16,15 +21,12 @@ deploy () {
   local username=$1
   local password=$2
 
-  poetry publish \
-    --username="$username" \
-    --password="$password" \
-    --no-interaction
+  return $(poetry publish --username="$username" --password="$password")
 }
 
 if published; then
-  echo -e "\n\033[1;36m$TRAVIS_TAG already published\033[0m\n"
+  echo -e "\n\033[1;36m$TRAVIS_TAG already published\033[0m"
 else
-  echo -e "\n\033[1;36mPublishing $TRAVIS_TAG\033[0m\n"
-  deploy $PYPI_USERNAME $PYPI_PASSWORD
+  echo -e "\n\033[1;36mPublishing $TRAVIS_TAG\033[0m"
+  exit $(deploy $PYPI_USERNAME $PYPI_PASSWORD)
 fi
