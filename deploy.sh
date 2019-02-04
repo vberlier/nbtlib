@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 package-name () {
-  grep -Po 'name\s*=\s*".+"' pyproject.toml | sed -r 's!.*"(.+)".*!\1!'
+  grep -Po '^\s*name\s*=\s*".+"\s*$' pyproject.toml | sed -r 's!.*"(.+)".*!\1!'
 }
 
 published () {
