@@ -16,11 +16,13 @@ install:
   - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
   - source $HOME/.poetry/env
   - poetry install
+  - poetry build
 
 script: poetry run pytest
 
 deploy:
   provider: script
-  script: deploy.sh
+  script: ./deploy.sh
+  skip_cleanup: true
   on:
     tags: true
