@@ -8,10 +8,6 @@ cache:
   directories:
     - $HOME/.cache/pypoetry
 
-python:
-  - "3.7"
-  - "3.6"
-
 install:
   - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
   - source $HOME/.poetry/env
@@ -20,9 +16,10 @@ install:
 
 script: poetry run pytest
 
-deploy:
-  provider: script
-  script: ./deploy.sh
-  skip_cleanup: true
-  on:
-    tags: true
+jobs:
+  include:
+    - python: 3.6
+    - python: 3.7
+    - stage: publish
+      if: tag IS present
+      script: ./deploy.sh
