@@ -23,8 +23,8 @@ deploy () {
 }
 
 if published; then
-  echo -e "\n$TRAVIS_TAG already published\n"
+  echo -e "\n\033[1;36m$TRAVIS_TAG already published\033[0m\n"
 else
-  echo -e "\nPublishing $TRAVIS_TAG\n"
+  echo -e "\n\033[1;36mPublishing $TRAVIS_TAG\033[0m\n"
   deploy $PYPI_USERNAME $PYPI_PASSWORD
 fi
