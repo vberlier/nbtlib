@@ -21,6 +21,7 @@ install:
   - poetry install
 script:
   - python -c "import sys; print(sys.maxsize)"
+  - python -c "print(int(0))"
   - python -c "print(int(2147483646))"
   - python -c "print(int(2147483647))"
   - python -c "print(int(2147483648))"

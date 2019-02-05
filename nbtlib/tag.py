@@ -217,8 +217,16 @@ class Numeric(Base):
     def __new__(cls, *args, **kwargs):
         self = super().__new__(cls, *args, **kwargs)
 
-        if cls.range and int(self) not in cls.range:
-            raise OutOfRange(self)
+        print(f'@@@ args = {args}')
+        print(f'@@@ kwargs = {kwargs}')
+        print(f'@@@ cls = {cls}')
+        print(f'@@@ self = {self}')
+        print(f'@@@ cls.range = {cls.range}')
+
+        if cls.range:
+            int_self = int(self)
+            if int_self not in cls.range:
+                raise OutOfRange(self)
         return self
 
     @classmethod
