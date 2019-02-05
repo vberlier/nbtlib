@@ -28,6 +28,7 @@ jobs:
         - brew install openssl readline
         - brew outdated pyenv || brew upgrade pyenv
         - brew install pyenv-virtualenv
+        - eval "$(pyenv init -)"
         - pyenv install $PYTHON
         - pyenv virtualenv $PYTHON travis
         - pyenv activate travis
