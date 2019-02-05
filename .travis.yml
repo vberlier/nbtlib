@@ -17,9 +17,6 @@ script: poetry run pytest
 
 jobs:
   include:
-    - python: 3.6
-    - python: 3.7
-
     - os: osx
       language: generic
       env: PYTHON=3.7.2
@@ -33,8 +30,11 @@ jobs:
         - pyenv virtualenv $PYTHON travis
         - pyenv activate travis
         - python --version
-
-    - stage: publish
-      python: 3.7
-      if: tag IS present
-      script: ./publish.sh
+      script:
+        - python -c "import sys; print(sys.maxsize)"
+        - python -c "print(int(2147483646))"
+        - python -c "print(int(2147483647))"
+        - python -c "print(int(2147483648))"
+        - python -c "print(int(9223372036854775806))"
+        - python -c "print(int(9223372036854775807))"
+        - python -c "print(int(9223372036854775808))"
