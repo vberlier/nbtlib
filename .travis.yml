@@ -20,6 +20,21 @@ jobs:
     - python: 3.6
     - python: 3.7
 
+    - os: osx
+      language: generic
+      env: PYTHON=3.6.0
+      before_install:
+        - brew update
+        - brew install openssl readline
+        - brew outdated pyenv || brew upgrade pyenv
+        - brew install pyenv-virtualenv
+        - pyenv install $PYTHON
+        - export PYENV_VERSION=$PYTHON
+        - export PATH="/Users/travis/.pyenv/shims:${PATH}"
+        - pyenv-virtualenv .venv
+        - source .venv/bin/activate
+        - python --version
+
     - stage: publish
       python: 3.7
       if: tag IS present
