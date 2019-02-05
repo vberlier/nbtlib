@@ -3,38 +3,24 @@ language: python
 sudo: false
 dist: xenial
 
-cache:
-  pip: true
-  directories:
-    - $HOME/.cache/pypoetry
-
+os: osx
+language: generic
+env: PYTHON=3.6.0
 install:
-  - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
-  - source $HOME/.poetry/env
-  - poetry install
-
-script: poetry run pytest
-
-jobs:
-  include:
-    - os: osx
-      language: generic
-      env: PYTHON=3.7.2
-      before_install:
-        - brew update
-        - brew install openssl readline
-        - brew outdated pyenv || brew upgrade pyenv
-        - brew install pyenv-virtualenv
-        - eval "$(pyenv init -)"
-        - pyenv install $PYTHON
-        - pyenv virtualenv $PYTHON travis
-        - pyenv activate travis
-        - python --version
-      script:
-        - python -c "import sys; print(sys.maxsize)"
-        - python -c "print(int(2147483646))"
-        - python -c "print(int(2147483647))"
-        - python -c "print(int(2147483648))"
-        - python -c "print(int(9223372036854775806))"
-        - python -c "print(int(9223372036854775807))"
-        - python -c "print(int(9223372036854775808))"
+  - brew update
+  - brew install openssl readline
+  - brew outdated pyenv || brew upgrade pyenv
+  - brew install pyenv-virtualenv
+  - eval "$(pyenv init -)"
+  - pyenv install $PYTHON
+  - pyenv virtualenv $PYTHON travis
+  - pyenv activate travis
+  - python --version
+script:
+  - python -c "import sys; print(sys.maxsize)"
+  - python -c "print(int(2147483646))"
+  - python -c "print(int(2147483647))"
+  - python -c "print(int(2147483648))"
+  - python -c "print(int(9223372036854775806))"
+  - python -c "print(int(9223372036854775807))"
+  - python -c "print(int(9223372036854775808))"
