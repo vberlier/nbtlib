@@ -29,10 +29,8 @@ jobs:
         - brew outdated pyenv || brew upgrade pyenv
         - brew install pyenv-virtualenv
         - pyenv install $PYTHON
-        - export PYENV_VERSION=$PYTHON
-        - export PATH="/Users/travis/.pyenv/shims:${PATH}"
-        - pyenv virtualenv .venv
-        - source .venv/bin/activate
+        - pyenv virtualenv $PYTHON travis
+        - pyenv activate travis
         - python --version
 
     - stage: publish
