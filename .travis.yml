@@ -16,6 +16,9 @@ install:
   - pyenv virtualenv $PYTHON travis
   - pyenv activate travis
   - python --version
+  - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+  - source $HOME/.poetry/env
+  - poetry install
 script:
   - python -c "import sys; print(sys.maxsize)"
   - python -c "print(int(2147483646))"
@@ -24,3 +27,4 @@ script:
   - python -c "print(int(9223372036854775806))"
   - python -c "print(int(9223372036854775807))"
   - python -c "print(int(9223372036854775808))"
+  - poetry run pytest
