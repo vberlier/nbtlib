@@ -223,7 +223,7 @@ class Numeric(Base):
         print(f'@@@ self = {self}')
         print(f'@@@ cls.range = {cls.range}')
 
-        if cls.range:
+        if cls.range is not None:
             int_self = int(self)
             if int_self not in cls.range:
                 raise OutOfRange(self)
