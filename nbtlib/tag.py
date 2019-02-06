@@ -217,7 +217,7 @@ class Numeric(Base):
     def __new__(cls, *args, **kwargs):
         self = super().__new__(cls, *args, **kwargs)
 
-        if cls.range and int(self) not in cls.range:
+        if cls.range is not None and int(self) not in cls.range:
             raise OutOfRange(self)
         return self
 
