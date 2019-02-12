@@ -192,6 +192,12 @@ literal_values_for_tags = [
     ('"3.0f"', String('3.0f')),
     ('+72foo', String('+72foo')),
 
+    # Literal aliases
+    ('true', Byte(1)),
+    ('false', Byte(0)),
+    ('True', Byte(1)),
+    ('FaLse', Byte(0)),
+
     # List tag
     ('[]', List[Short]([])),
     ('[5b,-9b,18b,64b]', List[Byte]([5, -9, 18, 64])),

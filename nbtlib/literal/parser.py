@@ -57,6 +57,14 @@ TOKENS_REGEX = re.compile(
 NUMBER_SUFFIXES = {'b': Byte, 's': Short, 'l': Long, 'f': Float, 'd': Double}
 
 
+# Define literal aliases
+
+LITERAL_ALIASES = {
+    'true': Byte(1),
+    'false': Byte(0),
+}
+
+
 # Custom errors
 
 class InvalidLiteral(ValueError):
@@ -157,6 +165,9 @@ class Parser:
 
     def parse_string(self):
         """Parse a regular unquoted string from the token stream."""
+        aliased_value = LITERAL_ALIASES.get(self.current_token.value.lower(), None)
+        if aliased_value is not None:
+            return aliased_value
         return String(self.current_token.value)
 
     def collect_tokens_until(self, token_type):
