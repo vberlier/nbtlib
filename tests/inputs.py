@@ -191,6 +191,12 @@ literal_values_for_tags = [
     ('2a', String('2a')),
     ('"3.0f"', String('3.0f')),
     ('+72foo', String('+72foo')),
+    ("''", String('')),
+    ("'\"'", String('"')),
+    ('"\'"', String("'")),
+    ('"\\""', String('"')),
+    ("'\\''", String("'")),
+    ('"\\\\\'\\""', String('\\\'"')),
 
     # Literal aliases
     ('true', Byte(1)),
@@ -249,6 +255,8 @@ invalid_literals = [
     '{foo: [1,2}',
     '{error: [test]]}',
     '[{,{}]',
+    '"\\\'"',
+    "'\\\"'",
 
 ]
 

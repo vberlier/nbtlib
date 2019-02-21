@@ -7,12 +7,14 @@ Exported classes:
     Serializer -- Class that can turn nbt tags into their literal representation
 
 Exported objects:
+    STRING_QUOTES    -- Maps the two types of quote to each other
     ESCAPE_SEQUENCES -- Maps escape sequences to their substitution
     ESCAPE_SUBS      -- Maps substitutions to their escape sequence
 """
 
 
-__all__ = ['serialize_tag', 'ESCAPE_SEQUENCES', 'ESCAPE_SUBS', 'Serializer']
+__all__ = ['serialize_tag', 'STRING_QUOTES', 'ESCAPE_SEQUENCES', 'ESCAPE_SUBS',
+           'Serializer']
 
 
 import re
@@ -21,19 +23,31 @@ from contextlib import contextmanager
 
 # Escape nbt strings
 
-ESCAPE_SEQUENCES = {
-    r'\"': '"',
-    r'\\': '\\',
+STRING_QUOTES = {
+    '"': "'",
+    "'": '"',
 }
+
+QUOTE_REGEX = re.compile('|'.join(STRING_QUOTES))
+
+ESCAPE_SEQUENCES = {fr'\{q}': q for q in STRING_QUOTES}
+ESCAPE_SEQUENCES.update({
+    r'\\': '\\',
+})
 
 ESCAPE_SUBS = dict(reversed(tuple(map(reversed, ESCAPE_SEQUENCES.items()))))
 
 
 def escape_string(string):
     """Return the escaped literal representation of an nbt string."""
+    found = QUOTE_REGEX.search(string)
+    quote = STRING_QUOTES[found.group()] if found else next(iter(STRING_QUOTES))
+
     for match, seq in ESCAPE_SUBS.items():
-        string = string.replace(match, seq)
-    return f'"{string}"'
+        if match == quote or match not in STRING_QUOTES:
+            string = string.replace(match, seq)
+
+    return f'{quote}{string}{quote}'
 
 
 # Detect if a compound key can be represented unquoted

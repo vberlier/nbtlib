@@ -21,7 +21,7 @@ from collections import namedtuple
 from ..tag import (Byte, Short, Int, Long, Float, Double, ByteArray, String,
                    List, Compound, IntArray, LongArray, OutOfRange,
                    IncompatibleItemType)
-from .serializer import ESCAPE_SEQUENCES
+from .serializer import STRING_QUOTES, ESCAPE_SEQUENCES, ESCAPE_SUBS
 
 
 # Token definition
@@ -29,7 +29,7 @@ from .serializer import ESCAPE_SEQUENCES
 ESCAPE_REGEX = re.compile(r'\\.')
 
 TOKENS = {
-    'QUOTED_STRING': fr'"(?:{ESCAPE_REGEX.pattern}|[^\\])*?"',
+    'QUOTED_STRING': '|'.join(fr'{q}(?:{ESCAPE_REGEX.pattern}|[^\\])*?{q}' for q in STRING_QUOTES),
     'NUMBER': r'[+-]?(?:[0-9]*?\.[0-9]+|[0-9]+\.[0-9]*?|[0-9]+)[bslfdBSLFD]?(?![a-zA-Z0-9._+-])',
     'STRING': r'[a-zA-Z0-9._+-]+',
     'COMPOUND': r'\{',
@@ -246,8 +246,11 @@ class Parser:
         """Return the unquoted value of a quoted string."""
         value = string[1:-1]
 
+        forbidden_sequences = {ESCAPE_SUBS[STRING_QUOTES[string[0]]]}
+        valid_sequences = set(ESCAPE_SEQUENCES) - forbidden_sequences
+
         for seq in ESCAPE_REGEX.findall(value):
-            if seq not in ESCAPE_SEQUENCES:
+            if seq not in valid_sequences:
                 raise self.error(f'Invalid escape sequence "{seq}"')
 
         for seq, sub in ESCAPE_SEQUENCES.items():
