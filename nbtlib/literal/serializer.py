@@ -21,7 +21,7 @@ import re
 from contextlib import contextmanager
 
 
-# Escape nbt strings
+# Quoted string escaping
 
 STRING_QUOTES = {
     '"': "'",
@@ -38,35 +38,16 @@ ESCAPE_SEQUENCES.update({
 ESCAPE_SUBS = dict(reversed(tuple(map(reversed, ESCAPE_SEQUENCES.items()))))
 
 
-def escape_string(string):
-    """Return the escaped literal representation of an nbt string."""
-    found = QUOTE_REGEX.search(string)
-    quote = STRING_QUOTES[found.group()] if found else next(iter(STRING_QUOTES))
-
-    for match, seq in ESCAPE_SUBS.items():
-        if match == quote or match not in STRING_QUOTES:
-            string = string.replace(match, seq)
-
-    return f'{quote}{string}{quote}'
-
-
 # Detect if a compound key can be represented unquoted
 
 UNQUOTED_COMPOUND_KEY = re.compile(r'^[a-zA-Z0-9._+-]+$')
 
 
-def stringify_compound_key(key):
-    """Escape the compound key if it can't be represented unquoted."""
-    if UNQUOTED_COMPOUND_KEY.match(key):
-        return key
-    return escape_string(key)
-
-
 # User-friendly helper
 
-def serialize_tag(tag, *, indent=None, compact=False):
+def serialize_tag(tag, *, indent=None, compact=False, quote=None):
     """Serialize an nbt tag to its literal representation."""
-    serializer = Serializer(indent=indent, compact=compact)
+    serializer = Serializer(indent=indent, compact=compact, quote=quote)
     return serializer.serialize(tag)
 
 
@@ -75,7 +56,7 @@ def serialize_tag(tag, *, indent=None, compact=False):
 class Serializer:
     """Nbt tag serializer."""
 
-    def __init__(self, *, indent=None, compact=False):
+    def __init__(self, *, indent=None, compact=False, quote=None):
         self.indentation = indent * ' ' if isinstance(indent, int) else indent
         self.comma = ',' if compact else ', '
         self.colon = ':' if compact else ': '
@@ -83,6 +64,8 @@ class Serializer:
 
         self.indent = ''
         self.previous_indent = ''
+
+        self.quote = quote
 
     @contextmanager
     def depth(self):
@@ -115,6 +98,26 @@ class Serializer:
             fmt.replace('{}', f'\n{self.indent}{{}}\n{self.previous_indent}')
         )
 
+    def escape_string(self, string):
+        """Return the escaped literal representation of an nbt string."""
+        if self.quote:
+            quote = self.quote
+        else:
+            found = QUOTE_REGEX.search(string)
+            quote = STRING_QUOTES[found.group()] if found else next(iter(STRING_QUOTES))
+
+        for match, seq in ESCAPE_SUBS.items():
+            if match == quote or match not in STRING_QUOTES:
+                string = string.replace(match, seq)
+
+        return f'{quote}{string}{quote}'
+
+    def stringify_compound_key(self, key):
+        """Escape the compound key if it can't be represented unquoted."""
+        if UNQUOTED_COMPOUND_KEY.match(key):
+            return key
+        return self.escape_string(key)
+
     def serialize(self, tag):
         """Return the literal representation of a tag."""
         handler = getattr(self, f'serialize_{tag.serializer}', None)
@@ -134,7 +137,7 @@ class Serializer:
 
     def serialize_string(self, tag):
         """Return the literal representation of a string tag."""
-        return escape_string(tag)
+        return self.escape_string(tag)
 
     def serialize_list(self, tag):
         """Return the literal representation of a list tag."""
@@ -155,6 +158,6 @@ class Serializer:
                 separator, fmt = self.expand(separator, fmt)
 
             return fmt.format(separator.join(
-                f'{stringify_compound_key(key)}{self.colon}{self.serialize(value)}'
+                f'{self.stringify_compound_key(key)}{self.colon}{self.serialize(value)}'
                 for key, value in tag.items()
             ))
