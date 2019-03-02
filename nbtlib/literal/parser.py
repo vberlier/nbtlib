@@ -160,7 +160,7 @@ class Parser:
             if suffix in NUMBER_SUFFIXES:
                 return NUMBER_SUFFIXES[suffix](value[:-1])
             return Double(value) if '.' in value else Int(value)
-        except OutOfRange:
+        except (OutOfRange, ValueError):
             return String(value)
 
     def parse_string(self):

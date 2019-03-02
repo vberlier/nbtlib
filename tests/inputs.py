@@ -194,6 +194,7 @@ literal_values_for_tags = [
     ('"3.0f"', String('3.0f')),
     ('+72foo', String('+72foo')),
     ('03b', String('03b')),
+    ('3.3s', String('3.3s')),
     ("''", String('')),
     ("'\"'", String('"')),
     ('"\'"', String("'")),
