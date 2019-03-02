@@ -72,7 +72,7 @@ class CompoundSchema(Compound):
     @classmethod
     def cast_item(cls, key, value):
         """Cast schema item to the appropriate tag type."""
-        schema_type = cls.schema.get(key, None)
+        schema_type = cls.schema.get(key)
         if schema_type is None:
             if cls.strict:
                 raise TypeError(f'Invalid key {key!r}')
