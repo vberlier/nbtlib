@@ -30,7 +30,7 @@ ESCAPE_REGEX = re.compile(r'\\.')
 
 TOKENS = {
     'QUOTED_STRING': '|'.join(fr'{q}(?:{ESCAPE_REGEX.pattern}|[^\\])*?{q}' for q in STRING_QUOTES),
-    'NUMBER': r'[+-]?(?:[0-9]*?\.[0-9]+|[0-9]+\.[0-9]*?|[1-9][0-9]*|0)[bslfdBSLFD]?(?![a-zA-Z0-9._+-])',
+    'NUMBER': r'[+-]?(?:[0-9]*?\.[0-9]+|[0-9]+\.[0-9]*?|[1-9][0-9]*|0)(e[+-]?[0-9]+)?[bslfdBSLFD]?(?![a-zA-Z0-9._+-])',
     'STRING': r'[a-zA-Z0-9._+-]+',
     'COMPOUND': r'\{',
     'CLOSE_COMPOUND': r'\}',

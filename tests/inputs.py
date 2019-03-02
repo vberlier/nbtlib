@@ -172,11 +172,16 @@ literal_values_for_tags = [
     ('0.0f', Float(0)),
     ('-1.0f', Float(-1)),
     ('56.487f', Float(56.487)),
+    ('1.2e02f', Float(120)),
+    ('82e+289f', Float(8.2e290)),
 
     # Double tag
     ('0.0d', Double(0)),
     ('-1.0d', Double(-1)),
     ('0.493128713218d', Double(0.493128713218)),
+    ('7.2', Double(7.2)),
+    ('1.0e10', Double(1e10)),
+    ('7e-72d', Double(7e-72)),
 
     # ByteArray tag
     ('[B;]', ByteArray([])),
@@ -194,6 +199,9 @@ literal_values_for_tags = [
     ('"3.0f"', String('3.0f')),
     ('+72foo', String('+72foo')),
     ('03b', String('03b')),
+    ('4e-3l', String('4e-3l')),
+    ('4e3l', String('4e3l')),
+    ('14e+5', String('14e+5')),
     ('3.3s', String('3.3s')),
     ("''", String('')),
     ("'\"'", String('"')),
