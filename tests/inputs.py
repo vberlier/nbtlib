@@ -174,6 +174,8 @@ literal_values_for_tags = [
     ('56.487f', Float(56.487)),
     ('1.2e02f', Float(120)),
     ('82e+289f', Float(8.2e290)),
+    ('1E-52f', Float(1e-52)),
+    ('1.5E+2f', Float(150)),
 
     # Double tag
     ('0.0d', Double(0)),
@@ -182,6 +184,8 @@ literal_values_for_tags = [
     ('7.2', Double(7.2)),
     ('1.0e10', Double(1e10)),
     ('7e-72d', Double(7e-72)),
+    ('7.3E2d', Double(730)),
+    ('.2E+2', Double(20)),
 
     # ByteArray tag
     ('[B;]', ByteArray([])),
