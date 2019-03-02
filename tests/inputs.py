@@ -229,6 +229,9 @@ literal_values_for_tags = [
     ('[[],[[],[]]]', List[List[List]]([[], [[], []]])),
     ('[[],[[[[[[[[[[],[[[[5,1]],[]]]]]]]]]]],[[[[]]]]]]', List[List[List[List[List[List[List[List[List[List[List[List[List[List[Int]]]]]]]]]]]]]]([[], [[[[[[[[[[], [[[[5, 1]], []]]]]]]]]]], [[[[]]]]]])),
     ('[[42],[hello]]', List[List]([List[Int]([42]), List[String](['hello'])])),
+    ('[[[[],[[[]]]]],[[[[],[5]]]]]', List[List[List[List[List]]]]([[[[], [List[List]([[]])]]], [[[List[Int]([]), List[Int]([Int(5)])]]]])),
+    ('[[[],[[]]],[[hello]]]', List[List[List]]([[List[List]([]), List[List]([[]])], [List([String('hello')])]])),
+    ('[[1],[[]]]', List([List([Int(1)]), List([List([])])])),
 
     # Compound tag
     ('{}', Compound({})),
@@ -263,8 +266,6 @@ invalid_literals = [
     '[a,1]',
     '[[],[],1b]',
     '[[],[],1b]',
-    '[[[[],[[[]]]]],[[[[],[5]]]]]',
-    '[[[],[[]]],[[hello]]]',
     '[L;5l,4l,3]',
     '{hello,world}',
     '{with space: 5}',

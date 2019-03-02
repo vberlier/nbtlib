@@ -412,34 +412,30 @@ class List(Base, list, metaclass=ListMeta):
 
     @staticmethod
     def infer_list_subtype(items):
-        indeterminate = True
+        """Infer a list subtype from a collection of items."""
         subtype = End
 
         for item in items:
-            if not isinstance(item, Base):
-                continue
             item_type = type(item)
+            if not issubclass(item_type, Base):
+                continue
 
-            if indeterminate:
+            if subtype is End:
                 subtype = item_type
-                indeterminate = List.indeterminate(subtype)
-                continue
+                if not issubclass(subtype, List):
+                    return subtype
+            elif subtype is not item_type:
+                stype, itype = subtype, item_type
+                generic = List
+                while issubclass(stype, List) and issubclass(itype, List):
+                    stype, itype = stype.subtype, itype.subtype
+                    generic = List[generic]
 
-            if issubclass(item_type, subtype) or List.indeterminate(item_type):
-                continue
-
-            if issubclass(subtype, List) and issubclass(item_type, List):
-                subtype = List
-            else:
-                raise IncompatibleItemType(item, subtype)
+                if stype is End:
+                    subtype = item_type
+                elif itype is not End:
+                    return generic.subtype
         return subtype
-
-    @staticmethod
-    def indeterminate(subtype):
-        """Check whether a subtype could be casted to something else."""
-        while issubclass(subtype, List):
-            subtype = subtype.subtype
-        return subtype is End
 
     @classmethod
     def parse(cls, buff, byteorder='big'):
