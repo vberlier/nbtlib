@@ -402,28 +402,44 @@ class List(Base, list, metaclass=ListMeta):
 
     def __new__(cls, iterable=()):
         if cls.subtype is End:
-            subtype = End
-
-            for item in iterable:
-                item_type = type(item)
-                if issubclass(item_type, Base):
-                    subtype = item_type
-                if cls.is_concrete_subtype(subtype):
-                    break
-
+            iterable = tuple(iterable)
+            subtype = cls.infer_list_subtype(iterable)
             cls = cls[subtype]
-
         return super().__new__(cls, iterable)
 
     def __init__(self, iterable=()):
         super().__init__(map(self.cast_item, iterable))
 
     @staticmethod
-    def is_concrete_subtype(subtype):
-        """Check if a subtype is concrete or could be casted to something else."""
+    def infer_list_subtype(items):
+        indeterminate = True
+        subtype = End
+
+        for item in items:
+            if not isinstance(item, Base):
+                continue
+            item_type = type(item)
+
+            if indeterminate:
+                subtype = item_type
+                indeterminate = List.indeterminate(subtype)
+                continue
+
+            if issubclass(item_type, subtype) or List.indeterminate(item_type):
+                continue
+
+            if issubclass(subtype, List) and issubclass(item_type, List):
+                subtype = List
+            else:
+                raise IncompatibleItemType(item, subtype)
+        return subtype
+
+    @staticmethod
+    def indeterminate(subtype):
+        """Check whether a subtype could be casted to something else."""
         while issubclass(subtype, List):
             subtype = subtype.subtype
-        return subtype is not End
+        return subtype is End
 
     @classmethod
     def parse(cls, buff, byteorder='big'):
@@ -463,9 +479,10 @@ class List(Base, list, metaclass=ListMeta):
             try:
                 return cls.subtype(item)
             except EndInstantiation:
-                raise ValueError('List tags without any subtype must either '
-                                 'be empty or instantiated with elements from '
-                                 'which a subtype can be inferred') from None
+                raise ValueError('List tags without an explicit subtype must '
+                                 'either be empty or instantiated with '
+                                 'elements from which a subtype can be '
+                                 'inferred') from None
             except (IncompatibleItemType, CastError):
                 raise
             except Exception as exc:

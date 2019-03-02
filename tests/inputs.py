@@ -84,9 +84,11 @@ bytes_for_valid_tags = [
     ('big', b'\x02\x00\x00\x00\x00', List[Short]([])),
     ('big', b'\x01\x00\x00\x00\x04\x05\xf7\x12\x40', List[Byte]([Byte(5), Byte(-9), Byte(18), Byte(64)])),
     ('big', b'\x08\x00\x00\x00\x02\x00\x05hello\x00\x05world', List[String]([String('hello'), String('world')])),
+    ('big', b'\t\x00\x00\x00\x02\x03\x00\x00\x00\x01\x00\x00\x00*\x08\x00\x00\x00\x01\x00\x05hello', List[List]([List[Int]([Int(42)]), List[String]([String('hello')])])),
     ('little', b'\x02\x00\x00\x00\x00', List[Short]([])),
     ('little', b'\x01\x04\x00\x00\x00\x05\xf7\x12\x40', List[Byte]([Byte(5), Byte(-9), Byte(18), Byte(64)])),
     ('little', b'\x08\x02\x00\x00\x00\x05\x00hello\x05\x00world', List[String]([String('hello'), String('world')])),
+    ('little', b'\t\x02\x00\x00\x00\x03\x01\x00\x00\x00*\x00\x00\x00\x08\x01\x00\x00\x00\x05\x00hello', List[List]([List[Int]([Int(42)]), List[String]([String('hello')])])),
 
     # Compound tag
     ('big', b'\x00', Compound({})),
@@ -212,6 +214,7 @@ literal_values_for_tags = [
     ('[[[],[1]],[]]', List[List[List[Int]]]([[[], [1]], []])),
     ('[[],[[],[]]]', List[List[List]]([[], [[], []]])),
     ('[[],[[[[[[[[[[],[[[[5,1]],[]]]]]]]]]]],[[[[]]]]]]', List[List[List[List[List[List[List[List[List[List[List[List[List[List[Int]]]]]]]]]]]]]]([[], [[[[[[[[[[], [[[[5, 1]], []]]]]]]]]]], [[[[]]]]]])),
+    ('[[42],[hello]]', List[List]([List[Int]([42]), List[String](['hello'])])),
 
     # Compound tag
     ('{}', Compound({})),
