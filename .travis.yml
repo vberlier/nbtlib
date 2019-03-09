@@ -13,7 +13,7 @@ install:
   - source $HOME/.poetry/env
   - poetry install
 
-script: poetry run pytest
+script: poetry run pytest --benchmark-enable
 
 jobs:
   include:
