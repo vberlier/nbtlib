@@ -23,4 +23,7 @@ jobs:
     - stage: publish
       python: 3.7
       if: tag IS present
-      script: ./publish.sh
+      script: >-
+        poetry build &&
+        poetry publish --username="$PYPI_USERNAME" --password="$PYPI_PASSWORD" --no-interaction ||
+        echo "Version $TRAVIS_TAG is already published"
