@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nbtlib"
-version = "1.4.7"
+version = "1.4.8"
 description = "A python package to read and edit nbt data"
 authors = ["Valentin Berlier <berlier.v@gmail.com>"]
 license = "MIT"
