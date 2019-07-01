@@ -24,7 +24,7 @@ python = "^3.6"
 numpy = "^1.16"
 
 [tool.poetry.dev-dependencies]
-pytest = "^4.6"
+pytest = "^5.0"
 pytest-benchmark = "^3.2"
 
 [tool.poetry.scripts]
