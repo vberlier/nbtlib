@@ -118,8 +118,11 @@ def write_numeric(fmt, value, buff, byteorder='big'):
 def read_string(buff, byteorder='big'):
     """Read a string from a file-like object."""
     length = read_numeric(USHORT, buff, byteorder)
-    return buff.read(length).decode('utf-8')
-
+    br=buff.read(length)
+    try:
+        return br.decode('utf-8')
+    except UnicodeDecodeError:
+        return br
 
 def write_string(value, buff, byteorder='big'):
     """Write a string to a file-like object."""
@@ -333,13 +336,28 @@ class ByteArray(Array):
     array_prefix = 'B'
     item_suffix = 'B'
 
+class abstring(type):
+	def __instancecheck__(s,d):
+		return super().__instancecheck__(d) or isinstance(d,MalformedString)
+	def __subclasscheck__(s,d):
+		return super().__subclasscheck__(d) or issubclass(d,MalformedString)
 
-class String(Base, str):
+class String(Base, str,metaclass=abstring):
     """Nbt tag representing a string."""
 
     __slots__ = ()
     tag_id = 8
     serializer = 'string'
+
+    def __new__(cls, *args, **kwargs):
+        if (not kwargs) and len(args)==1 and isinstance(args[0],bytes):
+            return MalformedString(*args)
+        return super().__new__(cls, *args, **kwargs)
+
+
+
+
+
 
     @classmethod
     def parse(cls, buff, byteorder='big'):
@@ -347,6 +365,15 @@ class String(Base, str):
 
     def write(self, buff, byteorder='big'):
         write_string(self, buff, byteorder)
+
+class MalformedString(Base, bytes):
+
+    __slots__ = ()
+    tag_id = 8
+    def write(self, buff, byteorder='big'):
+        write_numeric(USHORT, len(self), buff, byteorder)
+        buff.write(self)
+        
 
 
 class ListMeta(type):
