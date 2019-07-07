@@ -124,10 +124,9 @@ def read_string(buff, byteorder='big'):
     except UnicodeDecodeError:
         return br
 
-def write_string(data, buff, byteorder='big'):
+def write_string(value, buff, byteorder='big'):
     """Write a string to a file-like object."""
-    if not isinstance(data,bytes):
-        data = data.encode('utf-8')
+    data = value.encode('utf-8')
     write_numeric(USHORT, len(data), buff, byteorder)
     buff.write(data)
 
@@ -355,11 +354,6 @@ class String(Base, str,metaclass=abstring):
             return MalformedString(*args)
         return super().__new__(cls, *args, **kwargs)
 
-
-
-
-
-
     @classmethod
     def parse(cls, buff, byteorder='big'):
         return cls(read_string(buff, byteorder))
@@ -368,6 +362,10 @@ class String(Base, str,metaclass=abstring):
         write_string(self, buff, byteorder)
 
 class MalformedString(Base, bytes):
+    def __new__(cls, arg=""):
+        if not isinstance(arg,bytes):
+            return String(arg)
+        return super().__new__(cls, arg) 
 
     __slots__ = ()
     tag_id = 8
