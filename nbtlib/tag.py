@@ -353,6 +353,9 @@ class String(Base, str,metaclass=abstring):
     def __new__(cls, *args, **kwargs):
         if (not kwargs) and len(args)==1 and isinstance(args[0],bytes):
             return MalformedString(*args)
+        args=[*args]
+        if (not kwargs) and len(args)==1 and isinstance(args[0],cls):
+            args[0]=str.__str__(args[0])
         return super().__new__(cls, *args, **kwargs)
 
     @classmethod
