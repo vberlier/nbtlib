@@ -118,12 +118,16 @@ def write_numeric(fmt, value, buff, byteorder='big'):
 def read_string(buff, byteorder='big'):
     """Read a string from a file-like object."""
     length = read_numeric(USHORT, buff, byteorder)
-    return buff.read(length).decode('utf-8')
+    br=buff.read(length)
+    try:
+        return br.decode('utf-8')
+    except UnicodeDecodeError:
+        return br
 
-
-def write_string(value, buff, byteorder='big'):
+def write_string(data, buff, byteorder='big'):
     """Write a string to a file-like object."""
-    data = value.encode('utf-8')
+    if not isinstance(data,bytes):
+        data = data.encode('utf-8')
     write_numeric(USHORT, len(data), buff, byteorder)
     buff.write(data)
 
@@ -337,16 +341,22 @@ class ByteArray(Array):
 class String(Base, str):
     """Nbt tag representing a string."""
 
-    __slots__ = ()
+    __slots__ = ("data",)
     tag_id = 8
     serializer = 'string'
+
+    def __init__(self,data):
+        if isinstance(data,bytes):
+            self.data=data
+        else:
+            self.data=None
 
     @classmethod
     def parse(cls, buff, byteorder='big'):
         return cls(read_string(buff, byteorder))
 
     def write(self, buff, byteorder='big'):
-        write_string(self, buff, byteorder)
+        write_string(self.data or self, buff, byteorder)
 
 
 class ListMeta(type):
