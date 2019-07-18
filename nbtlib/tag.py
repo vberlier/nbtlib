@@ -356,7 +356,10 @@ class String(Base, str):
         return cls(read_string(buff, byteorder))
 
     def write(self, buff, byteorder='big'):
-        write_string(self.data or self, buff, byteorder)
+        if self.data is None:
+            write_string(self, buff, byteorder)
+        else:
+            write_string(self.data, buff, byteorder)
 
 
 class ListMeta(type):
