@@ -134,6 +134,23 @@ out_of_range_numeric_tags = [
 ]
 
 
+unsigned_values_for_integer_tags = [
+
+    (Byte(-1), 255),
+    (Byte(-128), 128),
+
+    (Short(-1), 65535),
+    (Short(-32768), 32768),
+
+    (Int(-1), 4294967295),
+    (Int(-2147483648), 2147483648),
+
+    (Long(-1), 18446744073709551615),
+    (Long(-9223372036854775808), 9223372036854775808),
+
+]
+
+
 literal_values_for_tags = [
 
     # Byte tag

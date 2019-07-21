@@ -4,7 +4,8 @@ import pytest
 from nbtlib import (End, Int, String, List, EndInstantiation, OutOfRange,
                     IncompatibleItemType, CastError)
 
-from .inputs import bytes_for_valid_tags, out_of_range_numeric_tags
+from .inputs import (bytes_for_valid_tags, out_of_range_numeric_tags,
+                     unsigned_values_for_integer_tags)
 
 
 @pytest.mark.parametrize('byteorder, bytes_input, expected_tag', bytes_for_valid_tags)
@@ -32,6 +33,16 @@ def test_end_tag_instantiation():
 def test_out_of_range_numeric_tags(tag_type, value):
     with pytest.raises(OutOfRange):
         tag_type(value)
+
+
+@pytest.mark.parametrize('tag, unsigned_value', unsigned_values_for_integer_tags)
+def test_unsigned_conversion(tag, unsigned_value):
+    assert tag.as_unsigned == unsigned_value
+
+
+@pytest.mark.parametrize('tag, unsigned_value', unsigned_values_for_integer_tags)
+def test_from_unsigned(tag, unsigned_value):
+    assert tag.from_unsigned(unsigned_value) == tag
 
 
 class TestListTagEdgeCases:

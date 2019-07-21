@@ -205,21 +205,6 @@ class Numeric(Base):
     serializer = 'numeric'
     fmt = None
     suffix = ''
-    range = None
-
-    def __init_subclass__(cls):
-        super().__init_subclass__()
-
-        if issubclass(cls, int):
-            limit = 2 ** (8 * cls.fmt['big'].size - 1)
-            cls.range = range(-limit, limit)
-
-    def __new__(cls, *args, **kwargs):
-        self = super().__new__(cls, *args, **kwargs)
-
-        if cls.range is not None and int(self) not in cls.range:
-            raise OutOfRange(self)
-        return self
 
     @classmethod
     def parse(cls, buff, byteorder='big'):
@@ -229,7 +214,50 @@ class Numeric(Base):
         write_numeric(self.fmt, self, buff, byteorder)
 
 
-class Byte(Numeric, int):
+class NumericInteger(Numeric, int):
+    """Intermediate class that represents a numeric integer nbt tag.
+
+    This class is not meant to be instantiated. It inherits from the
+    `Base` class and `int` and defines additional class attribute.
+    Derived class will inherit the `as_unsigned` property and
+    `from_unsigned` class method.
+
+    Class attributes:
+        range -- The supported range of values
+        mask  -- The largest number that can be represented
+        bits  -- The bit length of the largest number that can be represented
+    """
+
+    __slots__ = ()
+    range = None
+    mask = None
+    bits = None
+
+    def __init_subclass__(cls):
+        super().__init_subclass__()
+        limit = 2 ** (8 * cls.fmt['big'].size - 1)
+        cls.range = range(-limit, limit)
+        cls.mask = limit * 2 - 1
+        cls.bits = cls.mask.bit_length()
+
+    def __new__(cls, *args, **kwargs):
+        self = super().__new__(cls, *args, **kwargs)
+        if int(self) not in cls.range:
+            raise OutOfRange(self)
+        return self
+
+    @property
+    def as_unsigned(self):
+        """Interpret the value of the tag as an unsigned integer."""
+        return self & self.mask
+
+    @classmethod
+    def from_unsigned(cls, value):
+        """Create a tag from an unsigned integer."""
+        return cls(value - (value * 2 & cls.mask + 1))
+
+
+class Byte(NumericInteger):
     """Nbt tag representing a signed byte."""
 
     __slots__ = ()
@@ -238,7 +266,7 @@ class Byte(Numeric, int):
     suffix = 'b'
 
 
-class Short(Numeric, int):
+class Short(NumericInteger):
     """Nbt tag representing a signed 16 bit integer."""
 
     __slots__ = ()
@@ -247,7 +275,7 @@ class Short(Numeric, int):
     suffix = 's'
 
 
-class Int(Numeric, int):
+class Int(NumericInteger):
     """Nbt tag representing a signed 32 bit integer."""
 
     __slots__ = ()
@@ -255,7 +283,7 @@ class Int(Numeric, int):
     fmt = INT
 
 
-class Long(Numeric, int):
+class Long(NumericInteger):
     """Nbt tag representing a signed 64 bit integer."""
 
     __slots__ = ()
