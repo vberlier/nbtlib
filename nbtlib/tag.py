@@ -364,7 +364,7 @@ class ListMeta(type):
 
     def __getitem__(cls, item):
         if item is End:
-            return cls
+            return List
 
         try:
             return List.variants[item]
