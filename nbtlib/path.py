@@ -108,12 +108,14 @@ class NBT_Path(tuple):
                 out+='[].'
             else:
                 i,j=item
-                i=i or ""
                 j= "" if j is None else j
-                if any(k in i for k in " .{}[]\""):
-                    i='"'+("\\\"".join("\\\\" .join(i.split("\\")) .split("\"")))+'"'
-                
-                out+=f"{i}{j!s}."
+                if i is not None:
+                    if any(k in i for k in " .{}[]\"") or not i:
+                        i='"'+("\\\"".join("\\\\" .join(i.split("\\")) .split("\"")))+'"'
+                    
+                    out+=f"{i}{j!s}."
+                else:
+                    out+=f"{j!s}."
         return "".join(out)
     def __repr__(self):
         return f"NBT_Path({str(self).__repr__()})"
