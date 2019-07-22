@@ -92,11 +92,10 @@ class NBT_Path(tuple):
         if isinstance(key,str):
             return type(self)(self.parts+((key,None),))
         if isinstance(key,Compound):
-            *p,q=self.parts
-            q,r=q
-            r=r or Compound()
+            *p,(q,r)=self.parts
+            r=r or {}
             r=Compound(r.copy())
-            r.update(key)
+            r.merge(key)
             return type(self)((*p,(q,r)))
     def __str__(self):
         out=[]
@@ -146,12 +145,33 @@ class NBT_Path(tuple):
                     out=[i for i in out if isinstance(i,Compound) and match(i,tag)]
         return out
     def join(this,that):
-        pass
-
+        if isinstance(that,str):
+            that=type(this)(that)
+        if that.parts==((None,None)):
+            return this
+        if isinstance(that.parts[0],(int,type(None))) or that.parts[0][0] is not None:
+            return type(this)(this.parts+that.parts)
+        *a,(b,c)=this
+        (d,e),*f=that
+        c=c or {}
+        c=Compound(c.copy())
+        c.merge(e)
+        return type(this)((*a,(b,c),*f))
+    __sub__=join
 
 
 
 
 '''
 nbtlib.path.NBT_Path("Items")[None][-1]["a"].match(nbtlib.parse_nbt("{Items:[[{a:{}}],[{s:'',a:''}]]}"))
+>>> a-"{a:{e:5b}}[8]"
+NBT_Path('a.[-3].c{a: [1b, 2b]}.d.[].e{a: {e: 5b}}.[8].')
+>>> a-"{a:{e:5b}}[8]"-"d"
+NBT_Path('a.[-3].c{a: [1b, 2b]}.d.[].e{a: {e: 5b}}.[8].d.')
+>>> a-"{a:{e:5b}}[8]"-"[5]"
+NBT_Path('a.[-3].c{a: [1b, 2b]}.d.[].e{a: {e: 5b}}.[8].[5].')
+>>> a-"{a:{e:5b}}"-"[]d{a:{m:4f}}"
+NBT_Path('a.[-3].c{a: [1b, 2b]}.d.[].e{a: {e: 5b}}.[].d{a: {m: 4.0f}}.')
+>>> a-"{a:{e:5b}}"-"{a:{m:4f}}"
+NBT_Path('a.[-3].c{a: [1b, 2b]}.d.[].e{a: {e: 5b, m: 4.0f}}.')
 '''
