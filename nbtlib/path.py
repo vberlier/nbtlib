@@ -14,7 +14,7 @@ def slice_nbt(literal):
 
 
 def match(obj,pattern):
-	for i in Base.all_tags.values():
+	for i in Int.all_tags.values():
 		if isinstance(obj,i) and isinstance(pattern,i):
 			break
 	else:
@@ -116,8 +116,40 @@ class NBT_Path(tuple):
                 out+=f"{i}{j!s}."
         return "".join(out)
     def __repr__(self):
-        return f"NBT_Path({str(self).__repr__()})"#escape?
-    def match(self,obj):
-        pass
+        return f"NBT_Path({str(self).__repr__()})"
+    def match(self,obj):#NBT_Path("Items[][0].a{}").match(nbtlib.parse_nbt("{Items:[[{a:{}}],[{s:'',a:''}]]}"))
+        out=[obj]
+        for item in self:
+            if isinstance(item,int):
+                out_=[]
+                for i in (i for i in out if isinstance(i,List)):
+                    try:
+                        out_.append(i[item])
+                    except:
+                        pass
+                out=out_
+            elif item is None:
+                out=sum((i for i in out if isinstance(i,List)),[])
+            else:
+                itemname,tag=item
+                if itemname is not None:
+                    out_=[]
+                    for i in (i for i in out if isinstance(i,Compound)):
+                        try:
+                              out_.append(i[itemname])
+                        except:
+                              pass
+                    out=out_
+                if tag is not None:
+                    out=[i for i in out if isinstance(i,Compound) and match(i,tag)]
+        return out
     def join(this,that):
         pass
+
+
+
+
+
+'''
+nbtlib.path.NBT_Path("Items")[None][-1]["a"].match(nbtlib.parse_nbt("{Items:[[{a:{}}],[{s:'',a:''}]]}"))
+'''
