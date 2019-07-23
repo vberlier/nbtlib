@@ -14,20 +14,20 @@ def slice_nbt(literal):
 
 
 def match(obj,pattern):
-	for i in Int.all_tags.values():
-		if isinstance(obj,i) and isinstance(pattern,i):
-			break
-	else:
-		return False
-	if i is Compound:
-		return all(((k in obj) and match(obj[k],v)) for k,v in pattern.items())
-	elif i is List:
-		if pattern:
-			return all(any(match(k,j) for k in obj) for j in pattern)
-		else:
-			return not obj
-	else:
-		return obj==pattern
+    for i in Int.all_tags.values():
+        if isinstance(obj,i) and isinstance(pattern,i):
+            break
+    else:
+        return False
+    if i is Compound:
+        return all(((k in obj) and match(obj[k],v)) for k,v in pattern.items())
+    elif i is List:
+        if pattern:
+            return all(any(match(k,j) for k in obj) for j in pattern)
+        else:
+            return not obj
+    else:
+        return obj==pattern
 
 def parser(string):
     if string.startswith("{"):
