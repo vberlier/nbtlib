@@ -147,7 +147,7 @@ class NBT_Path(tuple):
     def join(this,that):
         if isinstance(that,str):
             that=type(this)(that)
-        if that.parts==((None,None)):
+        if that.parts==((None,None),):
             return this
         if isinstance(that.parts[0],(int,type(None))) or that.parts[0][0] is not None:
             return type(this)(this.parts+that.parts)
