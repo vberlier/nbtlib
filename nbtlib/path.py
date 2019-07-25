@@ -178,6 +178,7 @@ class NBT_Path(tuple):
         c.merge(e)
         return type(this)((*a,(b,c),*f))
     __sub__=join
+    __call__=match
 
 
 
@@ -194,4 +195,6 @@ NBT_Path('a.[-3].c{a: [1b, 2b]}.d.[].e{a: {e: 5b}}.[8].[5].')
 NBT_Path('a.[-3].c{a: [1b, 2b]}.d.[].e{a: {e: 5b}}.[].d{a: {m: 4.0f}}.')
 >>> a-"{a:{e:5b}}"-"{a:{m:4f}}"
 NBT_Path('a.[-3].c{a: [1b, 2b]}.d.[].e{a: {e: 5b, m: 4.0f}}.')
+>>>NBT_Path("Items[].a[]")(nbtlib.parse_nbt("{Items:[{a:[1,2]},{a:[B;3b,4b]},{a:[L;3l,4l]},{a:[I;3,4]},{a:[B;3b,4b]},{a:[\"3\",\"4\"]}]}"))
+[Int(1), Int(2), Byte(3), Byte(4), Long(3), Long(4), Int(3), Int(4), Byte(3), Byte(4), String('3'), String('4')]
 '''
