@@ -124,14 +124,33 @@ class NBT_Path(tuple):
         for item in self:
             if isinstance(item,int):
                 out_=[]
-                for i in (i for i in out if isinstance(i,List)):
-                    try:
-                        out_.append(i[item])
-                    except:
+                for i in (i for i in out if isinstance(i,(List,LongArray,ByteArray,IntArray))):
+                    if isinstance(i,List):  
+                        try:
+                            out_.append(i[item])
+                        except:
+                            pass
+                    elif isinstance(i,LongArray):  
+                        try:
+                            out_.append(Long(i[item]))
+                        except:
+                            pass
+                    elif isinstance(i,ByteArray):  
+                        try:
+                            out_.append(Byte(i[item]))
+                        except:
+                            pass
+                    elif isinstance(i,IntArray):  
+                        try:
+                            out_.append(Int(i[item]))
+                        except:
+                            pass
+                    else:
                         pass
+                        
                 out=out_
             elif item is None:
-                out=sum((i for i in out if isinstance(i,List)),[])
+                out=[j for i in ( map(Long,i)  if isinstance(i,LongArray) else map(Byte,i) if isinstance(i,ByteArray) else map(Int,i) if isinstance(i,IntArray) else i for i in out if isinstance(i,(List,ByteArray,IntArray,LongArray))) for j in i]
             else:
                 itemname,tag=item
                 if itemname is not None:
