@@ -1,3 +1,4 @@
+from copy import deepcopy
 from .tag import *
 from .literal.parser import Parser,tokenize
 __all__ = ('NBT_Path',)
@@ -93,8 +94,8 @@ class NBT_Path(tuple):
             return type(self)(self.parts+((key,None),))
         if isinstance(key,Compound):
             *p,(q,r)=self.parts
-            r=r or {}
-            r=Compound(r.copy())
+            r=r if r is not None else Compound()
+            r=deepcopy(r)
             r.merge(key)
             return type(self)((*p,(q,r)))
     def __str__(self):
@@ -153,8 +154,8 @@ class NBT_Path(tuple):
             return type(this)(this.parts+that.parts)
         *a,(b,c)=this
         (d,e),*f=that
-        c=c or {}
-        c=Compound(c.copy())
+        c=c if c is not None else Compound()
+        c=deepcopy(c)
         c.merge(e)
         return type(this)((*a,(b,c),*f))
     __sub__=join
