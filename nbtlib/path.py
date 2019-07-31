@@ -10,7 +10,7 @@ def slice_nbt(literal):
 
     cursor = parser.token_span[1]
     leftover = literal[cursor:]
-
+    assert (literal[cursor-1]=="}")
     return tag,leftover
 
 
@@ -34,33 +34,40 @@ def parser(string):
     if string.startswith("{"):
         tag,string=slice_nbt(string)
         yield (None,tag)
-        
-    while string:
-        if string.startswith("["):#[]
-            r=re.match("\[(-?\d+)?\]\.?",string)
+    elif string!=".":
+        string="."+string
+    while string and string!=".":
+        if string.startswith("[{") or string.startswith(".[{"):#[]
+            if string[0]==".":
+                string=string[1:]
+            string=string[1:]
+            tag,string=slice_nbt(string)
+            yield tag
+            assert(string[0]=="]")
+            string=string[1:]
+        elif string.startswith("[") or string.startswith(".["):#[]
+            r=re.match("\.?\[(-?\d+)?\]",string)
             x=r.groups()[0]
             if x:x=int(x)
             string=string[r.end():]
             yield x
         else:
-            if string.startswith('"'):#""
-                r=re.match(r'\"((\\\"|\\\\|[^\\\"])*)\"',string)
+            if string.startswith('."'):#""
+                r=re.match(r'\.\"((\\\"|\\\\|[^\\\"])*)\"',string)
                 t=r.groups()[0]
                 t="\"".join("\\".join(t.split("\\\\")).split("\\\""))
                 string=string[r.end():]
 
             else:
-                r=re.match('[^\[\]\{\}\. \"]+',string)
-                t=r.group()
+                r=re.match('\\.[^\[\]\{\}\. \"]+',string)
+                t=r.group()[1:]
                 string=string[r.end():]
             if string.startswith('{'):
                 tag,string=slice_nbt(string)
                 yield (t,tag)
             else:
                 yield (t,None)
-            if string.startswith("."):
-                string=string[1:]
-        
+       
 class NBT_Path(tuple):
     def __new__(cls,args=""):
         args=args or ((None,None),)
@@ -98,11 +105,21 @@ class NBT_Path(tuple):
             r=deepcopy(r)
             r.merge(key)
             return type(self)((*p,(q,r)))
+        if isinstance(key,list) and len(key)==1 :
+            key=key[0]
+            if isinstance(key,str):
+                key,emp=slice_nbt(key)
+                assert (not emp)
+            if isinstance(key,(Compound,int,type(None))):
+                return type(self)(self.parts+(key,))
+        if isinstance(key,list) and len(key)==0 :
+            return type(self)(self.parts+(None,))
+
     def __str__(self):
         out=[]
         for item in self:
             
-            if isinstance (item,int):
+            if isinstance (item,(int,Compound)):
                 out +=f"[{item}]."
             elif item is None:
                 out+='[].'
@@ -151,6 +168,8 @@ class NBT_Path(tuple):
                 out=out_
             elif item is None:
                 out=[j for i in ( map(Long,i)  if isinstance(i,LongArray) else map(Byte,i) if isinstance(i,ByteArray) else map(Int,i) if isinstance(i,IntArray) else i for i in out if isinstance(i,(List,ByteArray,IntArray,LongArray))) for j in i]
+            elif isinstance(item,Compound):
+                out=[i for j in out if isinstance(j,List) for i in j if match(i,item)]
             else:
                 itemname,tag=item
                 if itemname is not None:
@@ -169,7 +188,7 @@ class NBT_Path(tuple):
             that=type(this)(that)
         if that.parts==((None,None),):
             return this
-        if isinstance(that.parts[0],(int,type(None))) or that.parts[0][0] is not None:
+        if isinstance(that.parts[0],(int,type(None),Compound)) or that.parts[0][0] is not None:
             return type(this)(this.parts+that.parts)
         *a,(b,c)=this
         (d,e),*f=that
