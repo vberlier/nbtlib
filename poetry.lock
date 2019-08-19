@@ -106,18 +106,21 @@ description = "pytest: simple powerful testing with Python"
 name = "pytest"
 optional = false
 python-versions = ">=3.5"
-version = "5.0.1"
+version = "5.1.0"
 
 [package.dependencies]
 atomicwrites = ">=1.0"
 attrs = ">=17.4.0"
 colorama = "*"
-importlib-metadata = ">=0.12"
 more-itertools = ">=4.0.0"
 packaging = "*"
 pluggy = ">=0.12,<1.0"
 py = ">=1.5.0"
 wcwidth = "*"
+
+[package.dependencies.importlib-metadata]
+python = "<3.8"
+version = ">=0.12"
 
 [[package]]
 category = "dev"
@@ -156,7 +159,7 @@ python-versions = ">=2.7"
 version = "0.5.1"
 
 [metadata]
-content-hash = "4cb9c550e0d882bf3ce640ea1f1681a15d0cfffa986b8015709118ce7526a033"
+content-hash = "9b648dd795cb493ed54ab936509e81ee88b86b0e2c9d25461f217063fe4c1420"
 python-versions = "^3.6"
 
 [metadata.hashes]
@@ -171,7 +174,7 @@ pluggy = ["0825a152ac059776623854c1543d65a4ad408eb3d33ee114dff91e57ec6ae6fc", "b
 py = ["bf92637198836372b520efcba9e020c330123be8ce527e535d185ed4b6f45694", "e76826342cefe3c3d5f7e8ee4316b80d1dd8a300781612ddbc765c17ba25a6c6"]
 py-cpuinfo = ["6615d4527118d4ea1db4d86dac4340725b3906aa04bf36b7902f7af4425fb25f"]
 pyparsing = ["1873c03321fc118f4e9746baf201ff990ceb915f433f23b395f5580d1840cb2a", "9b6323ef4ab914af344ba97510e966d64ba91055d6b9afa6b30799340e89cc03"]
-pytest = ["6ef6d06de77ce2961156013e9dff62f1b2688aa04d0dc244299fe7d67e09370d", "a736fed91c12681a7b34617c8fcefe39ea04599ca72c608751c31d89579a3f77"]
+pytest = ["3805d095f1ea279b9870c3eeae5dddf8a81b10952c8835cd628cf1875b0ef031", "abc562321c2d190dd63c2faadf70b86b7af21a553b61f0df5f5e1270717dc5a3"]
 pytest-benchmark = ["4512c6805318d07926efcb3b39f7b98a10d035305a93edfd5329c86cbf9cfbf7", "ab851115ce022639173b9497d4a4183a1d8fe9cdcf8fab9d8a57607008aedd3d"]
 six = ["3350809f0555b11f552448330d0b52d5f24c91a322ea4a15ef22629740f3761c", "d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73"]
 wcwidth = ["3df37372226d6e63e1b1e1eda15c594bca98a22d33a23832a90998faa96bc65e", "f4ebe71925af7b40a864553f761ed559b43544f8f71746c2d756c7fe788ade7c"]
