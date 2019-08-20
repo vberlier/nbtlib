@@ -487,7 +487,8 @@ class List(Base, list, metaclass=ListMeta):
         return all(item.match(other_item) for item, other_item in zip(self, other))
 
     def __setitem__(self, key, value):
-        super().__setitem__(key, self.cast_item(value))
+        super().__setitem__(key, [self.cast_item(item) for item in value]
+                                 if isinstance(key, slice) else self.cast_item(value))
 
     def append(self, value):
         super().append(self.cast_item(value))
