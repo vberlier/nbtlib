@@ -163,6 +163,12 @@ class Base:
     def write(self, buff, byteorder='big'):
         """Write the binary representation of the tag to a file-like object."""
 
+    def match(self, other):
+        """Check whether the tag recursively matches a specific subset of values."""
+        if hasattr(other, 'tag_id') and self.tag_id != other.tag_id:
+            return False
+        return self == other
+
     def __repr__(self):
         if self.tag_id is not None:
             return f'{self.__class__.__name__}({super().__repr__()})'
@@ -477,6 +483,9 @@ class List(Base, list, metaclass=ListMeta):
         for elem in self:
             elem.write(buff, byteorder)
 
+    def match(self, other):
+        return all(item.match(other_item) for item, other_item in zip(self, other))
+
     def __setitem__(self, key, value):
         super().__setitem__(key, self.cast_item(value))
 
@@ -546,6 +555,11 @@ class Compound(Base, dict):
             write_string(name, buff, byteorder)
             tag.write(buff, byteorder)
         buff.write(self.end_tag)
+
+    def match(self, other):
+        return self.keys() >= other.keys() and all(
+            self[key].match(value) for key, value in other.items()
+        )
 
     def merge(self, other):
         """Recursively merge tags from another compound."""
