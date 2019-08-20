@@ -484,7 +484,10 @@ class List(Base, list, metaclass=ListMeta):
             elem.write(buff, byteorder)
 
     def match(self, other):
-        return all(item.match(other_item) for item, other_item in zip(self, other))
+        return len(self) == len(other) and all(
+            item.match(other_item)
+            for item, other_item in zip(self, other)
+        )
 
     def __setitem__(self, key, value):
         super().__setitem__(key, [self.cast_item(item) for item in value]
