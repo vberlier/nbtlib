@@ -42,6 +42,7 @@ __all__ = ['End', 'Byte', 'Short', 'Int', 'Long', 'Float', 'Double',
 from struct import Struct, error as StructError
 import numpy as np
 
+import nbtlib
 from .literal.serializer import serialize_tag
 
 
@@ -489,9 +490,33 @@ class List(Base, list, metaclass=ListMeta):
             for item, other_item in zip(self, other)
         )
 
+    def get(self, key, default=None):
+        if isinstance(key, nbtlib.Path):
+            return (key.get(self) or [default])[0]
+        return super().get(key, default)
+
+    def get_all(self, key):
+        if isinstance(key, nbtlib.Path):
+            return key.get(self)
+        return list(filter(None, [self.get(key)]))
+
+    def __getitem__(self, key):
+        if isinstance(key, nbtlib.Path):
+            return key.get(self)[0]
+        return super().__getitem__(key)
+
     def __setitem__(self, key, value):
-        super().__setitem__(key, [self.cast_item(item) for item in value]
-                                 if isinstance(key, slice) else self.cast_item(value))
+        if isinstance(key, nbtlib.Path):
+            key.set(self, value)
+        else:
+            super().__setitem__(key, [self.cast_item(item) for item in value]
+                                     if isinstance(key, slice) else self.cast_item(value))
+
+    def __delitem__(self, key):
+        if isinstance(key, nbtlib.Path):
+            key.delete(self)
+        else:
+            super().__delitem__(key)
 
     def append(self, value):
         super().append(self.cast_item(value))
@@ -564,6 +589,38 @@ class Compound(Base, dict):
         return self.keys() >= other.keys() and all(
             self[key].match(value) for key, value in other.items()
         )
+
+    def get(self, key, default=None):
+        if isinstance(key, nbtlib.Path):
+            return (key.get(self) or [default])[0]
+        return super().get(key, default)
+
+    def get_all(self, key):
+        if isinstance(key, nbtlib.Path):
+            return key.get(self)
+        return list(filter(None, [self.get(key)]))
+
+    def __contains__(self, item):
+        if isinstance(item, nbtlib.Path):
+            return bool(item.get(self))
+        return super().__contains__(item)
+
+    def __getitem__(self, key):
+        if isinstance(key, nbtlib.Path):
+            return key.get(self)[0]
+        return super().__getitem__(key)
+
+    def __setitem__(self, key, value):
+        if isinstance(key, nbtlib.Path):
+            key.set(self, value)
+        else:
+            super().__setitem__(key, value)
+
+    def __delitem__(self, key):
+        if isinstance(key, nbtlib.Path):
+            key.delete(self)
+        else:
+            super().__delitem__(key)
 
     def merge(self, other):
         """Recursively merge tags from another compound."""
