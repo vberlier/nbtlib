@@ -631,6 +631,16 @@ class Compound(Base, dict):
             else:
                 self[key] = value
 
+    def with_defaults(self, other):
+        """Return a new compound with recursively applied default values."""
+        result = Compound(other)
+        for key, value in self.items():
+            if key in result and (isinstance(result[key], Compound)
+                                  and isinstance(value, dict)):
+                value = result[key].with_defaults(value)
+            result[key] = value
+        return result
+
 
 class IntArray(Array):
     """Nbt tag representing an array of signed integers."""
