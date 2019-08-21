@@ -163,7 +163,7 @@ def parse_parts(path):
                 yield ListIndex(index=None)
                 yield CompoundMatch(tag[0])
             else:
-                raise InvalidPath(f'Brackets should only contain an integer or a compound')
+                raise InvalidPath('Brackets should only contain an integer or a compound')
 
         elif isinstance(tag, Compound):
             yield CompoundMatch(tag)
