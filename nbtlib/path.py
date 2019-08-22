@@ -149,6 +149,49 @@ class Path(tuple):
         return '.'.join(filter(None, segments))
 
 
+def parse_accessors(path):
+    try:
+        parser = Parser(tokenize(path))
+    except InvalidLiteral:
+        return ()
+
+    while True:
+        try:
+            tag = parser.parse()
+        except InvalidLiteral as exc:
+            raise InvalidPath(f'Invalid path at position {exc.args[0][0]}') from exc
+
+        if isinstance(tag, String):
+            if parser.current_token.type == 'QUOTED_STRING':
+                yield NamedKey(tag[:])
+            else:
+                yield from (NamedKey(key) for key in tag.split('.') if key)
+
+        elif isinstance(tag, List):
+            if not tag:
+                yield ListIndex(index=None)
+            elif len(tag) != 1:
+                raise InvalidPath('Brackets should only contain one element')
+            elif issubclass(tag.subtype, Int):
+                yield ListIndex(int(tag[0]))
+            elif issubclass(tag.subtype, Compound):
+                yield ListIndex(index=None)
+                yield CompoundMatch(tag[0])
+            else:
+                raise InvalidPath('Brackets should only contain an integer or a compound')
+
+        elif isinstance(tag, Compound):
+            yield CompoundMatch(tag)
+
+        else:
+            raise InvalidPath(f'Invalid path element {tag}')
+
+        try:
+            parser.next()
+        except InvalidLiteral:
+            break
+
+
 def extend_accessors(accessors, new_accessor):
     if isinstance(new_accessor, CompoundMatch) and accessors:
         *except_last, last_accessor = accessors
@@ -220,46 +263,3 @@ class CompoundMatch(NamedTuple):
 
     def __str__(self):
         return str(self.compound)
-
-
-def parse_accessors(path):
-    try:
-        parser = Parser(tokenize(path))
-    except InvalidLiteral:
-        return ()
-
-    while True:
-        try:
-            tag = parser.parse()
-        except InvalidLiteral as exc:
-            raise InvalidPath(f'Invalid path at position {exc.args[0][0]}') from exc
-
-        if isinstance(tag, String):
-            if parser.current_token.type == 'QUOTED_STRING':
-                yield NamedKey(tag[:])
-            else:
-                yield from (NamedKey(key) for key in tag.split('.') if key)
-
-        elif isinstance(tag, List):
-            if not tag:
-                yield ListIndex(index=None)
-            elif len(tag) != 1:
-                raise InvalidPath('Brackets should only contain one element')
-            elif issubclass(tag.subtype, Int):
-                yield ListIndex(int(tag[0]))
-            elif issubclass(tag.subtype, Compound):
-                yield ListIndex(index=None)
-                yield CompoundMatch(tag[0])
-            else:
-                raise InvalidPath('Brackets should only contain an integer or a compound')
-
-        elif isinstance(tag, Compound):
-            yield CompoundMatch(tag)
-
-        else:
-            raise InvalidPath(f'Invalid path element {tag}')
-
-        try:
-            parser.next()
-        except InvalidLiteral:
-            break
