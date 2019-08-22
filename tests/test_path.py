@@ -16,7 +16,7 @@ path_strings_to_part_keys = [
 
 @pytest.mark.parametrize('path_string, keys', path_strings_to_part_keys)
 def test_path_with_named_keys(path_string, keys):
-    assert tuple(p.key for p in Path(path_string).parts) == keys
+    assert tuple(p.key for p in Path(path_string)) == keys
 
 
 @pytest.fixture(scope='module')
@@ -158,4 +158,27 @@ normalized_path_strings = [
 
 @pytest.mark.parametrize('path_string', normalized_path_strings)
 def test_normalized_path_strings(path_string):
-    assert Path(path_string) == path_string
+    assert str(Path(path_string)) == path_string
+
+
+equivalent_paths = [
+    [Path(p) for p in paths]
+    for paths in [
+        ['a.b.c', 'a b c', 'a. b. c', '"a""b""c"', ' "a"  ..  "b" .c  ', 'a\nb\nc'],
+        ['[]{a: 1}', '[{a: 1}]', '[{a: 1}]{}', '[{a: 42}]{a: 1}', '[{}]{a: 42}{}{a: 1}'],
+        ['{a: {foo: "bar"}, value: 0}', '{a: {foo: "bar"}, value: 0}{a: {foo: "bar"}}'],
+        ['{a: {b: {c: 1}, foo: 42}}', '{a: {b: {c: 1}}}{a: {foo: 42}}', '{a: {b: {c: "thing"}, foo: 42}}{a: {b: {c: 1}}}'],
+    ]
+]
+
+
+equivalent_path_pairs = [
+    (path1, path2)
+    for paths in equivalent_paths
+    for path1, path2 in zip(paths, paths[1:])
+]
+
+
+@pytest.mark.parametrize('path1, path2', equivalent_path_pairs)
+def test_equivalent_paths(path1, path2):
+    assert path1 == path2

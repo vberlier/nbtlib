@@ -1,7 +1,7 @@
 """This module defines utilities for accessing deeply nested properties.
 
 Exported items:
-    Path        -- Class representing an nbt path, inherits from `str`
+    Path        -- Class representing an nbt path, inherits from `tuple`
     InvalidPath -- Exception raised when creating an invalid nbt path
 """
 
@@ -20,24 +20,81 @@ class InvalidPath(ValueError):
     """Raised when creating an invalid nbt path."""
 
 
-class Path(str):
+class Path(tuple):
     """Represents an nbt path.
 
     Instances of this class can be used for indexing into list and compound
     tags for accessing deeply nested properties.
     """
 
-    __slots__ = ('parts',)
+    __slots__ = ()
 
     def __new__(cls, path=None):
-        return cls.from_parts(parse_parts(path) if path else ())
+        if path is None:
+            return cls.from_parts()
+
+        if isinstance(path, Path):
+            return cls.from_parts(path)
+
+        parts = ()
+        for part in parse_parts(path):
+            parts = extend_parts(parts, part)
+
+        return cls.from_parts(parts)
+
+    def __getitem__(self, key):
+        if isinstance(key, Path):
+            new_parts = tuple(key)
+        elif isinstance(key, str):
+            new_parts = (NamedKey(key),)
+        elif isinstance(key, int):
+            new_parts = (ListIndex(index=key),)
+        elif isinstance(key, slice) and all(n is None for n in [key.start, key.stop, key.step]):
+            new_parts = (ListIndex(index=None),)
+        elif isinstance(key, Compound):
+            new_parts = (CompoundMatch(key),)
+        else:
+            raise KeyError(key)
+
+        parts = tuple(self)
+
+        for part in new_parts:
+            parts = extend_parts(parts, part)
+
+        return self.from_parts(parts)
+
+    def __add__(self, other):
+        if isinstance(other, Path):
+            return self[other]
+        elif isinstance(other, str):
+            return self[Path(other)]
+        else:
+            return NotImplemented
+
+    def __radd__(self, other):
+        if isinstance(other, Path):
+            return other[self]
+        elif isinstance(other, str):
+            return Path(other)[self]
+        else:
+            return NotImplemented
+
+    def __eq__(self, other):
+        if isinstance(other, str):
+            other = Path(other)
+        return super().__eq__(other)
+
+    def __ne__(self, other):
+        if isinstance(other, str):
+            other = Path(other)
+        return super().__ne__(other)
+
+    def __hash__(self):
+        return super().__hash__()
 
     @classmethod
-    def from_parts(cls, parts):
-        parts = tuple(parts)
-        self = super().__new__(cls, join_parts(parts))
-        self.parts = parts
-        return self
+    def from_parts(cls, parts=()):
+        return super().__new__(cls, parts)
 
     def traverse(self, tag):
         tags = [(None, tag)]
@@ -45,7 +102,7 @@ class Path(str):
         setter = None
         deleter = None
 
-        for part in self.parts:
+        for part in self:
             setter = getattr(part, 'set', setter)
             deleter = getattr(part, 'delete', deleter)
 
@@ -69,7 +126,41 @@ class Path(str):
             deleter(tags)
 
     def __repr__(self):
-        return f'{self.__class__.__name__}({super().__repr__()})'
+        return f'{self.__class__.__name__}({str(self)!r})'
+
+    def __str__(self):
+        segments = ['']
+
+        for part in self:
+            segment = str(part)
+
+            if not segment or segment.startswith('['):
+                segments[-1] += segment
+
+            elif segment.startswith('{'):
+                if segments[-1].endswith('[]'):
+                    segments[-1] = segments[-1][:-2] + f'[{segment}]'
+                else:
+                    segments[-1] += segment
+
+            else:
+                segments.append(segment)
+
+        return '.'.join(filter(None, segments))
+
+
+def extend_parts(parts, new_part):
+    if isinstance(new_part, CompoundMatch) and parts:
+        *except_last, last_part = parts
+
+        if isinstance(last_part, CompoundMatch):
+            return tuple(except_last) + (
+                CompoundMatch(new_part.compound.with_defaults(last_part.compound)),
+            )
+        if isinstance(last_part, ListIndex) and last_part.index is not None:
+            raise InvalidPath('Can\'t match a compound on list items '
+                              f'selected with {last_part!r}')
+    return parts + (new_part,)
 
 
 class NamedKey(NamedTuple):
@@ -132,9 +223,6 @@ class CompoundMatch(NamedTuple):
 
 
 def parse_parts(path):
-    if isinstance(path, Path):
-        yield from path.parts
-
     try:
         parser = Parser(tokenize(path))
     except InvalidLiteral:
@@ -175,22 +263,3 @@ def parse_parts(path):
             parser.next()
         except InvalidLiteral:
             break
-
-
-def join_parts(parts):
-    segments = ['']
-
-    for p in parts:
-        segment = str(p)
-
-        if not segment or segment.startswith('['):
-            segments[-1] += segment
-        elif segment.startswith('{'):
-            if segments[-1].endswith('[]'):
-                segments[-1] = segments[-1][:-2] + f'[{segment}]'
-            else:
-                segments[-1] += segment
-        else:
-            segments.append(segment)
-
-    return '.'.join(filter(None, segments))
