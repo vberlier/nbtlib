@@ -319,14 +319,14 @@ class Array(Base, np.ndarray):
     Class attributes:
         item_type    -- The numpy array data type
         array_prefix -- The literal array prefix
-        item_suffix  -- The literal item suffix
+        wrapper      -- The tag used to wrap the integer
     """
 
     __slots__ = ()
     serializer = 'array'
     item_type = None
     array_prefix = None
-    item_suffix = ''
+    wrapper = None
 
     def __new__(cls, value=None, *, length=0, byteorder='big'):
         item_type = cls.item_type[byteorder]
@@ -345,11 +345,14 @@ class Array(Base, np.ndarray):
         array = self if self.item_type[byteorder] is self.dtype else self.byteswap()
         buff.write(array.tobytes())
 
+    def __getitem__(self, index):
+        return int.__new__(self.wrapper, super().__getitem__(index))
+
     def __bool__(self):
         return all(self)
 
     def __repr__(self):
-        return f'{self.__class__.__name__}([{", ".join(map(str, self))}])'
+        return f'{self.__class__.__name__}([{", ".join(int.__str__(el) for el in self)}])'
 
 
 class ByteArray(Array):
@@ -359,7 +362,7 @@ class ByteArray(Array):
     tag_id = 7
     item_type = get_format(np.dtype, 'b')
     array_prefix = 'B'
-    item_suffix = 'B'
+    wrapper = Byte
 
 
 class String(Base, str):
@@ -564,6 +567,7 @@ class IntArray(Array):
     tag_id = 11
     item_type = get_format(np.dtype, 'i4')
     array_prefix = 'I'
+    wrapper = Int
 
 
 class LongArray(Array):
@@ -573,4 +577,4 @@ class LongArray(Array):
     tag_id = 12
     item_type = get_format(np.dtype, 'i8')
     array_prefix = 'L'
-    item_suffix = 'L'
+    wrapper = Long
