@@ -256,7 +256,7 @@ class ListIndex(NamedTuple):
 
 
 class CompoundMatch(NamedTuple):
-    compound: Optional[Compound]
+    compound: Compound
 
     def get(self, tags):
         return [(parent, tag) for parent, tag in tags if tag.match(self.compound)]
