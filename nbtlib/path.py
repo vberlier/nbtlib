@@ -183,6 +183,9 @@ def parse_accessors(path):
         elif isinstance(tag, Compound):
             yield CompoundMatch(tag)
 
+        elif parser.current_token.type == 'NUMBER':
+            yield from (NamedKey(key) for key in parser.current_token.value.split('.') if key)
+
         else:
             raise InvalidPath(f'Invalid path element {tag}')
 
