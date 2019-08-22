@@ -239,7 +239,7 @@ class ListIndex(NamedTuple):
                     for _, tag in tags
                     for i, item in enumerate(tag)]
         return [((tag, self.index), tag[self.index])
-                for _, tag in tags if self.index < len(tag)]
+                for _, tag in tags if -len(tag) <= self.index < len(tag)]
 
     def set(self, tags, value):
         for (parent, i), _ in tags:
