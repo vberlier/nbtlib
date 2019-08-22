@@ -132,7 +132,7 @@ class Serializer:
 
     def serialize_array(self, tag):
         """Return the literal representation of an array tag."""
-        elements = self.comma.join(f'{el}{tag.item_suffix}' for el in tag)
+        elements = self.comma.join(map(str, tag)).upper()
         return f'[{tag.array_prefix}{self.semicolon}{elements}]'
 
     def serialize_string(self, tag):
