@@ -149,6 +149,16 @@ class Path(tuple):
         return '.'.join(filter(None, segments))
 
 
+def can_be_converted_to_int(string):
+    if not isinstance(string, str):
+        return False
+    try:
+        int(string)
+        return True
+    except ValueError:
+        return False
+
+
 def parse_accessors(path):
     try:
         parser = Parser(tokenize(path))
@@ -172,11 +182,11 @@ def parse_accessors(path):
                 yield ListIndex(index=None)
             elif len(tag) != 1:
                 raise InvalidPath('Brackets should only contain one element')
-            elif issubclass(tag.subtype, Int):
-                yield ListIndex(int(tag[0]))
             elif issubclass(tag.subtype, Compound):
                 yield ListIndex(index=None)
                 yield CompoundMatch(tag[0])
+            elif issubclass(tag.subtype, Int) or can_be_converted_to_int(tag[0]):
+                yield ListIndex(int(tag[0]))
             else:
                 raise InvalidPath('Brackets should only contain an integer or a compound')
 
