@@ -485,10 +485,11 @@ class List(Base, list, metaclass=ListMeta):
             elem.write(buff, byteorder)
 
     def match(self, other):
-        return len(self) == len(other) and all(
-            item.match(other_item)
-            for item, other_item in zip(self, other)
-        )
+        if not isinstance(other, list):
+            return False
+        if not other:
+            return not self
+        return all(any(item.match(other_item) for item in self) for other_item in other)
 
     def get(self, key, default=None):
         if isinstance(key, nbtlib.Path):

@@ -27,7 +27,7 @@ def bigtest():
 @pytest.fixture
 def biglist():
     return parse_nbt("""[
-        [{a: [{value: 0}, {value: 1, thing: 42}], flag: 1}],
+        [{a: [{value: 0}, {value: 1, thing: 42}], flag: 1, first: 99}],
         [{spam: {egg: [{foo: 0}, {foo: 2}], checked: 1b}}, {spam: {egg: [{foo: 7}]}}],
         [{a: [{value: 1}, {value: 2, thing: 42}]}, {a: [], flag: 1}],
         [{a: [{value: 3, thing: 42}], flag: 1}],
@@ -69,10 +69,11 @@ biglist_path_to_items = [
     ('[][{flag: 1}].a[].value', [0, 1, 3]),
     ('[][].a[{thing: 42}].value', [1, 2, 3]),
     ('[][{a: []}].flag', [1]),
-    ('[][{a: [{}, {}]}].flag', [1]),
-    ('[][{a: [{}, {}]}].a[].value', [0, 1, 1, 2]),
-    ('[][{a: [{}]}].a[].value', [3]),
-    ('[1][{a: [{}]}].a[].value', []),
+    ('[][{a: [{}]}].flag', [1, 1]),
+    ('[][{a: [{thing: 42}]}].a[].value', [0, 1, 1, 2, 3]),
+    ('[][{a: [{thing: 0}]}].a[].value', []),
+    ('[][{a: [{value: 1}]}].a[].value', [0, 1, 1, 2]),
+    ('[][{a: [{value: 1}, {value: 0}]}].first', [99]),
 ]
 
 
