@@ -635,9 +635,9 @@ class Compound(Base, dict):
         """Return a new compound with recursively applied default values."""
         result = Compound(other)
         for key, value in self.items():
-            if key in result and (isinstance(result[key], Compound)
-                                  and isinstance(value, dict)):
-                value = result[key].with_defaults(value)
+            if key in result and (isinstance(value, Compound)
+                                  and isinstance(result[key], dict)):
+                value = value.with_defaults(result[key])
             result[key] = value
         return result
 
