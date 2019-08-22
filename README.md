@@ -133,6 +133,54 @@ assert serialize_tag(my_compound) == '{foo: ["hello", "world"], bar: [I; 1, 2, 3
 For more details on nbt literals check out the "[Usage](https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb)"
 notebook.
 
+### Nbt paths
+
+Nbt paths can be used to access deeply nested properties in nbt data. The implementation is based on information available on the [Minecraft wiki](https://minecraft.gamepedia.com/Commands/data#NBT_path).
+
+```python
+from nbtlib import parse_nbt, Path
+
+data = parse_nbt('{a: [{b: {c: 42}}]}')
+assert data['a'][0]['b']['c'] == 42
+assert data[Path('a[0].b.c')] == 42
+```
+
+You can retrieve, modify and delete multiple properties at the same time.
+
+```python
+from nbtlib import parse_nbt, Path
+from nbtlib.tag import Int
+
+data = parse_nbt('{foo: [{a: 1, b: {c: 42}}, {a: 2, b: {c: 0}}]}')
+
+data[Path('foo[].a')] = Int(99)
+assert str(data) == '{foo: [{a: 99, b: {c: 42}}, {a: 99, b: {c: 0}}]}'
+
+assert data.get_all(Path('foo[].b.c')) == [42, 0]
+
+del data[Path('foo[].b{c: 0}')]
+assert str(data) == '{foo: [{a: 99, b: {c: 42}}, {a: 99}]}'
+```
+
+Nbt paths are immutable but can be manipulated and combined together to form new paths.
+
+```python
+from nbtlib import Path
+from nbtlib.tag import Compound
+
+path = Path()['hello']['world']
+assert path[:][Compound({'a': Int(0)})] == 'hello.world[{a: 0}]'
+
+assert path + path == 'hello.world.hello.world'
+assert sum('abcdef', Path()) == 'a.b.c.d.e.f'
+
+assert Path()[0] + 'foo{a: 1}' + '{b: 2}.bar' == '[0].foo{a: 1, b: 2}.bar'
+
+assert path['key.with.dots'] == 'hello.world."key.with.dots"'
+assert path + 'key.with.dots' == 'hello.world.key.with.dots'
+
+```
+
 ## Command-line interface
 
 The package comes with a small CLI that makes it easy to quickly perform
