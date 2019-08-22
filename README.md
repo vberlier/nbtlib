@@ -15,6 +15,7 @@ python 3.6.
 - Parse and serialize raw nbt data
 - Define tag schemas that automatically enforce predefined tag types
 - Convert nbt between binary form and literal notation
+- Use nbt paths to access deeply nested properties
 - Includes a CLI to quickly perform read/write/merge operations
 
 ## Installation
