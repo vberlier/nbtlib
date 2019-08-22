@@ -6,7 +6,7 @@ Exported items:
 """
 
 
-__all__ = ['Path', 'InvalidPath']
+__all__ = ['Path', 'InvalidPath', 'NamedKey', 'ListIndex', 'CompoundMatch']
 
 
 import re
@@ -31,37 +31,37 @@ class Path(tuple):
 
     def __new__(cls, path=None):
         if path is None:
-            return cls.from_parts()
+            return cls.from_accessors()
 
         if isinstance(path, Path):
-            return cls.from_parts(path)
+            return cls.from_accessors(path)
 
-        parts = ()
-        for part in parse_parts(path):
-            parts = extend_parts(parts, part)
+        accessors = ()
+        for accessor in parse_accessors(path):
+            accessors = extend_accessors(accessors, accessor)
 
-        return cls.from_parts(parts)
+        return cls.from_accessors(accessors)
 
     def __getitem__(self, key):
         if isinstance(key, Path):
-            new_parts = tuple(key)
+            new_accessors = tuple(key)
         elif isinstance(key, str):
-            new_parts = (NamedKey(key),)
+            new_accessors = (NamedKey(key),)
         elif isinstance(key, int):
-            new_parts = (ListIndex(index=key),)
+            new_accessors = (ListIndex(index=key),)
         elif isinstance(key, slice) and all(n is None for n in [key.start, key.stop, key.step]):
-            new_parts = (ListIndex(index=None),)
+            new_accessors = (ListIndex(index=None),)
         elif isinstance(key, Compound):
-            new_parts = (CompoundMatch(key),)
+            new_accessors = (CompoundMatch(key),)
         else:
             raise KeyError(key)
 
-        parts = tuple(self)
+        accessors = tuple(self)
 
-        for part in new_parts:
-            parts = extend_parts(parts, part)
+        for accessor in new_accessors:
+            accessors = extend_accessors(accessors, accessor)
 
-        return self.from_parts(parts)
+        return self.from_accessors(accessors)
 
     def __add__(self, other):
         if isinstance(other, Path):
@@ -93,8 +93,8 @@ class Path(tuple):
         return super().__hash__()
 
     @classmethod
-    def from_parts(cls, parts=()):
-        return super().__new__(cls, parts)
+    def from_accessors(cls, accessors=()):
+        return super().__new__(cls, accessors)
 
     def traverse(self, tag):
         tags = [(None, tag)]
@@ -102,11 +102,11 @@ class Path(tuple):
         setter = None
         deleter = None
 
-        for part in self:
-            setter = getattr(part, 'set', setter)
-            deleter = getattr(part, 'delete', deleter)
+        for accessor in self:
+            setter = getattr(accessor, 'set', setter)
+            deleter = getattr(accessor, 'delete', deleter)
 
-            tags = part.get(tags)
+            tags = accessor.get(tags)
 
         return tags, setter, deleter
 
@@ -131,8 +131,8 @@ class Path(tuple):
     def __str__(self):
         segments = ['']
 
-        for part in self:
-            segment = str(part)
+        for accessor in self:
+            segment = str(accessor)
 
             if not segment or segment.startswith('['):
                 segments[-1] += segment
@@ -149,18 +149,18 @@ class Path(tuple):
         return '.'.join(filter(None, segments))
 
 
-def extend_parts(parts, new_part):
-    if isinstance(new_part, CompoundMatch) and parts:
-        *except_last, last_part = parts
+def extend_accessors(accessors, new_accessor):
+    if isinstance(new_accessor, CompoundMatch) and accessors:
+        *except_last, last_accessor = accessors
 
-        if isinstance(last_part, CompoundMatch):
+        if isinstance(last_accessor, CompoundMatch):
             return tuple(except_last) + (
-                CompoundMatch(new_part.compound.with_defaults(last_part.compound)),
+                CompoundMatch(new_accessor.compound.with_defaults(last_accessor.compound)),
             )
-        if isinstance(last_part, ListIndex) and last_part.index is not None:
+        if isinstance(last_accessor, ListIndex) and last_accessor.index is not None:
             raise InvalidPath('Can\'t match a compound on list items '
-                              f'selected with {last_part!r}')
-    return parts + (new_part,)
+                              f'selected with {last_accessor!r}')
+    return accessors + (new_accessor,)
 
 
 class NamedKey(NamedTuple):
@@ -222,7 +222,7 @@ class CompoundMatch(NamedTuple):
         return str(self.compound)
 
 
-def parse_parts(path):
+def parse_accessors(path):
     try:
         parser = Parser(tokenize(path))
     except InvalidLiteral:

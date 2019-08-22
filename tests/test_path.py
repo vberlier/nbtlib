@@ -3,7 +3,7 @@ import pytest
 from nbtlib import Path, parse_nbt, load
 
 
-path_strings_to_part_keys = [
+path_strings_to_keys = [
     ('', ()),
     ('hello', ('hello',)),
     ('hello.world', ('hello', 'world')),
@@ -14,7 +14,7 @@ path_strings_to_part_keys = [
 ]
 
 
-@pytest.mark.parametrize('path_string, keys', path_strings_to_part_keys)
+@pytest.mark.parametrize('path_string, keys', path_strings_to_keys)
 def test_path_with_named_keys(path_string, keys):
     assert tuple(p.key for p in Path(path_string)) == keys
 
