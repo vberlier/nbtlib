@@ -494,33 +494,36 @@ class List(Base, list, metaclass=ListMeta):
             return not self
         return all(any(item.match(other_item) for item in self) for other_item in other)
 
-    def get(self, key, default=None):
-        if isinstance(key, nbtlib.Path):
-            return (key.get(self) or [default])[0]
-        return super().get(key, default)
+    def get(self, index, default=None):
+        return (self.get_all(index) or [default])[0]
 
-    def get_all(self, key):
-        if isinstance(key, nbtlib.Path):
-            return key.get(self)
-        return list(filter(None, [self.get(key)]))
+    def get_all(self, index):
+        try:
+            return (index.get(self) if isinstance(index, nbtlib.Path) else
+                    [super().__getitem__(index)])
+        except IndexError:
+            return []
 
-    def __getitem__(self, key):
-        if isinstance(key, nbtlib.Path):
-            return key.get(self)[0]
-        return super().__getitem__(key)
+    def __getitem__(self, index):
+        if isinstance(index, nbtlib.Path):
+            values = index.get(self)
+            if not values:
+                raise IndexError(index)
+            return values[0]
+        return super().__getitem__(index)
 
-    def __setitem__(self, key, value):
-        if isinstance(key, nbtlib.Path):
-            key.set(self, value)
+    def __setitem__(self, index, value):
+        if isinstance(index, nbtlib.Path):
+            index.set(self, value)
         else:
-            super().__setitem__(key, [self.cast_item(item) for item in value]
-                                     if isinstance(key, slice) else self.cast_item(value))
+            super().__setitem__(index, [self.cast_item(item) for item in value]
+                                     if isinstance(index, slice) else self.cast_item(value))
 
-    def __delitem__(self, key):
-        if isinstance(key, nbtlib.Path):
-            key.delete(self)
+    def __delitem__(self, index):
+        if isinstance(index, nbtlib.Path):
+            index.delete(self)
         else:
-            super().__delitem__(key)
+            super().__delitem__(index)
 
     def append(self, value):
         super().append(self.cast_item(value))
@@ -600,9 +603,11 @@ class Compound(Base, dict):
         return super().get(key, default)
 
     def get_all(self, key):
-        if isinstance(key, nbtlib.Path):
-            return key.get(self)
-        return list(filter(None, [self.get(key)]))
+        try:
+            return (key.get(self) if isinstance(key, nbtlib.Path) else
+                    [super().__getitem__(key)])
+        except KeyError:
+            return []
 
     def __contains__(self, item):
         if isinstance(item, nbtlib.Path):
@@ -611,7 +616,10 @@ class Compound(Base, dict):
 
     def __getitem__(self, key):
         if isinstance(key, nbtlib.Path):
-            return key.get(self)[0]
+            values = key.get(self)
+            if not values:
+                raise KeyError(key)
+            return values[0]
         return super().__getitem__(key)
 
     def __setitem__(self, key, value):
