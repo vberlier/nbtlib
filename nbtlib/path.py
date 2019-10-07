@@ -12,7 +12,7 @@ __all__ = ['Path', 'InvalidPath', 'NamedKey', 'ListIndex', 'CompoundMatch']
 import re
 from typing import NamedTuple, Optional
 
-from .tag import Int, String, List, Compound
+from .tag import Int, String, Array, List, Compound
 from .literal.parser import Parser, tokenize, InvalidLiteral
 
 
@@ -247,6 +247,8 @@ class ListIndex(NamedTuple):
     index: Optional[int]
 
     def get(self, tags):
+        tags = [tag for tag in tags if isinstance(tag[1], (List, Array))]
+
         if self.index is None:
             return [((tag, i), item)
                     for _, tag in tags

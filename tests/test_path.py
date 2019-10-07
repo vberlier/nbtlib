@@ -64,6 +64,9 @@ bigtest_path_to_items = [
     ('Level."listTest (compound)"[{random: "data"}].property', []),
     ('Level."listTest (compound)"[].name', ['Compound tag #0', 'Compound tag #1']),
     ('Level."listTest (compound)"[]."created-on"', [1264099775885, 1264099775885]),
+    ('[]', []),
+    ('{}[]', []),
+    ('{}[0]', []),
 ]
 
 
