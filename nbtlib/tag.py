@@ -49,7 +49,7 @@ from .literal.serializer import serialize_tag
 # Struct formats used to pack and unpack numeric values
 
 def get_format(fmt, string):
-    """Return a dictionnary containing a format for each byte order."""
+    """Return a dictionary containing a format for each byte order."""
     return {'big': fmt('>' + string), 'little': fmt('<' + string)}
 
 BYTE = get_format(Struct, 'b')
