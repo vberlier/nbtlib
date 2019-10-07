@@ -26,7 +26,7 @@ Exported classes:
     LongArray -- Represents a long array tag, inherits from `ndarray`
 
 Exported exceptions:
-    EndEndInstantiation  -- Raised when instantiating an End tag
+    EndInstantiation     -- Raised when instantiating an End tag
     OutOfRange           -- Raised when the value of a numerical tag is out of range
     IncompatibleItemType -- Raised when the type of a list item is incompatible
     CastError            -- Raised when casting a value to a tag fails
@@ -42,6 +42,7 @@ __all__ = ['End', 'Byte', 'Short', 'Int', 'Long', 'Float', 'Double',
 from struct import Struct, error as StructError
 import numpy as np
 
+import nbtlib
 from .literal.serializer import serialize_tag
 
 
@@ -162,6 +163,12 @@ class Base:
 
     def write(self, buff, byteorder='big'):
         """Write the binary representation of the tag to a file-like object."""
+
+    def match(self, other):
+        """Check whether the tag recursively matches a specific subset of values."""
+        if hasattr(other, 'tag_id') and self.tag_id != other.tag_id:
+            return False
+        return self == other
 
     def __repr__(self):
         if self.tag_id is not None:
@@ -480,8 +487,43 @@ class List(Base, list, metaclass=ListMeta):
         for elem in self:
             elem.write(buff, byteorder)
 
-    def __setitem__(self, key, value):
-        super().__setitem__(key, self.cast_item(value))
+    def match(self, other):
+        if not isinstance(other, list):
+            return False
+        if not other:
+            return not self
+        return all(any(item.match(other_item) for item in self) for other_item in other)
+
+    def get(self, index, default=None):
+        return (self.get_all(index) or [default])[0]
+
+    def get_all(self, index):
+        try:
+            return (index.get(self) if isinstance(index, nbtlib.Path) else
+                    [super().__getitem__(index)])
+        except IndexError:
+            return []
+
+    def __getitem__(self, index):
+        if isinstance(index, nbtlib.Path):
+            values = index.get(self)
+            if not values:
+                raise IndexError(index)
+            return values[0]
+        return super().__getitem__(index)
+
+    def __setitem__(self, index, value):
+        if isinstance(index, nbtlib.Path):
+            index.set(self, value)
+        else:
+            super().__setitem__(index, [self.cast_item(item) for item in value]
+                                     if isinstance(index, slice) else self.cast_item(value))
+
+    def __delitem__(self, index):
+        if isinstance(index, nbtlib.Path):
+            index.delete(self)
+        else:
+            super().__delitem__(index)
 
     def append(self, value):
         super().append(self.cast_item(value))
@@ -550,6 +592,48 @@ class Compound(Base, dict):
             tag.write(buff, byteorder)
         buff.write(self.end_tag)
 
+    def match(self, other):
+        return isinstance(other, dict) and self.keys() >= other.keys() and all(
+            self[key].match(value) for key, value in other.items()
+        )
+
+    def get(self, key, default=None):
+        if isinstance(key, nbtlib.Path):
+            return (key.get(self) or [default])[0]
+        return super().get(key, default)
+
+    def get_all(self, key):
+        try:
+            return (key.get(self) if isinstance(key, nbtlib.Path) else
+                    [super().__getitem__(key)])
+        except KeyError:
+            return []
+
+    def __contains__(self, item):
+        if isinstance(item, nbtlib.Path):
+            return bool(item.get(self))
+        return super().__contains__(item)
+
+    def __getitem__(self, key):
+        if isinstance(key, nbtlib.Path):
+            values = key.get(self)
+            if not values:
+                raise KeyError(key)
+            return values[0]
+        return super().__getitem__(key)
+
+    def __setitem__(self, key, value):
+        if isinstance(key, nbtlib.Path):
+            key.set(self, value)
+        else:
+            super().__setitem__(key, value)
+
+    def __delitem__(self, key):
+        if isinstance(key, nbtlib.Path):
+            key.delete(self)
+        else:
+            super().__delitem__(key)
+
     def merge(self, other):
         """Recursively merge tags from another compound."""
         for key, value in other.items():
@@ -558,6 +642,16 @@ class Compound(Base, dict):
                 self[key].merge(value)
             else:
                 self[key] = value
+
+    def with_defaults(self, other):
+        """Return a new compound with recursively applied default values."""
+        result = Compound(other)
+        for key, value in self.items():
+            if key in result and (isinstance(value, Compound)
+                                  and isinstance(result[key], dict)):
+                value = value.with_defaults(result[key])
+            result[key] = value
+        return result
 
 
 class IntArray(Array):
