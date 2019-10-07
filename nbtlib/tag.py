@@ -593,7 +593,7 @@ class Compound(Base, dict):
         buff.write(self.end_tag)
 
     def match(self, other):
-        return self.keys() >= other.keys() and all(
+        return isinstance(other, dict) and self.keys() >= other.keys() and all(
             self[key].match(value) for key, value in other.items()
         )
 
