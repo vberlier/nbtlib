@@ -42,14 +42,14 @@ __all__ = ['End', 'Byte', 'Short', 'Int', 'Long', 'Float', 'Double',
 from struct import Struct, error as StructError
 import numpy as np
 
-import nbtlib
+#import nbtlib
 from .literal.serializer import serialize_tag
 
 
 # Struct formats used to pack and unpack numeric values
 
 def get_format(fmt, string):
-    """Return a dictionnary containing a format for each byte order."""
+    """Return a dictionary containing a format for each byte order."""
     return {'big': fmt('>' + string), 'little': fmt('<' + string)}
 
 BYTE = get_format(Struct, 'b')
@@ -501,13 +501,15 @@ class List(Base, list, metaclass=ListMeta):
 
     def get_all(self, index):
         try:
-            return (index.get(self) if isinstance(index, nbtlib.Path) else
+            from .path import Path
+            return (index.get(self) if isinstance(index, Path) else
                     [super().__getitem__(index)])
         except IndexError:
             return []
 
     def __getitem__(self, index):
-        if isinstance(index, nbtlib.Path):
+        from .path import Path
+        if isinstance(index, Path):
             values = index.get(self)
             if not values:
                 raise IndexError(index)
@@ -515,14 +517,16 @@ class List(Base, list, metaclass=ListMeta):
         return super().__getitem__(index)
 
     def __setitem__(self, index, value):
-        if isinstance(index, nbtlib.Path):
+        from .path import Path
+        if isinstance(index, Path):
             index.set(self, value)
         else:
             super().__setitem__(index, [self.cast_item(item) for item in value]
                                      if isinstance(index, slice) else self.cast_item(value))
 
     def __delitem__(self, index):
-        if isinstance(index, nbtlib.Path):
+        from .path import Path
+        if isinstance(index, Path):
             index.delete(self)
         else:
             super().__delitem__(index)
@@ -600,24 +604,28 @@ class Compound(Base, dict):
         )
 
     def get(self, key, default=None):
-        if isinstance(key, nbtlib.Path):
+        from .path import Path
+        if isinstance(key, Path):
             return (key.get(self) or [default])[0]
         return super().get(key, default)
 
     def get_all(self, key):
         try:
-            return (key.get(self) if isinstance(key, nbtlib.Path) else
+            from .path import Path
+            return (key.get(self) if isinstance(key, Path) else
                     [super().__getitem__(key)])
         except KeyError:
             return []
 
     def __contains__(self, item):
-        if isinstance(item, nbtlib.Path):
+        from .path import Path
+        if isinstance(item, Path):
             return bool(item.get(self))
         return super().__contains__(item)
 
     def __getitem__(self, key):
-        if isinstance(key, nbtlib.Path):
+        from .path import Path
+        if isinstance(key, Path):
             values = key.get(self)
             if not values:
                 raise KeyError(key)
@@ -625,13 +633,15 @@ class Compound(Base, dict):
         return super().__getitem__(key)
 
     def __setitem__(self, key, value):
-        if isinstance(key, nbtlib.Path):
+        from .path import Path
+        if isinstance(key, Path):
             key.set(self, value)
         else:
             super().__setitem__(key, value)
 
     def __delitem__(self, key):
-        if isinstance(key, nbtlib.Path):
+        from .path import Path
+        if isinstance(key, Path):
             key.delete(self)
         else:
             super().__delitem__(key)
