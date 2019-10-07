@@ -353,6 +353,8 @@ class Array(Base, np.ndarray):
         buff.write(array.tobytes())
 
     def __getitem__(self, index):
+        if isinstance(index, slice):
+            return super().__getitem__(index)
         return int.__new__(self.wrapper, super().__getitem__(index))
 
     def __bool__(self):
