@@ -42,7 +42,6 @@ __all__ = ['End', 'Byte', 'Short', 'Int', 'Long', 'Float', 'Double',
 from struct import Struct, error as StructError
 import numpy as np
 
-import nbtlib
 from .literal.serializer import serialize_tag
 
 
@@ -501,31 +500,31 @@ class List(Base, list, metaclass=ListMeta):
 
     def get_all(self, index):
         try:
-            return (index.get(self) if isinstance(index, nbtlib.Path) else
-                    [super().__getitem__(index)])
+            return ([super().__getitem__(index)]
+                    if isinstance(index, (int, slice)) else index.get(self))
         except IndexError:
             return []
 
     def __getitem__(self, index):
-        if isinstance(index, nbtlib.Path):
-            values = index.get(self)
-            if not values:
-                raise IndexError(index)
-            return values[0]
-        return super().__getitem__(index)
+        if isinstance(index, (int, slice)):
+            return super().__getitem__(index)
+        values = index.get(self)
+        if not values:
+            raise IndexError(index)
+        return values[0]
 
     def __setitem__(self, index, value):
-        if isinstance(index, nbtlib.Path):
-            index.set(self, value)
-        else:
+        if isinstance(index, (int, slice)):
             super().__setitem__(index, [self.cast_item(item) for item in value]
                                      if isinstance(index, slice) else self.cast_item(value))
+        else:
+            index.set(self, value)
 
     def __delitem__(self, index):
-        if isinstance(index, nbtlib.Path):
-            index.delete(self)
-        else:
+        if isinstance(index, (int, slice)):
             super().__delitem__(index)
+        else:
+            index.delete(self)
 
     def append(self, value):
         super().append(self.cast_item(value))
@@ -600,41 +599,41 @@ class Compound(Base, dict):
         )
 
     def get(self, key, default=None):
-        if isinstance(key, nbtlib.Path):
-            return (key.get(self) or [default])[0]
-        return super().get(key, default)
+        if isinstance(key, str):
+            return super().get(key, default)
+        return (key.get(self) or [default])[0]
 
     def get_all(self, key):
         try:
-            return (key.get(self) if isinstance(key, nbtlib.Path) else
-                    [super().__getitem__(key)])
+            return ([super().__getitem__(key)]
+                    if isinstance(key, str) else key.get(self))
         except KeyError:
             return []
 
     def __contains__(self, item):
-        if isinstance(item, nbtlib.Path):
-            return bool(item.get(self))
-        return super().__contains__(item)
+        if isinstance(item, str):
+            return super().__contains__(item)
+        return bool(item.get(self))
 
     def __getitem__(self, key):
-        if isinstance(key, nbtlib.Path):
-            values = key.get(self)
-            if not values:
-                raise KeyError(key)
-            return values[0]
-        return super().__getitem__(key)
+        if isinstance(key, str):
+            return super().__getitem__(key)
+        values = key.get(self)
+        if not values:
+            raise KeyError(key)
+        return values[0]
 
     def __setitem__(self, key, value):
-        if isinstance(key, nbtlib.Path):
-            key.set(self, value)
-        else:
+        if isinstance(key, str):
             super().__setitem__(key, value)
+        else:
+            key.set(self, value)
 
     def __delitem__(self, key):
-        if isinstance(key, nbtlib.Path):
-            key.delete(self)
-        else:
+        if isinstance(key, str):
             super().__delitem__(key)
+        else:
+            key.delete(self)
 
     def merge(self, other):
         """Recursively merge tags from another compound."""
