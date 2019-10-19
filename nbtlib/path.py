@@ -225,7 +225,8 @@ class NamedKey(NamedTuple):
     UNQUOTED_REGEX = re.compile(r'^[a-zA-Z0-9_]+$')
 
     def get(self, tags):
-        return [(tag, tag[self.key]) for _, tag in tags if self.key in tag]
+        return [(tag, tag[self.key]) for _, tag in tags
+                if isinstance(tag, dict) and self.key in tag]
 
     def set(self, tags, value):
         for parent, _ in tags:
