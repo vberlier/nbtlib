@@ -20,7 +20,7 @@ keywords = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 numpy = "^1.16"
 
 [tool.poetry.dev-dependencies]

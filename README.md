@@ -5,7 +5,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/nbtlib.svg)](https://pypi.org/project/nbtlib/)
 
 > A python library to read and edit [nbt data](http://wiki.vg/NBT). Requires
-python 3.6.
+> python 3.7.
 
 **Features**
 
@@ -38,7 +38,6 @@ notebook in the docs folder.
 The `nbtlib.load` function can be used to load nbt files as `nbtlib.File` objects. The
 `root` property contains the root nbt tag. Every nbt tag inherits from
 its python counterpart. This means that all the builtin operations defined on the python counterpart can be used on nbt tags.
-
 
 ```python
 import nbtlib
@@ -322,6 +321,6 @@ You can run the tests with `poetry run pytest`.
 $ poetry run pytest
 ```
 
-----
+---
 
 License - [MIT](https://github.com/vberlier/nbtlib/blob/master/LICENSE)
