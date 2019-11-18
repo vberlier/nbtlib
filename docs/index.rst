@@ -1,0 +1,5 @@
+nbtlib
+======
+
+.. toctree::
+  nbt
