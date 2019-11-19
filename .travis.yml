@@ -8,6 +8,11 @@ cache:
   directories:
     - $HOME/.cache/pypoetry
 
+addons:
+  apt:
+    packages:
+      - pandoc
+
 install:
   - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
   - source $HOME/.poetry/env
