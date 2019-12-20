@@ -2,11 +2,12 @@
 
 Exported items:
     load -- Helper function to load nbt files
-    File -- Class that represents an nbt file, inherits from `Compound`
+    Root -- Class that represents an nbt root tag, inherits from `Compound`
+    File -- Class that represents an nbt file, inherits from `Root`
 """
 
 
-__all__ = ['load', 'File']
+__all__ = ['load', 'Root', 'File']
 
 
 import gzip
