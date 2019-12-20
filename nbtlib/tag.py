@@ -257,7 +257,7 @@ class Base:
     :class:`Base` class and their associated builtin data type.
 
     Attributes:
-        all_tags: A dictionnary mapping tag ids to child classes.
+        all_tags: A dictionary mapping tag ids to child classes.
 
             .. doctest::
 
@@ -300,7 +300,7 @@ class Base:
     serializer = None
 
     def __init_subclass__(cls):
-        # Add class to the `all_tags` dictionnary if it has a tag id
+        # Add class to the `all_tags` dictionary if it has a tag id
         if cls.tag_id is not None and cls.tag_id not in cls.all_tags:
             cls.all_tags[cls.tag_id] = cls
 
