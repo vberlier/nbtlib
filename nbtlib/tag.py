@@ -159,9 +159,11 @@ class Base:
     @classmethod
     def parse(cls, buff, byteorder='big'):
         """Parse data from a file-like object and return a tag instance."""
+        raise NotImplementedError
 
     def write(self, buff, byteorder='big'):
         """Write the binary representation of the tag to a file-like object."""
+        raise NotImplementedError
 
     def match(self, other):
         """Check whether the tag recursively matches a specific subset of values."""
