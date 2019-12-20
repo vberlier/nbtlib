@@ -146,7 +146,7 @@ class Base:
     tag_id = None
     serializer = None
 
-    def __init_subclass__(cls):
+    def __init_subclass__(cls):  # @NoSelf
         # Add class to the `all_tags` dictionnary if it has a tag id
         if cls.tag_id is not None and cls.tag_id not in cls.all_tags:
             cls.all_tags[cls.tag_id] = cls
@@ -239,7 +239,7 @@ class NumericInteger(Numeric, int):
     mask = None
     bits = None
 
-    def __init_subclass__(cls):
+    def __init_subclass__(cls):  # @NoSelf
         super().__init_subclass__()
         limit = 2 ** (8 * cls.fmt['big'].size - 1)
         cls.range = range(-limit, limit)
@@ -401,7 +401,7 @@ class ListMeta(type):
         super().__init__(name, bases, dct)
         cls.variants = {}
 
-    def __getitem__(cls, item):
+    def __getitem__(cls, item):  # @NoSelf
         if item is End:
             return List
 
