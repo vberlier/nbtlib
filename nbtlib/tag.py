@@ -387,6 +387,9 @@ class String(Base, str):
     def write(self, buff, byteorder='big'):
         write_string(self, buff, byteorder)
 
+    def __str__(self):
+        return str.__str__(self)
+
 
 class ListMeta(type):
     """Allows class indexing to create and return subclasses on the fly.
