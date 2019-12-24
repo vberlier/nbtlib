@@ -127,7 +127,7 @@ class Serializer:
 
     def serialize_numeric(self, tag):
         """Return the literal representation of a numeric tag."""
-        str_func = int.__str__ if isinstance(tag, int) else float.__str__
+        str_func = int.__repr__ if isinstance(tag, int) else float.__repr__
         return str_func(tag) + tag.suffix
 
     def serialize_array(self, tag):
