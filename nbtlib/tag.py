@@ -387,8 +387,8 @@ class String(Base, str):
     def write(self, buff, byteorder='big'):
         write_string(self, buff, byteorder)
 
-    def __str__(self):
-        return str.__str__(self)
+    # String tags return their plain value on `str()`, not their snbt
+    __str__ = str.__str__
 
 
 class ListMeta(type):
