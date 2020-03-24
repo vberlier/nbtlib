@@ -13,7 +13,9 @@ install:
   - source $HOME/.poetry/env
   - poetry install
 
-script: poetry run pytest --benchmark-enable
+script:
+  - poetry run pytest --benchmark-enable
+  - poetry run black --check nbtlib tests examples
 
 jobs:
   include:
