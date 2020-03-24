@@ -2,11 +2,12 @@
 
 Exported items:
     load -- Helper function to load nbt files
-    File -- Class that represents an nbt file, inherits from `Compound`
+    Root -- Class that represents an nbt root tag, inherits from `Compound`
+    File -- Class that represents an nbt file, inherits from `Root`
 """
 
 
-__all__ = ['load', 'File']
+__all__ = ['load', 'Root', 'File']
 
 
 import gzip
@@ -37,7 +38,33 @@ def load(filename, *, gzipped=None, byteorder='big'):
         return File.from_buffer(buff, byteorder)
 
 
-class File(Compound):
+class Root(Compound):
+    """Class representing a compound nbt root tag.
+
+    Getting the root tag of the file can be done with the `root` property
+    as a convenience shortcut to tag[tag.root_name]. As most, if not all,
+    Minecraft root tags are unnamed, tag.root['x'] evaluates to tag['']['x'].
+    """
+    @property
+    def root_name(self):
+        """The name of the root nbt tag."""
+        return next(iter(self), None)
+
+    @root_name.setter
+    def root_name(self, value):
+        self[value] = self.pop(self.root_name)
+
+    @property
+    def root(self):
+        """The root nbt tag of the file."""
+        return self[self.root_name]
+
+    @root.setter
+    def root(self, value):
+        self[self.root_name] = value
+
+
+class File(Root):
     """Class representing a compound nbt file.
 
     The class inherits from `Compound`, so all of the dict operations
@@ -45,8 +72,7 @@ class File(Compound):
 
     The `load` class method can be use to load files from disk. If
     you need to create the file from a file-like object you can use the
-    inherited `parse` method. Getting the root tag of the file can be
-    done with the `root` property. You can use the `save` method to save
+    inherited `parse` method. You can use the `save` method to save
     modifications.
 
     Using the `File` instance as a context manager will automatically
@@ -67,24 +93,6 @@ class File(Compound):
         self.filename = None
         self.gzipped = gzipped
         self.byteorder = byteorder
-
-    @property
-    def root_name(self):
-        """The name of the root nbt tag."""
-        return next(iter(self), None)
-
-    @root_name.setter
-    def root_name(self, value):
-        self[value] = self.pop(self.root_name)
-
-    @property
-    def root(self):
-        """The root nbt tag of the file."""
-        return self[self.root_name]
-
-    @root.setter
-    def root(self, value):
-        self[self.root_name] = value
 
     @classmethod
     def from_buffer(cls, buff, byteorder='big'):
