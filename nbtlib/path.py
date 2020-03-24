@@ -6,7 +6,7 @@ Exported items:
 """
 
 
-__all__ = ['Path', 'InvalidPath', 'NamedKey', 'ListIndex', 'CompoundMatch']
+__all__ = ["Path", "InvalidPath", "NamedKey", "ListIndex", "CompoundMatch"]
 
 
 import re
@@ -49,7 +49,9 @@ class Path(tuple):
             new_accessors = (NamedKey(key),)
         elif isinstance(key, int):
             new_accessors = (ListIndex(index=key),)
-        elif isinstance(key, slice) and all(n is None for n in [key.start, key.stop, key.step]):
+        elif isinstance(key, slice) and all(
+            n is None for n in [key.start, key.stop, key.step]
+        ):
             new_accessors = (ListIndex(index=None),)
         elif isinstance(key, Compound):
             new_accessors = (CompoundMatch(key),)
@@ -103,8 +105,8 @@ class Path(tuple):
         deleter = None
 
         for accessor in self:
-            setter = getattr(accessor, 'set', setter)
-            deleter = getattr(accessor, 'delete', deleter)
+            setter = getattr(accessor, "set", setter)
+            deleter = getattr(accessor, "delete", deleter)
 
             tags = accessor.get(tags)
 
@@ -126,27 +128,27 @@ class Path(tuple):
             deleter(tags)
 
     def __repr__(self):
-        return f'{self.__class__.__name__}({str(self)!r})'
+        return f"{self.__class__.__name__}({str(self)!r})"
 
     def __str__(self):
-        segments = ['']
+        segments = [""]
 
         for accessor in self:
             segment = str(accessor)
 
-            if not segment or segment.startswith('['):
+            if not segment or segment.startswith("["):
                 segments[-1] += segment
 
-            elif segment.startswith('{'):
-                if segments[-1].endswith('[]'):
-                    segments[-1] = segments[-1][:-2] + f'[{segment}]'
+            elif segment.startswith("{"):
+                if segments[-1].endswith("[]"):
+                    segments[-1] = segments[-1][:-2] + f"[{segment}]"
                 else:
                     segments[-1] += segment
 
             else:
                 segments.append(segment)
 
-        return '.'.join(filter(None, segments))
+        return ".".join(filter(None, segments))
 
 
 def can_be_converted_to_int(string):
@@ -169,35 +171,39 @@ def parse_accessors(path):
         try:
             tag = parser.parse()
         except InvalidLiteral as exc:
-            raise InvalidPath(f'Invalid path at position {exc.args[0][0]}') from exc
+            raise InvalidPath(f"Invalid path at position {exc.args[0][0]}") from exc
 
         if isinstance(tag, String):
-            if parser.current_token.type == 'QUOTED_STRING':
+            if parser.current_token.type == "QUOTED_STRING":
                 yield NamedKey(tag[:])
             else:
-                yield from (NamedKey(key) for key in tag.split('.') if key)
+                yield from (NamedKey(key) for key in tag.split(".") if key)
 
         elif isinstance(tag, List):
             if not tag:
                 yield ListIndex(index=None)
             elif len(tag) != 1:
-                raise InvalidPath('Brackets should only contain one element')
+                raise InvalidPath("Brackets should only contain one element")
             elif issubclass(tag.subtype, Compound):
                 yield ListIndex(index=None)
                 yield CompoundMatch(tag[0])
             elif issubclass(tag.subtype, Int) or can_be_converted_to_int(tag[0]):
                 yield ListIndex(int(tag[0]))
             else:
-                raise InvalidPath('Brackets should only contain an integer or a compound')
+                raise InvalidPath(
+                    "Brackets should only contain an integer or a compound"
+                )
 
         elif isinstance(tag, Compound):
             yield CompoundMatch(tag)
 
-        elif parser.current_token.type == 'NUMBER':
-            yield from (NamedKey(key) for key in parser.current_token.value.split('.') if key)
+        elif parser.current_token.type == "NUMBER":
+            yield from (
+                NamedKey(key) for key in parser.current_token.value.split(".") if key
+            )
 
         else:
-            raise InvalidPath(f'Invalid path element {tag}')
+            raise InvalidPath(f"Invalid path element {tag}")
 
         try:
             parser.next()
@@ -210,23 +216,26 @@ def extend_accessors(accessors, new_accessor):
         *except_last, last_accessor = accessors
 
         if isinstance(last_accessor, CompoundMatch):
-            return tuple(except_last) + (
-                CompoundMatch(new_accessor.compound.with_defaults(last_accessor.compound)),
-            )
+            new_compound = new_accessor.compound.with_defaults(last_accessor.compound)
+            return tuple(except_last) + (CompoundMatch(new_compound),)
         if isinstance(last_accessor, ListIndex) and last_accessor.index is not None:
-            raise InvalidPath('Can\'t match a compound on list items '
-                              f'selected with {last_accessor!r}')
+            raise InvalidPath(
+                f"Can't match a compound on list items selected with {last_accessor!r}"
+            )
     return accessors + (new_accessor,)
 
 
 class NamedKey(NamedTuple):
     key: str
 
-    UNQUOTED_REGEX = re.compile(r'^[a-zA-Z0-9_]+$')
+    UNQUOTED_REGEX = re.compile(r"^[a-zA-Z0-9_]+$")
 
     def get(self, tags):
-        return [(tag, tag[self.key]) for _, tag in tags
-                if isinstance(tag, dict) and self.key in tag]
+        return [
+            (tag, tag[self.key])
+            for _, tag in tags
+            if isinstance(tag, dict) and self.key in tag
+        ]
 
     def set(self, tags, value):
         for parent, _ in tags:
@@ -239,8 +248,9 @@ class NamedKey(NamedTuple):
 
     def __str__(self):
         return (
-            self.key if self.UNQUOTED_REGEX.match(self.key) else
-            '"' + self.key.replace('"', '\\"') + '"'
+            self.key
+            if self.UNQUOTED_REGEX.match(self.key)
+            else '"' + self.key.replace('"', '\\"') + '"'
         )
 
 
@@ -251,11 +261,13 @@ class ListIndex(NamedTuple):
         tags = [tag for tag in tags if isinstance(tag[1], (List, Array))]
 
         if self.index is None:
-            return [((tag, i), item)
-                    for _, tag in tags
-                    for i, item in enumerate(tag)]
-        return [((tag, self.index), tag[self.index])
-                for _, tag in tags if -len(tag) <= self.index < len(tag)]
+            return [((tag, i), item) for _, tag in tags for i, item in enumerate(tag)]
+
+        return [
+            ((tag, self.index), tag[self.index])
+            for _, tag in tags
+            if -len(tag) <= self.index < len(tag)
+        ]
 
     def set(self, tags, value):
         for (parent, i), _ in tags:

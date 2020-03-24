@@ -6,7 +6,7 @@ Exported items:
 """
 
 
-__all__ = ['schema', 'CompoundSchema']
+__all__ = ["schema", "CompoundSchema"]
 
 
 from itertools import chain
@@ -28,8 +28,9 @@ def schema(name, dct, *, strict=False):
     with keys that are not defined in the schema will raise a
     `TypeError`.
     """
-    return type(name, (CompoundSchema,), {'__slots__': (), 'schema': dct,
-                                          'strict': strict})
+    return type(
+        name, (CompoundSchema,), {"__slots__": (), "schema": dct, "strict": strict}
+    )
 
 
 class CompoundSchema(Compound):
@@ -65,9 +66,7 @@ class CompoundSchema(Compound):
 
     def update(self, mapping, **kwargs):
         pairs = chain(mapping.items(), kwargs.items())
-        super().update(
-            (key, self.cast_item(key, value)) for key, value in pairs
-        )
+        super().update((key, self.cast_item(key, value)) for key, value in pairs)
 
     @classmethod
     def cast_item(cls, key, value):
@@ -75,7 +74,7 @@ class CompoundSchema(Compound):
         schema_type = cls.schema.get(key)
         if schema_type is None:
             if cls.strict:
-                raise TypeError(f'Invalid key {key!r}')
+                raise TypeError(f"Invalid key {key!r}")
         elif not isinstance(value, schema_type):
             try:
                 return schema_type(value)

@@ -7,7 +7,7 @@ Exported items:
 """
 
 
-__all__ = ['load', 'Root', 'File']
+__all__ = ["load", "Root", "File"]
 
 
 import gzip
@@ -15,7 +15,7 @@ import gzip
 from .tag import Compound
 
 
-def load(filename, *, gzipped=None, byteorder='big'):
+def load(filename, *, gzipped=None, byteorder="big"):
     """Load the nbt file at the specified location.
 
     By default, the function will figure out by itself if the file is
@@ -28,11 +28,11 @@ def load(filename, *, gzipped=None, byteorder='big'):
         return File.load(filename, gzipped, byteorder)
 
     # if we don't know we read the magic number
-    with open(filename, 'rb') as buff:
+    with open(filename, "rb") as buff:
         magic_number = buff.read(2)
         buff.seek(0)
 
-        if magic_number == b'\x1f\x8b':
+        if magic_number == b"\x1f\x8b":
             buff = gzip.GzipFile(fileobj=buff)
 
         return File.from_buffer(buff, byteorder)
@@ -45,6 +45,7 @@ class Root(Compound):
     as a convenience shortcut to tag[tag.root_name]. As most, if not all,
     Minecraft root tags are unnamed, tag.root['x'] evaluates to tag['']['x'].
     """
+
     @property
     def root_name(self):
         """The name of the root nbt tag."""
@@ -86,29 +87,29 @@ class File(Root):
 
     # We remove the inherited end tag as the end of nbt files is
     # specified by the end of the file buffer
-    end_tag = b''
+    end_tag = b""
 
-    def __init__(self, *args, gzipped=False, byteorder='big'):
+    def __init__(self, *args, gzipped=False, byteorder="big"):
         super().__init__(*args)
         self.filename = None
         self.gzipped = gzipped
         self.byteorder = byteorder
 
     @classmethod
-    def from_buffer(cls, buff, byteorder='big'):
+    def from_buffer(cls, buff, byteorder="big"):
         """Load nbt file from a file-like object.
 
         The `buff` argument can be either a standard `io.BufferedReader`
         for uncompressed nbt or a `gzip.GzipFile` for gzipped nbt data.
         """
         self = cls.parse(buff, byteorder)
-        self.filename = getattr(buff, 'name', self.filename)
+        self.filename = getattr(buff, "name", self.filename)
         self.gzipped = isinstance(buff, gzip.GzipFile)
         self.byteorder = byteorder
         return self
 
     @classmethod
-    def load(cls, filename, gzipped, byteorder='big'):
+    def load(cls, filename, gzipped, byteorder="big"):
         """Read, parse and return the file at the specified location.
 
         The `gzipped` argument is used to indicate if the specified
@@ -116,7 +117,7 @@ class File(Root):
         whether the file is big-endian or little-endian.
         """
         open_file = gzip.open if gzipped else open
-        with open_file(filename, 'rb') as buff:
+        with open_file(filename, "rb") as buff:
             return cls.from_buffer(buff, byteorder)
 
     def save(self, filename=None, *, gzipped=None, byteorder=None):
@@ -138,10 +139,10 @@ class File(Root):
             filename = self.filename
 
         if filename is None:
-            raise ValueError('No filename specified')
+            raise ValueError("No filename specified")
 
         open_file = gzip.open if gzipped else open
-        with open_file(filename, 'wb') as buff:
+        with open_file(filename, "wb") as buff:
             self.write(buff, byteorder or self.byteorder)
 
     def __enter__(self):
@@ -151,4 +152,4 @@ class File(Root):
         self.save()
 
     def __repr__(self):
-        return f'<{self.__class__.__name__} {self.root_name!r}: {self.root!r}>'
+        return f"<{self.__class__.__name__} {self.root_name!r}: {self.root!r}>"

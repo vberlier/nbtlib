@@ -33,10 +33,25 @@ Exported exceptions:
 """
 
 
-__all__ = ['End', 'Byte', 'Short', 'Int', 'Long', 'Float', 'Double',
-           'ByteArray', 'String', 'List', 'Compound', 'IntArray', 'LongArray',
-           'EndInstantiation', 'OutOfRange', 'IncompatibleItemType',
-           'CastError']
+__all__ = [
+    "End",
+    "Byte",
+    "Short",
+    "Int",
+    "Long",
+    "Float",
+    "Double",
+    "ByteArray",
+    "String",
+    "List",
+    "Compound",
+    "IntArray",
+    "LongArray",
+    "EndInstantiation",
+    "OutOfRange",
+    "IncompatibleItemType",
+    "CastError",
+]
 
 
 from struct import Struct, error as StructError
@@ -47,40 +62,43 @@ from .literal.serializer import serialize_tag
 
 # Struct formats used to pack and unpack numeric values
 
+
 def get_format(fmt, string):
     """Return a dictionary containing a format for each byte order."""
-    return {'big': fmt('>' + string), 'little': fmt('<' + string)}
+    return {"big": fmt(">" + string), "little": fmt("<" + string)}
 
-BYTE = get_format(Struct, 'b')
-SHORT = get_format(Struct, 'h')
-USHORT = get_format(Struct, 'H')
-INT = get_format(Struct, 'i')
-LONG = get_format(Struct, 'q')
-FLOAT = get_format(Struct, 'f')
-DOUBLE = get_format(Struct, 'd')
+
+BYTE = get_format(Struct, "b")
+SHORT = get_format(Struct, "h")
+USHORT = get_format(Struct, "H")
+INT = get_format(Struct, "i")
+LONG = get_format(Struct, "q")
+FLOAT = get_format(Struct, "f")
+DOUBLE = get_format(Struct, "d")
 
 
 # Custom errors
+
 
 class EndInstantiation(TypeError):
     """Raised when trying to instantiate an `End` tag."""
 
     def __init__(self):
-        super().__init__('End tags can\'t be instantiated')
+        super().__init__("End tags can't be instantiated")
 
 
 class OutOfRange(ValueError):
     """Raised when a numeric value is out of range."""
 
     def __init__(self, value):
-        super().__init__(f'{value!r} is out of range')
+        super().__init__(f"{value!r} is out of range")
 
 
 class IncompatibleItemType(TypeError):
     """Raised when a list item is incompatible with the subtype of the list."""
 
     def __init__(self, item, subtype):
-        super().__init__(f'{item!r} should be a {subtype.__name__} tag')
+        super().__init__(f"{item!r} should be a {subtype.__name__} tag")
         self.item = item
         self.subtype = subtype
 
@@ -89,14 +107,15 @@ class CastError(ValueError):
     """Raised when an object couldn't be casted to the appropriate tag type."""
 
     def __init__(self, obj, tag_type):
-        super().__init__(f'Couldn\'t cast {obj!r} to {tag_type.__name__}')
+        super().__init__(f"Couldn't cast {obj!r} to {tag_type.__name__}")
         self.obj = obj
         self.tag_type = tag_type
 
 
 # Read/write helpers for numeric and string values
 
-def read_numeric(fmt, buff, byteorder='big'):
+
+def read_numeric(fmt, buff, byteorder="big"):
     """Read a numeric value from a file-like object."""
     try:
         fmt = fmt[byteorder]
@@ -104,31 +123,32 @@ def read_numeric(fmt, buff, byteorder='big'):
     except StructError:
         return 0
     except KeyError as exc:
-        raise ValueError('Invalid byte order') from exc
+        raise ValueError("Invalid byte order") from exc
 
 
-def write_numeric(fmt, value, buff, byteorder='big'):
+def write_numeric(fmt, value, buff, byteorder="big"):
     """Write a numeric value to a file-like object."""
     try:
         buff.write(fmt[byteorder].pack(value))
     except KeyError as exc:
-        raise ValueError('Invalid byte order') from exc
+        raise ValueError("Invalid byte order") from exc
 
 
-def read_string(buff, byteorder='big'):
+def read_string(buff, byteorder="big"):
     """Read a string from a file-like object."""
     length = read_numeric(USHORT, buff, byteorder)
-    return buff.read(length).decode('utf-8')
+    return buff.read(length).decode("utf-8")
 
 
-def write_string(value, buff, byteorder='big'):
+def write_string(value, buff, byteorder="big"):
     """Write a string to a file-like object."""
-    data = value.encode('utf-8')
+    data = value.encode("utf-8")
     write_numeric(USHORT, len(data), buff, byteorder)
     buff.write(data)
 
 
 # Tag definitions
+
 
 class Base:
     """Base class inherited by all nbt tags.
@@ -157,15 +177,15 @@ class Base:
         return cls.all_tags[tag_id]
 
     @classmethod
-    def parse(cls, buff, byteorder='big'):
+    def parse(cls, buff, byteorder="big"):
         """Parse data from a file-like object and return a tag instance."""
 
-    def write(self, buff, byteorder='big'):
+    def write(self, buff, byteorder="big"):
         """Write the binary representation of the tag to a file-like object."""
 
     def match(self, other):
         """Check whether the tag recursively matches a specific subset of values."""
-        if hasattr(other, 'tag_id') and self.tag_id != other.tag_id:
+        if hasattr(other, "tag_id") and self.tag_id != other.tag_id:
             return False
         return self == other
 
@@ -174,7 +194,7 @@ class Base:
 
     def __repr__(self):
         if self.tag_id is not None:
-            return f'{self.__class__.__name__}({super().__repr__()})'
+            return f"{self.__class__.__name__}({super().__repr__()})"
         return super().__repr__()
 
 
@@ -205,15 +225,15 @@ class Numeric(Base):
     """
 
     __slots__ = ()
-    serializer = 'numeric'
+    serializer = "numeric"
     fmt = None
-    suffix = ''
+    suffix = ""
 
     @classmethod
-    def parse(cls, buff, byteorder='big'):
+    def parse(cls, buff, byteorder="big"):
         return cls(read_numeric(cls.fmt, buff, byteorder))
 
-    def write(self, buff, byteorder='big'):
+    def write(self, buff, byteorder="big"):
         write_numeric(self.fmt, self, buff, byteorder)
 
 
@@ -238,7 +258,7 @@ class NumericInteger(Numeric, int):
 
     def __init_subclass__(cls):
         super().__init_subclass__()
-        limit = 2 ** (8 * cls.fmt['big'].size - 1)
+        limit = 2 ** (8 * cls.fmt["big"].size - 1)
         cls.range = range(-limit, limit)
         cls.mask = limit * 2 - 1
         cls.bits = cls.mask.bit_length()
@@ -266,7 +286,7 @@ class Byte(NumericInteger):
     __slots__ = ()
     tag_id = 1
     fmt = BYTE
-    suffix = 'b'
+    suffix = "b"
 
 
 class Short(NumericInteger):
@@ -275,7 +295,7 @@ class Short(NumericInteger):
     __slots__ = ()
     tag_id = 2
     fmt = SHORT
-    suffix = 's'
+    suffix = "s"
 
 
 class Int(NumericInteger):
@@ -292,7 +312,7 @@ class Long(NumericInteger):
     __slots__ = ()
     tag_id = 4
     fmt = LONG
-    suffix = 'L'
+    suffix = "L"
 
 
 class Float(Numeric, float):
@@ -301,7 +321,7 @@ class Float(Numeric, float):
     __slots__ = ()
     tag_id = 5
     fmt = FLOAT
-    suffix = 'f'
+    suffix = "f"
 
 
 class Double(Numeric, float):
@@ -310,7 +330,7 @@ class Double(Numeric, float):
     __slots__ = ()
     tag_id = 6
     fmt = DOUBLE
-    suffix = 'd'
+    suffix = "d"
 
 
 class Array(Base, np.ndarray):
@@ -326,24 +346,24 @@ class Array(Base, np.ndarray):
     """
 
     __slots__ = ()
-    serializer = 'array'
+    serializer = "array"
     item_type = None
     array_prefix = None
     wrapper = None
 
-    def __new__(cls, value=None, *, length=0, byteorder='big'):
+    def __new__(cls, value=None, *, length=0, byteorder="big"):
         item_type = cls.item_type[byteorder]
         if value is None:
             return np.zeros((length,), item_type).view(cls)
         return np.asarray(value, item_type).view(cls)
 
     @classmethod
-    def parse(cls, buff, byteorder='big'):
+    def parse(cls, buff, byteorder="big"):
         item_type = cls.item_type[byteorder]
         data = buff.read(read_numeric(INT, buff, byteorder) * item_type.itemsize)
         return cls(np.frombuffer(data, item_type), byteorder=byteorder)
 
-    def write(self, buff, byteorder='big'):
+    def write(self, buff, byteorder="big"):
         write_numeric(INT, len(self), buff, byteorder)
         array = self if self.item_type[byteorder] is self.dtype else self.byteswap()
         buff.write(array.tobytes())
@@ -365,8 +385,8 @@ class ByteArray(Array):
 
     __slots__ = ()
     tag_id = 7
-    item_type = get_format(np.dtype, 'b')
-    array_prefix = 'B'
+    item_type = get_format(np.dtype, "b")
+    array_prefix = "B"
     wrapper = Byte
 
 
@@ -375,13 +395,13 @@ class String(Base, str):
 
     __slots__ = ()
     tag_id = 8
-    serializer = 'string'
+    serializer = "string"
 
     @classmethod
-    def parse(cls, buff, byteorder='big'):
+    def parse(cls, buff, byteorder="big"):
         return cls(read_string(buff, byteorder))
 
-    def write(self, buff, byteorder='big'):
+    def write(self, buff, byteorder="big"):
         write_string(self, buff, byteorder)
 
 
@@ -405,8 +425,11 @@ class ListMeta(type):
         try:
             return List.variants[item]
         except KeyError:
-            variant = type(f'{List.__name__}[{item.__name__}]', (List,),
-                           {'__slots__': (), 'subtype': item})
+            variant = type(
+                f"{List.__name__}[{item.__name__}]",
+                (List,),
+                {"__slots__": (), "subtype": item},
+            )
             List.variants[item] = variant
             return variant
 
@@ -433,7 +456,7 @@ class List(Base, list, metaclass=ListMeta):
 
     __slots__ = ()
     tag_id = 9
-    serializer = 'list'
+    serializer = "list"
     subtype = End
 
     def __new__(cls, iterable=()):
@@ -474,12 +497,12 @@ class List(Base, list, metaclass=ListMeta):
         return subtype
 
     @classmethod
-    def parse(cls, buff, byteorder='big'):
+    def parse(cls, buff, byteorder="big"):
         tag = cls.get_tag(read_numeric(BYTE, buff, byteorder))
         length = read_numeric(INT, buff, byteorder)
         return cls[tag](tag.parse(buff, byteorder) for _ in range(length))
 
-    def write(self, buff, byteorder='big'):
+    def write(self, buff, byteorder="big"):
         write_numeric(BYTE, self.subtype.tag_id, buff, byteorder)
         write_numeric(INT, len(self), buff, byteorder)
         for elem in self:
@@ -497,8 +520,11 @@ class List(Base, list, metaclass=ListMeta):
 
     def get_all(self, index):
         try:
-            return ([super().__getitem__(index)]
-                    if isinstance(index, (int, slice)) else index.get(self))
+            return (
+                [super().__getitem__(index)]
+                if isinstance(index, (int, slice))
+                else index.get(self)
+            )
         except IndexError:
             return []
 
@@ -512,8 +538,12 @@ class List(Base, list, metaclass=ListMeta):
 
     def __setitem__(self, index, value):
         if isinstance(index, (int, slice)):
-            super().__setitem__(index, [self.cast_item(item) for item in value]
-                                     if isinstance(index, slice) else self.cast_item(value))
+            super().__setitem__(
+                index,
+                [self.cast_item(item) for item in value]
+                if isinstance(index, slice)
+                else self.cast_item(value),
+            )
         else:
             index.set(self, value)
 
@@ -546,10 +576,10 @@ class List(Base, list, metaclass=ListMeta):
             try:
                 return cls.subtype(item)
             except EndInstantiation:
-                raise ValueError('List tags without an explicit subtype must '
-                                 'either be empty or instantiated with '
-                                 'elements from which a subtype can be '
-                                 'inferred') from None
+                raise ValueError(
+                    "List tags without an explicit subtype must either be empty or "
+                    "instantiated with elements from which a subtype can be inferred"
+                ) from None
             except (IncompatibleItemType, CastError):
                 raise
             except Exception as exc:
@@ -570,11 +600,11 @@ class Compound(Base, dict):
 
     __slots__ = ()
     tag_id = 10
-    serializer = 'compound'
-    end_tag = b'\x00'
+    serializer = "compound"
+    end_tag = b"\x00"
 
     @classmethod
-    def parse(cls, buff, byteorder='big'):
+    def parse(cls, buff, byteorder="big"):
         self = cls()
         tag_id = read_numeric(BYTE, buff, byteorder)
         while tag_id != 0:
@@ -583,7 +613,7 @@ class Compound(Base, dict):
             tag_id = read_numeric(BYTE, buff, byteorder)
         return self
 
-    def write(self, buff, byteorder='big'):
+    def write(self, buff, byteorder="big"):
         for name, tag in self.items():
             write_numeric(BYTE, tag.tag_id, buff, byteorder)
             write_string(name, buff, byteorder)
@@ -591,8 +621,10 @@ class Compound(Base, dict):
         buff.write(self.end_tag)
 
     def match(self, other):
-        return isinstance(other, dict) and self.keys() >= other.keys() and all(
-            self[key].match(value) for key, value in other.items()
+        return (
+            isinstance(other, dict)
+            and self.keys() >= other.keys()
+            and all(self[key].match(value) for key, value in other.items())
         )
 
     def get(self, key, default=None):
@@ -602,8 +634,7 @@ class Compound(Base, dict):
 
     def get_all(self, key):
         try:
-            return ([super().__getitem__(key)]
-                    if isinstance(key, str) else key.get(self))
+            return [super().__getitem__(key)] if isinstance(key, str) else key.get(self)
         except KeyError:
             return []
 
@@ -635,8 +666,9 @@ class Compound(Base, dict):
     def merge(self, other):
         """Recursively merge tags from another compound."""
         for key, value in other.items():
-            if key in self and (isinstance(self[key], Compound)
-                                and isinstance(value, dict)):
+            if key in self and (
+                isinstance(self[key], Compound) and isinstance(value, dict)
+            ):
                 self[key].merge(value)
             else:
                 self[key] = value
@@ -645,8 +677,9 @@ class Compound(Base, dict):
         """Return a new compound with recursively applied default values."""
         result = Compound(other)
         for key, value in self.items():
-            if key in result and (isinstance(value, Compound)
-                                  and isinstance(result[key], dict)):
+            if key in result and (
+                isinstance(value, Compound) and isinstance(result[key], dict)
+            ):
                 value = value.with_defaults(result[key])
             result[key] = value
         return result
@@ -657,8 +690,8 @@ class IntArray(Array):
 
     __slots__ = ()
     tag_id = 11
-    item_type = get_format(np.dtype, 'i4')
-    array_prefix = 'I'
+    item_type = get_format(np.dtype, "i4")
+    array_prefix = "I"
     wrapper = Int
 
 
@@ -667,6 +700,6 @@ class LongArray(Array):
 
     __slots__ = ()
     tag_id = 12
-    item_type = get_format(np.dtype, 'i8')
-    array_prefix = 'L'
+    item_type = get_format(np.dtype, "i8")
+    array_prefix = "L"
     wrapper = Long

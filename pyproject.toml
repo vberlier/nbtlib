@@ -26,6 +26,7 @@ numpy = "^1.16"
 [tool.poetry.dev-dependencies]
 pytest = "^5.4"
 pytest-benchmark = "^3.2"
+black = "^19.10b0"
 
 [tool.poetry.scripts]
 nbt = 'nbtlib.cli:main'

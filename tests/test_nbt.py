@@ -12,19 +12,19 @@ def validate_types(tag, expected):
     )
 
 
-@pytest.mark.parametrize('file_path, value', nbt_files)
+@pytest.mark.parametrize("file_path, value", nbt_files)
 def test_file_loading(file_path, value):
     nbt_file = nbt.load(file_path)
     assert nbt_file == value
 
 
-@pytest.mark.parametrize('file_path, value', nbt_files)
+@pytest.mark.parametrize("file_path, value", nbt_files)
 def test_file_compression(file_path, value):
     nbt_file = nbt.load(file_path)
     assert nbt_file.gzipped == value.gzipped
 
 
-@pytest.mark.parametrize('file_path, value', nbt_files)
+@pytest.mark.parametrize("file_path, value", nbt_files)
 def test_file_types(file_path, value):
     nbt_file = nbt.load(file_path)
-    assert validate_types(nbt_file, value), 'mismatched types'
+    assert validate_types(nbt_file, value), "mismatched types"

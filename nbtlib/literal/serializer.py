@@ -13,8 +13,13 @@ Exported objects:
 """
 
 
-__all__ = ['serialize_tag', 'STRING_QUOTES', 'ESCAPE_SEQUENCES', 'ESCAPE_SUBS',
-           'Serializer']
+__all__ = [
+    "serialize_tag",
+    "STRING_QUOTES",
+    "ESCAPE_SEQUENCES",
+    "ESCAPE_SUBS",
+    "Serializer",
+]
 
 
 import re
@@ -28,22 +33,21 @@ STRING_QUOTES = {
     "'": '"',
 }
 
-QUOTE_REGEX = re.compile('|'.join(STRING_QUOTES))
+QUOTE_REGEX = re.compile("|".join(STRING_QUOTES))
 
-ESCAPE_SEQUENCES = {fr'\{q}': q for q in STRING_QUOTES}
-ESCAPE_SEQUENCES.update({
-    r'\\': '\\',
-})
+ESCAPE_SEQUENCES = {fr"\{q}": q for q in STRING_QUOTES}
+ESCAPE_SEQUENCES[r"\\"] = "\\"
 
 ESCAPE_SUBS = dict(reversed(tuple(map(reversed, ESCAPE_SEQUENCES.items()))))
 
 
 # Detect if a compound key can be represented unquoted
 
-UNQUOTED_COMPOUND_KEY = re.compile(r'^[a-zA-Z0-9._+-]+$')
+UNQUOTED_COMPOUND_KEY = re.compile(r"^[a-zA-Z0-9._+-]+$")
 
 
 # User-friendly helper
+
 
 def serialize_tag(tag, *, indent=None, compact=False, quote=None):
     """Serialize an nbt tag to its literal representation."""
@@ -53,17 +57,18 @@ def serialize_tag(tag, *, indent=None, compact=False, quote=None):
 
 # Implement serializer
 
+
 class Serializer:
     """Nbt tag serializer."""
 
     def __init__(self, *, indent=None, compact=False, quote=None):
-        self.indentation = indent * ' ' if isinstance(indent, int) else indent
-        self.comma = ',' if compact else ', '
-        self.colon = ':' if compact else ': '
-        self.semicolon = ';' if compact else '; '
+        self.indentation = indent * " " if isinstance(indent, int) else indent
+        self.comma = "," if compact else ", "
+        self.colon = ":" if compact else ": "
+        self.semicolon = ";" if compact else "; "
 
-        self.indent = ''
-        self.previous_indent = ''
+        self.indent = ""
+        self.previous_indent = ""
 
         self.quote = quote
 
@@ -82,20 +87,24 @@ class Serializer:
 
     def should_expand(self, tag):
         """Return whether the specified tag should be expanded."""
-        return self.indentation is not None and tag and (
-            not self.previous_indent or (
-                tag.serializer == 'list'
-                and tag.subtype.serializer in ('array', 'list', 'compound')
-            ) or (
-                tag.serializer == 'compound'
+        return (
+            self.indentation is not None
+            and tag
+            and (
+                not self.previous_indent
+                or (
+                    tag.serializer == "list"
+                    and tag.subtype.serializer in ("array", "list", "compound")
+                )
+                or (tag.serializer == "compound")
             )
         )
 
     def expand(self, separator, fmt):
         """Return the expanded version of the separator and format string."""
         return (
-            f'{separator}\n{self.indent}',
-            fmt.replace('{}', f'\n{self.indent}{{}}\n{self.previous_indent}')
+            f"{separator}\n{self.indent}",
+            fmt.replace("{}", f"\n{self.indent}{{}}\n{self.previous_indent}"),
         )
 
     def escape_string(self, string):
@@ -110,7 +119,7 @@ class Serializer:
             if match == quote or match not in STRING_QUOTES:
                 string = string.replace(match, seq)
 
-        return f'{quote}{string}{quote}'
+        return f"{quote}{string}{quote}"
 
     def stringify_compound_key(self, key):
         """Escape the compound key if it can't be represented unquoted."""
@@ -120,9 +129,9 @@ class Serializer:
 
     def serialize(self, tag):
         """Return the literal representation of a tag."""
-        handler = getattr(self, f'serialize_{tag.serializer}', None)
+        handler = getattr(self, f"serialize_{tag.serializer}", None)
         if handler is None:
-            raise TypeError(f'Can\'t serialize {type(tag)!r} instance')
+            raise TypeError(f"Can't serialize {type(tag)!r} instance")
         return handler(tag)
 
     def serialize_numeric(self, tag):
@@ -133,7 +142,7 @@ class Serializer:
     def serialize_array(self, tag):
         """Return the literal representation of an array tag."""
         elements = self.comma.join(map(serialize_tag, tag)).upper()
-        return f'[{tag.array_prefix}{self.semicolon}{elements}]'
+        return f"[{tag.array_prefix}{self.semicolon}{elements}]"
 
     def serialize_string(self, tag):
         """Return the literal representation of a string tag."""
@@ -141,7 +150,7 @@ class Serializer:
 
     def serialize_list(self, tag):
         """Return the literal representation of a list tag."""
-        separator, fmt = self.comma, '[{}]'
+        separator, fmt = self.comma, "[{}]"
 
         with self.depth():
             if self.should_expand(tag):
@@ -151,13 +160,15 @@ class Serializer:
 
     def serialize_compound(self, tag):
         """Return the literal representation of a compound tag."""
-        separator, fmt = self.comma, '{{{}}}'
+        separator, fmt = self.comma, "{{{}}}"
 
         with self.depth():
             if self.should_expand(tag):
                 separator, fmt = self.expand(separator, fmt)
 
-            return fmt.format(separator.join(
-                f'{self.stringify_compound_key(key)}{self.colon}{self.serialize(value)}'
-                for key, value in tag.items()
-            ))
+            return fmt.format(
+                separator.join(
+                    f"{self.stringify_compound_key(key)}{self.colon}{self.serialize(value)}"
+                    for key, value in tag.items()
+                )
+            )
