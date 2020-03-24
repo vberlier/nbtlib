@@ -3,3 +3,4 @@ nbtlib
 
 .. toctree::
   nbt
+  tag
