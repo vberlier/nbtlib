@@ -151,6 +151,4 @@ class File(Root):
         self.save()
 
     def __repr__(self):
-        if self.filename:
-            return f'<{self.__class__.__name__}({self.filename!r}): {self!r}>'
-        return super().__repr__(self)
+        return f'<{self.__class__.__name__} {self.root_name!r}: {self.root!r}>'
