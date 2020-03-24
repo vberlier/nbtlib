@@ -169,16 +169,13 @@ class Base:
             return False
         return self == other
 
+    def snbt(self):
+        return serialize_tag(self)
+
     def __repr__(self):
         if self.tag_id is not None:
             return f'{self.__class__.__name__}({super().__repr__()})'
         return super().__repr__()
-
-    def __str__(self):
-        try:
-            return serialize_tag(self)
-        except TypeError:
-            return super().__str__()
 
 
 class End(Base):
@@ -360,7 +357,7 @@ class Array(Base, np.ndarray):
         return all(self)
 
     def __repr__(self):
-        return f'{self.__class__.__name__}([{", ".join(int.__str__(el) for el in self)}])'
+        return f'{self.__class__.__name__}([{", ".join(map(str, self))}])'
 
 
 class ByteArray(Array):

@@ -278,4 +278,4 @@ class CompoundMatch(NamedTuple):
         return [(parent, tag) for parent, tag in tags if tag.match(self.compound)]
 
     def __str__(self):
-        return str(self.compound)
+        return self.compound.snbt()
