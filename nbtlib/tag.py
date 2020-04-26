@@ -520,38 +520,31 @@ class List(Base, list, metaclass=ListMeta):
 
     def get_all(self, index):
         try:
-            return (
-                [super().__getitem__(index)]
-                if isinstance(index, (int, slice))
-                else index.get(self)
-            )
+            return (index.get(self) if hasattr(index, "is_nbt_path") else
+                    [super().__getitem__(index)])
         except IndexError:
             return []
 
     def __getitem__(self, index):
-        if isinstance(index, (int, slice)):
-            return super().__getitem__(index)
-        values = index.get(self)
-        if not values:
-            raise IndexError(index)
-        return values[0]
+        if hasattr(index, "is_nbt_path"):
+            values = index.get(self)
+            if not values:
+                raise IndexError(index)
+            return values[0]
+        return super().__getitem__(index)
 
     def __setitem__(self, index, value):
-        if isinstance(index, (int, slice)):
-            super().__setitem__(
-                index,
-                [self.cast_item(item) for item in value]
-                if isinstance(index, slice)
-                else self.cast_item(value),
-            )
-        else:
+        if hasattr(index, "is_nbt_path"):
             index.set(self, value)
+        else:
+            super().__setitem__(index, [self.cast_item(item) for item in value]
+                                     if isinstance(index, slice) else self.cast_item(value))
 
     def __delitem__(self, index):
-        if isinstance(index, (int, slice)):
-            super().__delitem__(index)
-        else:
+        if hasattr(index, "is_nbt_path"):
             index.delete(self)
+        else:
+            super().__delitem__(index)
 
     def append(self, value):
         super().append(self.cast_item(value))
@@ -628,40 +621,41 @@ class Compound(Base, dict):
         )
 
     def get(self, key, default=None):
-        if isinstance(key, str):
-            return super().get(key, default)
-        return (key.get(self) or [default])[0]
+        if hasattr(key, "is_nbt_path"):
+            return (key.get(self) or [default])[0]
+        return super().get(key, default)
 
     def get_all(self, key):
         try:
-            return [super().__getitem__(key)] if isinstance(key, str) else key.get(self)
+            return (key.get(self) if hasattr(key, "is_nbt_path") else
+                    [super().__getitem__(key)])
         except KeyError:
             return []
 
     def __contains__(self, item):
-        if isinstance(item, str):
-            return super().__contains__(item)
-        return bool(item.get(self))
+        if hasattr(item, "is_nbt_path"):
+            return bool(item.get(self))
+        return super().__contains__(item)
 
     def __getitem__(self, key):
-        if isinstance(key, str):
-            return super().__getitem__(key)
-        values = key.get(self)
-        if not values:
-            raise KeyError(key)
-        return values[0]
+        if hasattr(key, "is_nbt_path"):
+            values = key.get(self)
+            if not values:
+                raise KeyError(key)
+            return values[0]
+        return super().__getitem__(key)
 
     def __setitem__(self, key, value):
-        if isinstance(key, str):
-            super().__setitem__(key, value)
-        else:
+        if hasattr(key, "is_nbt_path"):
             key.set(self, value)
+        else:
+            super().__setitem__(key, value)
 
     def __delitem__(self, key):
-        if isinstance(key, str):
-            super().__delitem__(key)
-        else:
+        if hasattr(key, "is_nbt_path"):
             key.delete(self)
+        else:
+            super().__delitem__(key)
 
     def merge(self, other):
         """Recursively merge tags from another compound."""

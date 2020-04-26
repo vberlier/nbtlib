@@ -29,6 +29,8 @@ class Path(tuple):
 
     __slots__ = ()
 
+    is_nbt_path="∃"
+    
     def __new__(cls, path=None):
         if path is None:
             return cls.from_accessors()
