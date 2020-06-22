@@ -427,7 +427,7 @@ description = "A friendly Sphinx wrapper"
 name = "mudkip"
 optional = false
 python-versions = ">=3.7,<4.0"
-version = "0.3.5"
+version = "0.3.6"
 
 [package.dependencies]
 click = ">=7.0,<8.0"
@@ -1114,7 +1114,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "fe780e6abfaddff8af8489a740515cad584d848ff67944005e203998f19458b7"
+content-hash = "8afb69f1336cb1cc8fccc7b3938178e57bd35518c49c5a5485e1dc18b9467b0a"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1288,8 +1288,8 @@ more-itertools = [
     {file = "more_itertools-8.4.0-py3-none-any.whl", hash = "sha256:b78134b2063dd214000685165d81c154522c3ee0a1c0d4d113c80361c234c5a2"},
 ]
 mudkip = [
-    {file = "mudkip-0.3.5-py3-none-any.whl", hash = "sha256:0a837528e0a0bfc23e89f4072cb4e241a71a4afa39eafa4214926c009428e1cd"},
-    {file = "mudkip-0.3.5.tar.gz", hash = "sha256:d67201522879a0767a5bdfbc08f34968f1d3621f3e5a5baa4c2879abb1cc12ea"},
+    {file = "mudkip-0.3.6-py3-none-any.whl", hash = "sha256:c26b8253f5bd571ae113cb66cb889ca66b361d879409c0e0be2f4a1af15f06f1"},
+    {file = "mudkip-0.3.6.tar.gz", hash = "sha256:6c9dbf911d9e4efef785cd0da36b4172991457ac3fd0538b0289d36bad2962d5"},
 ]
 nbconvert = [
     {file = "nbconvert-5.6.1-py2.py3-none-any.whl", hash = "sha256:f0d6ec03875f96df45aa13e21fd9b8450c42d7e1830418cccc008c0df725fcee"},
