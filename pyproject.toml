@@ -27,6 +27,7 @@ numpy = "^1.16"
 pytest = "^5.4"
 pytest-benchmark = "^3.2"
 black = "^19.10b0"
+mudkip = "^0.3.5"
 
 [tool.poetry.scripts]
 nbt = 'nbtlib.cli:main'
