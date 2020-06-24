@@ -180,6 +180,9 @@ class Root(Compound):
     def root(self, value):
         self[self.root_name] = value
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} {self.root_name!r}: {self.root!r}>"
+
 
 class File(Root):
     r"""Class representing a compound nbt file.
@@ -348,6 +351,3 @@ class File(Root):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.save()
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} {self.root_name!r}: {self.root!r}>"
