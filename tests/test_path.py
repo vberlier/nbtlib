@@ -12,8 +12,8 @@ path_strings_to_keys = [
     ('"escape \\"quotes\\""."in.quoted".key', ('escape "quotes"', "in.quoted", "key")),
     ("...with..redundant..dots", ("with", "redundant", "dots")),
     (".2d", ("2d",)),
-    ("85.2", ("85", "2",)),
-    ("85.f", ("85", "f",)),
+    ("85.2", ("85", "2")),
+    ("85.f", ("85", "f")),
 ]
 
 
