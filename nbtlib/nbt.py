@@ -153,7 +153,7 @@ class Root(Compound):
             'Data'
             >>> compound.root_name = "NewData"
             >>> compound
-            Root({'NewData': Compound({})})
+            <Root 'NewData': Compound({})>
         """
         return next(iter(self), None)
 
