@@ -782,7 +782,7 @@ class List(Base, list):
             return cls.variants[item]
         except KeyError:
             variant = type(
-                f"List[{item.__name__}]", (List,), {"__slots__": (), "subtype": item},
+                f"List[{item.__name__}]", (List,), {"__slots__": (), "subtype": item}
             )
             cls.variants[item] = variant
             return variant
