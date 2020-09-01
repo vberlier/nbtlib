@@ -5,7 +5,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/nbtlib.svg)](https://pypi.org/project/nbtlib/)
 
 > A python library to read and edit [nbt data](http://wiki.vg/NBT). Requires
-> python 3.7.
+> python 3.8.
 
 **Features**
 

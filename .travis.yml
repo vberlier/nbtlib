@@ -14,12 +14,11 @@ install:
   - poetry install
 
 script:
-  - poetry run pytest --benchmark-enable
+  - poetry run pytest --benchmark-enable --minecraft-latest --minecraft-snapshot
   - poetry run black --check nbtlib tests examples
 
 jobs:
   include:
-    - python: 3.7
     - python: 3.8
 
     - stage: publish
