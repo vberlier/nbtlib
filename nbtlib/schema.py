@@ -49,12 +49,13 @@ class CompoundSchema(Compound):
         strict -- Boolean enabling strict schema validation
     """
 
-    __slots__ = ()
+    __slots__ = ("_strict",)
     schema = {}
     strict = False
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, strict=False, **kwargs):
         super().__init__(*args, **kwargs)
+        self._strict = strict or self.strict
 
         for key, value in self.items():
             correct_value = self.cast_item(key, value)
@@ -68,16 +69,19 @@ class CompoundSchema(Compound):
         pairs = chain(mapping.items(), kwargs.items())
         super().update((key, self.cast_item(key, value)) for key, value in pairs)
 
-    @classmethod
-    def cast_item(cls, key, value):
+    def cast_item(self, key, value):
         """Cast schema item to the appropriate tag type."""
-        schema_type = cls.schema.get(key)
+        schema_type = self.schema.get(key)
         if schema_type is None:
-            if cls.strict:
+            if self._strict:
                 raise TypeError(f"Invalid key {key!r}")
         elif not isinstance(value, schema_type):
             try:
-                return schema_type(value)
+                return (
+                    schema_type(value, strict=self._strict)
+                    if issubclass(schema_type, CompoundSchema)
+                    else schema_type(value)
+                )
             except CastError:
                 raise
             except Exception as exc:
