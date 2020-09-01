@@ -26,4 +26,4 @@ jobs:
       if: tag IS present
       script:
         - poetry build
-        - poetry publish --username="$PYPI_USERNAME" --password="$PYPI_PASSWORD"
+        - poetry publish --username="__token__" --password="$PYPI_TOKEN"
