@@ -371,6 +371,29 @@ class Base:
         """
         return serialize_tag(self)
 
+    def unpack(self, json=False):
+        """Return the unpacked nbt value as an instance of the associated base type.
+
+        .. doctest::
+
+            >>> Compound({"foo": Long(123)}).unpack()
+            {'foo': 123}
+
+        Arguments:
+            json: Whether the returned value should be json-serializable.
+
+                This argument will convert array tags into plain python lists
+                instead of numpy arrays.
+
+                .. doctest::
+
+                    >>> Compound({"foo": ByteArray([1, 2, 3])}).unpack()
+                    {'foo': array([1, 2, 3], dtype=int8)}
+                    >>> Compound({"foo": ByteArray([1, 2, 3])}).unpack(json=True)
+                    {'foo': [1, 2, 3]}
+        """
+        return None
+
     def __repr__(self):
         if self.tag_id is not None:
             return f"{self.__class__.__name__}({super().__repr__()})"
@@ -519,6 +542,10 @@ class NumericInteger(Numeric, int):
             raise OutOfRange(self)
         return self
 
+    def unpack(self, json=False):
+        """Override :meth:`Base.unpack` for numeric integer tags."""
+        return int(self)
+
     @property
     def as_unsigned(self):
         """Interpret the value of the tag as an unsigned integer."""
@@ -573,6 +600,10 @@ class Float(Numeric, float):
     fmt = FLOAT
     suffix = "f"
 
+    def unpack(self, json=False):
+        """Override :meth:`Base.unpack` for float tags."""
+        return float(self)
+
 
 class Double(Numeric, float):
     """Nbt tag representing a double-precision floating point number."""
@@ -581,6 +612,10 @@ class Double(Numeric, float):
     tag_id = 6
     fmt = DOUBLE
     suffix = "d"
+
+    def unpack(self, json=False):
+        """Override :meth:`Base.unpack` for double tags."""
+        return float(self)
 
 
 class Array(Base, np.ndarray):
@@ -648,6 +683,10 @@ class Array(Base, np.ndarray):
         array = self if self.item_type[byteorder] is self.dtype else self.byteswap()
         fileobj.write(array.tobytes())
 
+    def unpack(self, json=False):
+        """Override :meth:`Base.unpack` for array tags."""
+        return self.tolist() if json else np.copy(self)
+
     def __getitem__(self, index):
         if isinstance(index, slice):
             return super().__getitem__(index)
@@ -685,6 +724,10 @@ class String(Base, str):
     def write(self, fileobj, byteorder="big"):
         """Override :meth:`Base.write` for string tags."""
         write_string(self, fileobj, byteorder)
+
+    def unpack(self, json=False):
+        """Override :meth:`Base.unpack` for string tags."""
+        return str(self)
 
 
 class List(Base, list):
@@ -865,6 +908,10 @@ class List(Base, list):
             return not self
         return all(any(item.match(other_item) for item in self) for other_item in other)
 
+    def unpack(self, json=False):
+        """Override :meth:`Base.unpack` for list tags."""
+        return [item.unpack(json) for item in self]
+
     def get(self, index, default=None):
         """Return the element at the specified index.
 
@@ -1022,6 +1069,10 @@ class Compound(Base, dict):
             and self.keys() >= other.keys()
             and all(self[key].match(value) for key, value in other.items())
         )
+
+    def unpack(self, json=False):
+        """Override :meth:`Base.unpack` for compound tags."""
+        return {key: value.unpack(json) for key, value in self.items()}
 
     def get(self, key, default=None):
         """Get the element with the specified key.
