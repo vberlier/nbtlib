@@ -361,15 +361,21 @@ class Base:
             return False
         return self == other
 
-    def snbt(self):
+    def snbt(self, indent=None, compact=False, quote=None):
         """Return the snbt literal corresponding to the tag instance.
 
         .. doctest::
 
             >>> Compound({"foo": Long(123)}).snbt()
             '{foo: 123L}'
+            >>> Compound({"foo": Long(123)}).snbt(compact=True)
+            '{foo:123L}'
+            >>> print(Compound({"foo": Long(123)}).snbt(indent=4))
+            {
+                foo: 123L
+            }
         """
-        return serialize_tag(self)
+        return serialize_tag(self, indent=indent, compact=compact, quote=quote)
 
     def unpack(self, json=False):
         """Return the unpacked nbt value as an instance of the associated base type.
