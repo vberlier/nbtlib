@@ -30,7 +30,7 @@ $ pip install nbtlib
 
 The following examples will give you a very basic overview of what you
 can do. For more advanced examples, check out the
-"[Usage](https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb)"
+"[Usage](https://github.com/vberlier/nbtlib/blob/main/docs/Usage.ipynb)"
 notebook in the docs folder.
 
 ### Reading files
@@ -48,7 +48,7 @@ assert nbt_file.root['intTest'] == 2147483647
 
 For example, instances of `nbtlib.File` inherit from regular `Compound` tags, which themselves inherit from the builtin python dictionary `dict`. Similarly, instances of `Int` tags inherit from the builtin class `int`.
 
-For more details on loading nbt files and how to work with nbt tags check out the "[Usage](https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb)"
+For more details on loading nbt files and how to work with nbt tags check out the "[Usage](https://github.com/vberlier/nbtlib/blob/main/docs/Usage.ipynb)"
 notebook.
 
 ### Editing files
@@ -75,7 +75,7 @@ demo.root['counter'] = Int(demo.root['counter'] + 1)
 demo.save()
 ```
 
-For more details on the `save` method check out the "[Usage](https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb)"
+For more details on the `save` method check out the "[Usage](https://github.com/vberlier/nbtlib/blob/main/docs/Usage.ipynb)"
 notebook.
 
 ### Using schemas
@@ -98,7 +98,7 @@ assert isinstance(my_object, MySchema)
 assert isinstance(my_object['foo'], String)
 ```
 
-For more details on schemas check out the "[Usage](https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb)"
+For more details on schemas check out the "[Usage](https://github.com/vberlier/nbtlib/blob/main/docs/Usage.ipynb)"
 notebook.
 
 ### Nbt literals
@@ -129,7 +129,7 @@ my_compound = Compound({
 assert serialize_tag(my_compound) == '{foo: ["hello", "world"], bar: [I; 1, 2, 3]}'
 ```
 
-For more details on nbt literals check out the "[Usage](https://github.com/vberlier/nbtlib/blob/master/docs/Usage.ipynb)"
+For more details on nbt literals check out the "[Usage](https://github.com/vberlier/nbtlib/blob/main/docs/Usage.ipynb)"
 notebook.
 
 ### Nbt paths
@@ -306,7 +306,7 @@ $ nbt -m '{name:"Merging in an uncompressed little-endian file"}' my_file.nbt --
 Contributions are welcome. This project uses [`poetry`](https://poetry.eustace.io/) so you'll need to install it first if you want to be able to work with the project locally.
 
 ```sh
-$ curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+$ curl -sSL https://raw.githubusercontent.com/sdispater/poetry/main/get-poetry.py | python
 ```
 
 You should now be able to install the required dependencies.
@@ -323,4 +323,4 @@ $ poetry run pytest
 
 ---
 
-License - [MIT](https://github.com/vberlier/nbtlib/blob/master/LICENSE)
+License - [MIT](https://github.com/vberlier/nbtlib/blob/main/LICENSE)
