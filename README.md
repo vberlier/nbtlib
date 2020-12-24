@@ -208,6 +208,7 @@ optional arguments:
   --unpack       output interpreted nbt
   --json         output nbt as json
   --path <path>  output all the matching tags
+  --find <path>  recursively find the first matching tag
 ```
 
 ### Read nbt data
@@ -267,6 +268,13 @@ You can combine this with the `--unpack` flag to print out the unpacked python o
 ```bash
 $ nbt -r my_file.nbt --path "bar" --unpack
 Hello, world!
+```
+
+If you don't know exactly how to access the data you're interested in you can use the `--find` option to recursively try to match a given path.
+
+```bash
+$ nbt -r my_file.nbt --find "[1]"
+2
 ```
 
 ### Write nbt data
