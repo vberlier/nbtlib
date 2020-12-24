@@ -226,6 +226,23 @@ def write_string(value, fileobj, byteorder="big"):
     fileobj.write(data)
 
 
+# Path helpers
+
+
+def find_tag(key, tags):
+    """Return the first recursively matching tag."""
+    for tag in tags:
+        if isinstance(tag, (Compound, List)):
+            value = tag.get(key)
+            if value is None:
+                value = find_tag(
+                    key, list(tag if isinstance(tag, List) else tag.values())
+                )
+            if value is not None:
+                return value
+    return None
+
+
 # Tag definitions
 
 
@@ -918,6 +935,24 @@ class List(Base, list):
         """Override :meth:`Base.unpack` for list tags."""
         return [item.unpack(json) for item in self]
 
+    def find(self, key, default=None):
+        """Return the first recursively matching tag.
+
+        .. doctest::
+
+            >>> tag = parse_nbt("[{data: {value: 42}}, {data: {value: 7}}]")
+            >>> tag.find(Path("data.value"))
+            Int(42)
+            >>> tag.find("value")
+            Int(42)
+
+        Arguments:
+            index: Can be a string, an integer, a slice or an instance of :class:`nbtlib.path.Path`.
+            default: Returned when the element could not be found.
+        """
+        value = find_tag(key, [self])
+        return default if value is None else value
+
     def get(self, index, default=None):
         """Return the element at the specified index.
 
@@ -939,7 +974,7 @@ class List(Base, list):
                 if isinstance(index, (int, slice))
                 else index.get(self)
             )
-        except IndexError:
+        except (IndexError, AttributeError):
             return []
 
     def __getitem__(self, index):
@@ -1080,6 +1115,24 @@ class Compound(Base, dict):
         """Override :meth:`Base.unpack` for compound tags."""
         return {key: value.unpack(json) for key, value in self.items()}
 
+    def find(self, key, default=None):
+        """Return the first recursively matching tag.
+
+        .. doctest::
+
+            >>> tag = parse_nbt("{foo: {bar: [{value: 42}, {value: 7}]}}")
+            >>> tag.find(Path("[1].value"))
+            Int(7)
+            >>> tag.find("value")
+            Int(42)
+
+        Arguments:
+            index: Can be a string, an integer, a slice or an instance of :class:`nbtlib.path.Path`.
+            default: Returned when the element could not be found.
+        """
+        value = find_tag(key, [self])
+        return default if value is None else value
+
     def get(self, key, default=None):
         """Get the element with the specified key.
 
@@ -1087,9 +1140,10 @@ class Compound(Base, dict):
             key: Can be a string or an instance of :class:`nbtlib.path.Path`.
             default: Returned when the element could not be found.
         """
-        if isinstance(key, str):
+        try:
+            return (key.get(self) or [default])[0]
+        except AttributeError:
             return super().get(key, default)
-        return (key.get(self) or [default])[0]
 
     def get_all(self, key):
         """Return all the elements matching the specified key.
