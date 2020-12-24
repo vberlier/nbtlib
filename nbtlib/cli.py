@@ -4,7 +4,7 @@ from argparse import ArgumentParser, ArgumentTypeError
 
 
 from nbtlib import nbt, parse_nbt, serialize_tag, InvalidLiteral, Path
-from nbtlib.tag import Compound
+from nbtlib.tag import Compound, find_tag
 
 
 # Validation helper
@@ -38,6 +38,9 @@ parser.add_argument("--pretty", action="store_true", help="output indented snbt"
 parser.add_argument("--unpack", action="store_true", help="output interpreted nbt")
 parser.add_argument("--json", action="store_true", help="output nbt as json")
 parser.add_argument("--path", metavar="<path>", help="output all the matching tags")
+parser.add_argument(
+    "--find", metavar="<path>", help="recursively find the first matching tag"
+)
 
 parser.add_argument("file", metavar="<file>", help="the target file")
 
@@ -59,6 +62,7 @@ def main():
                 args.unpack,
                 args.json,
                 args.path,
+                args.find,
             )
         elif args.w:
             write(args.w, args.file, gzipped, byteorder)
@@ -68,12 +72,16 @@ def main():
         parser.exit(1, str(exc) + "\n")
 
 
-def read(filename, gzipped, byteorder, compact, pretty, unpack, json, path):
+def read(filename, gzipped, byteorder, compact, pretty, unpack, json, path, find):
     nbt_file = nbt.load(filename, gzipped=gzipped, byteorder=byteorder)
 
     tags = nbt_file.get_all(Path(path)) if path else [nbt_file]
 
     for tag in tags:
+        if find:
+            tag = find_tag(Path(find), [tag])
+        if tag is None:
+            continue
         if unpack:
             if pretty:
                 pprint(tag.unpack())
