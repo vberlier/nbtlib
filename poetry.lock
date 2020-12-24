@@ -531,7 +531,7 @@ python-versions = "*"
 
 [[package]]
 name = "mudkip"
-version = "0.3.6"
+version = "0.3.8"
 description = "A friendly Sphinx wrapper"
 category = "dev"
 optional = false
@@ -539,16 +539,17 @@ python-versions = ">=3.7,<4.0"
 
 [package.dependencies]
 click = ">=7.0,<8.0"
+colorama = {version = "*", markers = "sys_platform == \"win32\""}
 jupyter_nbextensions_configurator = ">=0.4.1,<0.5.0"
 livereload = ">=2.6,<3.0"
-nbsphinx = ">=0.7.1,<0.8.0"
+nbsphinx = ">=0.7.1,<0.9.0"
 notebook = ">=6.0.3,<7.0.0"
-recommonmark = ">=0.6.0,<0.7.0"
+recommonmark = ">=0.6,<0.8"
 sphinx = ">=3.1.1,<4.0.0"
 sphinx-autodoc-typehints = ">=1.11.0,<2.0.0"
 sphinx_rtd_theme = ">=0.5.0,<0.6.0"
-tomlkit = ">=0.6.0,<0.7.0"
-watchdog = ">=0.10.2,<0.11.0"
+tomlkit = ">=0.6,<0.8"
+watchdog = ">=0.10.2,<1.1.0"
 
 [[package]]
 name = "mypy-extensions"
@@ -1414,7 +1415,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "201d17e65e8327738db39cfba9859ec627ddf27c2dde37cd4a57e65336fa3f52"
+content-hash = "f1d14c7ee034e7224457919ad964f8ce8ac52ce95f01a23f188018bd10e07048"
 
 [metadata.files]
 alabaster = [
@@ -1689,8 +1690,8 @@ mistune = [
     {file = "mistune-0.8.4.tar.gz", hash = "sha256:59a3429db53c50b5c6bcc8a07f8848cb00d7dc8bdb431a4ab41920d201d4756e"},
 ]
 mudkip = [
-    {file = "mudkip-0.3.6-py3-none-any.whl", hash = "sha256:c26b8253f5bd571ae113cb66cb889ca66b361d879409c0e0be2f4a1af15f06f1"},
-    {file = "mudkip-0.3.6.tar.gz", hash = "sha256:6c9dbf911d9e4efef785cd0da36b4172991457ac3fd0538b0289d36bad2962d5"},
+    {file = "mudkip-0.3.8-py3-none-any.whl", hash = "sha256:5b9c68bd48433b01e5d86618742705f62ef2099fe571d52c6684466b2cbd580f"},
+    {file = "mudkip-0.3.8.tar.gz", hash = "sha256:2048594a75da8c1840d00686848a8ee6997940c6ff0d0a46ca74f43c4a008cb2"},
 ]
 mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},
