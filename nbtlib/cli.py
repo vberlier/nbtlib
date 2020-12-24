@@ -27,6 +27,7 @@ parser = ArgumentParser(prog="nbt", description="Perform operations on nbt files
 
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument("-r", action="store_true", help="read nbt data from a file")
+group.add_argument("-s", action="store_true", help="read snbt from a file")
 group.add_argument("-w", metavar="<nbt>", type=nbt_data, help="write nbt to a file")
 group.add_argument("-m", metavar="<nbt>", type=nbt_data, help="merge nbt into a file")
 
@@ -52,11 +53,12 @@ def main():
     args = parser.parse_args()
     gzipped, byteorder = not args.plain, "little" if args.little else "big"
     try:
-        if args.r:
+        if args.r or args.s:
             read(
                 args.file,
                 gzipped,
                 byteorder,
+                args.s,
                 args.compact,
                 args.pretty,
                 args.unpack,
@@ -72,8 +74,12 @@ def main():
         parser.exit(1, str(exc) + "\n")
 
 
-def read(filename, gzipped, byteorder, compact, pretty, unpack, json, path, find):
-    nbt_file = nbt.load(filename, gzipped=gzipped, byteorder=byteorder)
+def read(filename, gzipped, byteorder, snbt, compact, pretty, unpack, json, path, find):
+    if snbt:
+        with open(filename) as f:
+            nbt_file = parse_nbt(f.read())
+    else:
+        nbt_file = nbt.load(filename, gzipped=gzipped, byteorder=byteorder)
 
     tags = nbt_file.get_all(Path(path)) if path else [nbt_file]
 
