@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v1.11.0 (2020-12-24)
+### Feature
+* Make it possible to load snbt files ([`ebf1080`](https://github.com/vberlier/nbtlib/commit/ebf10809eebaf19185868868b98c463c3845540d))
+
+### Documentation
+* Document the `-s` option for reading snbt ([`1206e05`](https://github.com/vberlier/nbtlib/commit/1206e05229cb48b46ed7427432f5e55155b0b0fd))
+
 ## v1.10.0 (2020-12-24)
 ### Feature
 * Add --find cli option ([`d99bc48`](https://github.com/vberlier/nbtlib/commit/d99bc48354899f0e1edfdc600859dc6e4eb79351))
