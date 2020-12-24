@@ -187,8 +187,8 @@ basic operations on nbt files.
 
 ```
 $ nbt --help
-usage: nbt [-h] (-r | -w <nbt> | -m <nbt>) [--plain] [--little] [--compact]
-           [--pretty] [--unpack] [--json] [--path <path>]
+usage: nbt [-h] (-r | -s | -w <nbt> | -m <nbt>) [--plain] [--little] [--compact]
+           [--pretty] [--unpack] [--json] [--path <path>] [--find <path>]
            <file>
 
 Perform operations on nbt files.
@@ -199,6 +199,7 @@ positional arguments:
 optional arguments:
   -h, --help     show this help message and exit
   -r             read nbt data from a file
+  -s             read snbt from a file
   -w <nbt>       write nbt to a file
   -m <nbt>       merge nbt into a file
   --plain        don't use gzip compression
@@ -275,6 +276,13 @@ If you don't know exactly how to access the data you're interested in you can us
 ```bash
 $ nbt -r my_file.nbt --find "[1]"
 2
+```
+
+You can also perform all these operations on snbt by using the `-s` option instead of the `-r` option.
+
+```bash
+$ nbt -s foo.snbt --path bar
+"Hello, world!"
 ```
 
 ### Write nbt data
