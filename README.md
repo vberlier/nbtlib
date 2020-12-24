@@ -187,24 +187,27 @@ basic operations on nbt files.
 
 ```
 $ nbt --help
-usage: nbt [-h] (-r | -w <nbt> | -m <nbt>) [--plain] [--little] [--pretty]
-           [--compact]
+usage: nbt [-h] (-r | -w <nbt> | -m <nbt>) [--plain] [--little] [--compact]
+           [--pretty] [--unpack] [--json] [--path <path>]
            <file>
 
-Perform basic operations on nbt files.
+Perform operations on nbt files.
 
 positional arguments:
-  <file>      the target file
+  <file>         the target file
 
 optional arguments:
-  -h, --help  show this help message and exit
-  -r          read nbt data from a file
-  -w <nbt>    write nbt to a file
-  -m <nbt>    merge nbt into an nbt file
-  --plain     don't use gzip compression
-  --little    use little-endian format
-  --pretty    output indented snbt
-  --compact   output compact snbt
+  -h, --help     show this help message and exit
+  -r             read nbt data from a file
+  -w <nbt>       write nbt to a file
+  -m <nbt>       merge nbt into a file
+  --plain        don't use gzip compression
+  --little       use little-endian format
+  --compact      output compact snbt
+  --pretty       output indented snbt
+  --unpack       output interpreted nbt
+  --json         output nbt as json
+  --path <path>  output all the matching tags
 ```
 
 ### Read nbt data
@@ -221,7 +224,7 @@ You can use the following command if you want to save the output into a
 file.
 
 ```bash
-$ nbt -r my_file.nbt > my_file.txt
+$ nbt -r my_file.nbt > my_file.snbt
 ```
 
 Using the `--compact` argument will remove all the extra whitespace from the output.
@@ -239,6 +242,31 @@ $ nbt -r my_file.nbt --pretty
     foo: [1, 2, 3],
     bar: "Hello, world!"
 }
+```
+
+The output can be converted to json with the `--json` flag.
+
+```bash
+$ nbt -r my_file.nbt --json
+{"foo": [1, 2, 3], "bar": "Hello, world!"}
+```
+
+The `--path` option lets you output tags that match a given path.
+
+```bash
+$ nbt -r my_file.nbt --path "bar"
+"Hello, world!"
+$ nbt -r my_file.nbt --path "foo[]"
+1
+2
+3
+```
+
+You can combine this with the `--unpack` flag to print out the unpacked python objects.
+
+```bash
+$ nbt -r my_file.nbt --path "bar" --unpack
+Hello, world!
 ```
 
 ### Write nbt data
