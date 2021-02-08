@@ -37,7 +37,7 @@ nbt = 'nbtlib.cli:main'
 [tool.semantic_release]
 branch = "main"
 version_variable = ["nbtlib/__init__.py:__version__"]
-version_pattern = ['pyproject.toml:\nversion = "{version}"']
+version_toml = "pyproject.toml:tool.poetry.version"
 build_command = "poetry build"
 
 [build-system]
