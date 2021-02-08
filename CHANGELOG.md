@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.11.1 (2021-02-08)
+### Fix
+* Replace unicode errors ([`09013d7`](https://github.com/vberlier/nbtlib/commit/09013d7b7baff68fb4f2b91bef82bceeb71e06d1))
+
 ## v1.11.0 (2020-12-24)
 ### Feature
 * Make it possible to load snbt files ([`ebf1080`](https://github.com/vberlier/nbtlib/commit/ebf10809eebaf19185868868b98c463c3845540d))
