@@ -82,11 +82,12 @@ __all__ = [
 ]
 
 
-from struct import Struct, error as StructError
+from struct import Struct
+from struct import error as StructError
+
 import numpy as np
 
 from .literal.serializer import serialize_tag
-
 
 # Struct formats used to pack and unpack numeric values
 
@@ -216,7 +217,7 @@ def write_numeric(fmt, value, fileobj, byteorder="big"):
 def read_string(fileobj, byteorder="big"):
     """Read a string from a file-like object."""
     length = read_numeric(USHORT, fileobj, byteorder)
-    return fileobj.read(length).decode("utf-8")
+    return fileobj.read(length).decode("utf-8", "replace")
 
 
 def write_string(value, fileobj, byteorder="big"):
