@@ -938,8 +938,8 @@ six = "*"
 
 [[package]]
 name = "python-semantic-release"
-version = "7.13.2"
-description = "Automatic semantic versioning for python projects"
+version = "7.14.0"
+description = "Automatic Semantic Versioning for Python projects"
 category = "dev"
 optional = false
 python-versions = "*"
@@ -1438,7 +1438,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "05858616f9abc2ca7f9ae80739bd015d360ee5694aa31d06c14d2ffc50233342"
+content-hash = "c62e4a5dded451c6c02e9ac6721eaaecf9efcc6018952cb47ad1b8e7812f221f"
 
 [metadata.files]
 alabaster = [
@@ -1882,8 +1882,8 @@ python-gitlab = [
     {file = "python_gitlab-1.15.0-py3-none-any.whl", hash = "sha256:51ad36873b5c20cd21d9373db0936fb99c521575668320025d0fb519398d2e17"},
 ]
 python-semantic-release = [
-    {file = "python-semantic-release-7.13.2.tar.gz", hash = "sha256:5eaffada8d0e0bddeaf57776a6c510809fe4915ebf71d204efe8f362072c1a78"},
-    {file = "python_semantic_release-7.13.2-py3-none-any.whl", hash = "sha256:57d49e97ed895a1ac8bedd9b89d136f217b7d159b8d865051dd1dd43275ddd47"},
+    {file = "python-semantic-release-7.14.0.tar.gz", hash = "sha256:cda2feebad8fcb1e6522c0dd9a831cb1d39c7b9d6f9e17b20b178295431a2312"},
+    {file = "python_semantic_release-7.14.0-py3-none-any.whl", hash = "sha256:bb07830e620b6f9bb2a19bfe149186ff80f53a11f8cef24eb790f46cb1a54c4b"},
 ]
 pytz = [
     {file = "pytz-2020.4-py2.py3-none-any.whl", hash = "sha256:5c55e189b682d420be27c6995ba6edce0c0a77dd67bfbe2ae6607134d5851ffd"},
