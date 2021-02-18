@@ -1,11 +1,9 @@
+from argparse import ArgumentParser, ArgumentTypeError
 from json import dumps as json_dumps
 from pprint import pprint
-from argparse import ArgumentParser, ArgumentTypeError
 
-
-from nbtlib import nbt, parse_nbt, serialize_tag, InvalidLiteral, Path
+from nbtlib import InvalidLiteral, Path, nbt, parse_nbt, serialize_tag
 from nbtlib.tag import Compound, find_tag
-
 
 # Validation helper
 
@@ -17,7 +15,7 @@ def nbt_data(literal):
         raise ArgumentTypeError(exc) from exc
     else:
         if not isinstance(nbt_data, Compound):
-            raise ArgumentTypeError("The root nbt tag must be a compound tag")
+            raise ArgumentTypeError("the root nbt tag must be a compound tag")
         return nbt_data
 
 
@@ -25,11 +23,13 @@ def nbt_data(literal):
 
 parser = ArgumentParser(prog="nbt", description="Perform operations on nbt files.")
 
-group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument("-r", action="store_true", help="read nbt data from a file")
-group.add_argument("-s", action="store_true", help="read snbt from a file")
-group.add_argument("-w", metavar="<nbt>", type=nbt_data, help="write nbt to a file")
-group.add_argument("-m", metavar="<nbt>", type=nbt_data, help="merge nbt into a file")
+inputs = parser.add_mutually_exclusive_group()
+inputs.add_argument("-r", action="store_true", help="read nbt data from a file")
+inputs.add_argument("-s", action="store_true", help="read snbt from a file")
+
+outputs = parser.add_mutually_exclusive_group()
+outputs.add_argument("-w", metavar="<nbt>", help="write nbt to a file")
+outputs.add_argument("-m", metavar="<nbt>", help="merge nbt into a file")
 
 parser.add_argument("--plain", action="store_true", help="don't use gzip compression")
 parser.add_argument("--little", action="store_true", help="use little-endian format")
@@ -54,27 +54,26 @@ def main():
     gzipped, byteorder = not args.plain, "little" if args.little else "big"
     try:
         if args.r or args.s:
-            read(
-                args.file,
-                gzipped,
-                byteorder,
-                args.s,
-                args.compact,
-                args.pretty,
-                args.unpack,
-                args.json,
-                args.path,
-                args.find,
-            )
+            for tag in read(
+                args.file, gzipped, byteorder, args.s, args.path, args.find
+            ):
+                if args.w:
+                    write(tag, args.w, gzipped, byteorder)
+                elif args.m:
+                    merge(tag, args.m, gzipped, byteorder)
+                else:
+                    display(tag, args.compact, args.pretty, args.unpack, args.json)
         elif args.w:
-            write(args.w, args.file, gzipped, byteorder)
+            write(nbt_data(args.w), args.file, gzipped, byteorder)
         elif args.m:
-            merge(args.m, args.file, gzipped, byteorder)
-    except IOError as exc:
-        parser.exit(1, str(exc) + "\n")
+            merge(nbt_data(args.m), args.file, gzipped, byteorder)
+        else:
+            parser.error("one of the following arguments is required: -r -s -w -m")
+    except (ArgumentTypeError, IOError) as exc:
+        parser.error(f"{exc}")
 
 
-def read(filename, gzipped, byteorder, snbt, compact, pretty, unpack, json, path, find):
+def read(filename, gzipped, byteorder, snbt, path, find):
     if snbt:
         with open(filename) as f:
             nbt_file = parse_nbt(f.read())
@@ -85,18 +84,21 @@ def read(filename, gzipped, byteorder, snbt, compact, pretty, unpack, json, path
 
     for tag in tags:
         if find:
-            tag = find_tag(Path(find), [tag])
-        if tag is None:
-            continue
-        if unpack:
-            if pretty:
-                pprint(tag.unpack())
-            else:
-                print(tag.unpack())
-        elif json:
-            print(json_dumps(tag.unpack(json=True), indent=4 if pretty else None))
+            tag = tag.find(Path(find))
+        if tag is not None:
+            yield tag
+
+
+def display(tag, compact, pretty, unpack, json):
+    if unpack:
+        if pretty:
+            pprint(tag.unpack())
         else:
-            print(serialize_tag(tag, indent=4 if pretty else None, compact=compact))
+            print(tag.unpack())
+    elif json:
+        print(json_dumps(tag.unpack(json=True), indent=4 if pretty else None))
+    else:
+        print(serialize_tag(tag, indent=4 if pretty else None, compact=compact))
 
 
 def write(nbt_data, filename, gzipped, byteorder):

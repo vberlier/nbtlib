@@ -187,8 +187,9 @@ basic operations on nbt files.
 
 ```
 $ nbt --help
-usage: nbt [-h] (-r | -s | -w <nbt> | -m <nbt>) [--plain] [--little] [--compact]
-           [--pretty] [--unpack] [--json] [--path <path>] [--find <path>]
+usage: nbt [-h] [-r | -s] [-w <nbt> | -m <nbt>] [--plain] [--little]
+           [--compact] [--pretty] [--unpack] [--json]
+           [--path <path>] [--find <path>]
            <file>
 
 Perform operations on nbt files.
@@ -297,6 +298,12 @@ $ nbt -w '{foo:[1,2,3],bar:{hello:[B;1b,1b,0b,1b]}}' my_file.nbt
 
 The file will be created if it doesn't already exist.
 
+You can combine the `-w` flag with other flags to read, filter and write nbt data.
+
+```bash
+$ nbt -r my_file.nbt --path "bar" -w bar.nbt
+```
+
 ### Merge nbt data
 
 Finally, you can merge some nbt data into an already existing file by
@@ -317,6 +324,12 @@ $ nbt -r my_file.nbt
 Here, the compound values that aren't present in the input literal are
 left untouched. Using the `-w` option instead of `-m` would
 overwrite the whole file.
+
+You can combine the `-m` flag with other flags to read, filter and merge nbt data.
+
+```bash
+$ nbt -s foo.snbt -m my_file.nbt
+```
 
 ### Compression and byte order
 
