@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.12.0 (2021-02-18)
+### Feature
+* Make it possible to combine reading and writing/merging ([`9d5be17`](https://github.com/vberlier/nbtlib/commit/9d5be173a0b594a4077eddfe53709b78c6a67637))
+
 ## v1.11.1 (2021-02-08)
 ### Fix
 * Replace unicode errors ([`09013d7`](https://github.com/vberlier/nbtlib/commit/09013d7b7baff68fb4f2b91bef82bceeb71e06d1))
