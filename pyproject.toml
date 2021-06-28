@@ -29,7 +29,7 @@ pytest-benchmark = "^3.4"
 black = "^21.6b0"
 mudkip = "^0.4.9"
 pytest-minecraft = "^0.1.1"
-python-semantic-release = "^7.16.1"
+python-semantic-release = "^7.16.2"
 
 [tool.poetry.scripts]
 nbt = 'nbtlib.cli:main'
