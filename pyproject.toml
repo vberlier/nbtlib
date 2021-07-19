@@ -21,7 +21,7 @@ keywords = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-numpy = ">1.16,<1.21.1"
+numpy = ">1.16,<1.21.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
