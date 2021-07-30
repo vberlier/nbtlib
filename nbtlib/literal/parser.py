@@ -45,7 +45,8 @@ TOKENS = {
     "QUOTED_STRING": "|".join(
         fr"{q}(?:{ESCAPE_REGEX.pattern}|[^\\])*?{q}" for q in STRING_QUOTES
     ),
-    "NUMBER": r"[+-]?(?:[0-9]*?\.[0-9]+|[0-9]+\.[0-9]*?|[1-9][0-9]*|0)([eE][+-]?[0-9]+)?[bslfdBSLFD]?(?![a-zA-Z0-9._+-])",
+    "NUMBER": r"[+-]?(?:[0-9]*?\.[0-9]+|[0-9]+\.[0-9]*?|[1-9][0-9]*|0)"
+              r"([eE][+-]?[0-9]+)?[bslfdBSLFD]?(?![a-zA-Z0-9._+-])",
     "STRING": r"[a-zA-Z0-9._+-]+",
     "COMPOUND": r"\{",
     "CLOSE_COMPOUND": r"\}",
@@ -203,7 +204,9 @@ class Parser:
                 return
 
             if self.current_token.type != "COMMA":
-                raise self.error(f"Expected comma but got {self.current_token.value!r}")
+                raise self.error(
+                    f"Expected comma but got {self.current_token.value!r}"
+                )
             self.next()
 
     def parse_compound(self):
@@ -219,7 +222,10 @@ class Parser:
                 item_key = self.unquote_string(item_key)
 
             if self.next().current_token.type != "COLON":
-                raise self.error(f"Expected colon but got {self.current_token.value!r}")
+                raise self.error(
+                    f"Expected colon but got {self.current_token.value!r}"
+                )
+
             self.next()
             compound_tag[item_key] = self.parse()
         return compound_tag
@@ -230,7 +236,10 @@ class Parser:
             is_number = token.type == "NUMBER"
             value = token.value.lower()
             if not (is_number and value.endswith(number_suffix)):
-                raise self.error(f"Invalid {number_type} array element {token.value!r}")
+                raise self.error(
+                    f"Invalid {number_type} array element {token.value!r}"
+                )
+
             yield int(value.replace(number_suffix, ""))
 
     def parse_byte_array(self):
@@ -249,8 +258,12 @@ class Parser:
         """Parse a list from the token stream."""
         try:
             return List(
-                [self.parse() for _ in self.collect_tokens_until("CLOSE_BRACKET")]
+                [
+                    self.parse()
+                    for _ in self.collect_tokens_until("CLOSE_BRACKET")
+                ]
             )
+
         except IncompatibleItemType as exc:
             raise self.error(
                 f"Item {str(exc.item)!r} is not a {exc.subtype.__name__} tag"

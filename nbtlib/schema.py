@@ -21,7 +21,7 @@ def schema(name, dct, *, strict=False):
     subclass the base `CompoundSchema` class.
 
     The `name` argument is the name of the class and `dct` should be a
-    dictionnary containing the actual schema. The schema should map keys
+    dictionary containing the actual schema. The schema should map keys
     to tag types or other compound schemas.
 
     If the `strict` keyword only argument is set to True, interacting
@@ -29,7 +29,9 @@ def schema(name, dct, *, strict=False):
     `TypeError`.
     """
     return type(
-        name, (CompoundSchema,), {"__slots__": (), "schema": dct, "strict": strict}
+        name,
+        (CompoundSchema,),
+        {"__slots__": (), "schema": dct, "strict": strict}
     )
 
 
@@ -67,7 +69,9 @@ class CompoundSchema(Compound):
 
     def update(self, mapping, **kwargs):
         pairs = chain(mapping.items(), kwargs.items())
-        super().update((key, self.cast_item(key, value)) for key, value in pairs)
+        super().update(
+            (key, self.cast_item(key, value)) for key, value in pairs
+        )
 
     def cast_item(self, key, value):
         """Cast schema item to the appropriate tag type."""

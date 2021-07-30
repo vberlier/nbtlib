@@ -21,7 +21,9 @@ def nbt_data(literal):
 
 # Create the argument parser
 
-parser = ArgumentParser(prog="nbt", description="Perform operations on nbt files.")
+parser = ArgumentParser(
+    prog="nbt", description="Perform operations on nbt files."
+)
 
 inputs = parser.add_mutually_exclusive_group()
 inputs.add_argument("-r", action="store_true", help="read nbt data from a file")
@@ -31,14 +33,27 @@ outputs = parser.add_mutually_exclusive_group()
 outputs.add_argument("-w", metavar="<nbt>", help="write nbt to a file")
 outputs.add_argument("-m", metavar="<nbt>", help="merge nbt into a file")
 
-parser.add_argument("--plain", action="store_true", help="don't use gzip compression")
-parser.add_argument("--little", action="store_true", help="use little-endian format")
-
-parser.add_argument("--compact", action="store_true", help="output compact snbt")
-parser.add_argument("--pretty", action="store_true", help="output indented snbt")
-parser.add_argument("--unpack", action="store_true", help="output interpreted nbt")
-parser.add_argument("--json", action="store_true", help="output nbt as json")
-parser.add_argument("--path", metavar="<path>", help="output all the matching tags")
+parser.add_argument(
+    "--plain", action="store_true", help="don't use gzip compression"
+)
+parser.add_argument(
+    "--little", action="store_true", help="use little-endian format"
+)
+parser.add_argument(
+    "--compact", action="store_true", help="output compact snbt"
+)
+parser.add_argument(
+    "--pretty", action="store_true", help="output indented snbt"
+)
+parser.add_argument(
+    "--unpack", action="store_true", help="output interpreted nbt"
+)
+parser.add_argument(
+    "--json", action="store_true", help="output nbt as json"
+)
+parser.add_argument(
+    "--path", metavar="<path>", help="output all the matching tags"
+)
 parser.add_argument(
     "--find", metavar="<path>", help="recursively find the first matching tag"
 )
@@ -59,16 +74,26 @@ def main():
             ):
                 if args.w:
                     write(tag, args.w, gzipped, byteorder)
+
                 elif args.m:
                     merge(tag, args.m, gzipped, byteorder)
+
                 else:
-                    display(tag, args.compact, args.pretty, args.unpack, args.json)
+                    display(
+                        tag, args.compact, args.pretty, args.unpack, args.json
+                    )
+
         elif args.w:
             write(nbt_data(args.w), args.file, gzipped, byteorder)
+
         elif args.m:
             merge(nbt_data(args.m), args.file, gzipped, byteorder)
+
         else:
-            parser.error("one of the following arguments is required: -r -s -w -m")
+            parser.error(
+                "one of the following arguments is required: -r -s -w -m"
+            )
+
     except (ArgumentTypeError, IOError) as exc:
         parser.error(f"{exc}")
 

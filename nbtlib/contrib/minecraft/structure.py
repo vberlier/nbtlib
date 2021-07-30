@@ -45,7 +45,9 @@ class StructureFile(File, CompoundSchema):
     strict = True
 
     def __init__(self, structure_data=None, *, filename=None):
-        super().__init__({"": structure_data or {}}, gzipped=True, filename=filename)
+        super().__init__(
+            {"": structure_data or {}}, gzipped=True, filename=filename
+        )
 
     @classmethod
     def load(cls, filename):

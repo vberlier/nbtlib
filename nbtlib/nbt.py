@@ -327,12 +327,18 @@ class File(Root):
             >>> with demo:
             ...     demo.root['counter'] = nbtlib.Int(0)
 
-        This essentially overwrites the file at the end of the ``with`` statement.
+        This essentially overwrites the file at the end
+            of the ``with`` statement.
 
         Arguments:
-            filename: The name of the file. Defaults to the instance's :attr:`filename` attribute.
-            gzipped: Whether the file should be gzipped. Defaults to the instance's :attr:`gzipped` attribute.
-            byteorder: Whether the file should be big-endian or little-endian. Defaults to the instance's :attr:`byteorder` attribute.
+            filename: The name of the file.
+                Defaults to the instance's :attr:`filename` attribute.
+
+            gzipped: Whether the file should be gzipped.
+                Defaults to the instance's :attr:`gzipped` attribute.
+
+            byteorder: Whether the file should be big-endian or little-endian.
+                Defaults to the instance's :attr:`byteorder` attribute.
         """
         if gzipped is None:
             gzipped = self.gzipped
@@ -343,8 +349,8 @@ class File(Root):
             raise ValueError("No filename specified")
 
         open_file = gzip.open if gzipped else open
-        with open_file(filename, "wb") as fileobj:
-            self.write(fileobj, byteorder or self.byteorder)
+        with open_file(filename, "wb") as file_obj:
+            self.write(file_obj, byteorder or self.byteorder)
 
     def __enter__(self):
         return self

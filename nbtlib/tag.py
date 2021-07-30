@@ -300,7 +300,7 @@ class Base:
     serializer = None
 
     def __init_subclass__(cls):
-        # Add class to the `all_tags` dictionnary if it has a tag id
+        # Add class to the `all_tags` dictionary if it has a tag id
         if cls.tag_id is not None and cls.tag_id not in cls.all_tags:
             cls.all_tags[cls.tag_id] = cls
 
@@ -314,7 +314,8 @@ class Base:
             <class 'nbtlib.tag.Int'>
 
         Arguments:
-            tag_id: The tag id must be valid otherwise the method raises a ``KeyError``.
+            tag_id: The tag id must be valid
+                otherwise the method raises a ``KeyError``.
         """
         return cls.all_tags[tag_id]
 
@@ -329,12 +330,14 @@ class Base:
             fileobj: A readable file-like object.
             byteorder: Whether the nbt data is big-endian or little-endian.
 
-                .. doctest::
+            .. doctest::
 
-                    >>> Int.parse(io.BytesIO(b"\x00\x00\x00\x01"))
-                    Int(1)
-                    >>> Int.parse(io.BytesIO(b"\x01\x00\x00\x00"), byteorder="little")
-                    Int(1)
+                >>> Int.parse(io.BytesIO(b"\x00\x00\x00\x01"))
+                Int(1)
+                >>> Int.parse(
+                >>>     io.BytesIO(b"\x01\x00\x00\x00"), byteorder="little"
+                >>> )
+                Int(1)
         """
 
     def write(self, fileobj, byteorder="big"):
@@ -345,7 +348,8 @@ class Base:
 
         Arguments:
             fileobj: A writable file-like object.
-            byteorder: Whether the nbt data should be big-endian or little-endian.
+            byteorder: Whether the nbt data should be big-endian
+                or little-endian.
 
                 .. doctest::
 
@@ -362,9 +366,9 @@ class Base:
     def match(self, other):
         """Check whether the tag recursively matches a subset of values.
 
-        The default implementation checks that the :attr:`tag_id` of the argument
-        matches and that the two instances are equal. Concrete tags override
-        this method.
+        The default implementation checks that the :attr:`tag_id` of the
+        argument matches and that the two instances are equal.
+        Concrete tags override this method.
 
         .. doctest::
 
@@ -396,7 +400,8 @@ class Base:
         return serialize_tag(self, indent=indent, compact=compact, quote=quote)
 
     def unpack(self, json=False):
-        """Return the unpacked nbt value as an instance of the associated base type.
+        """Return the unpacked nbt value as an instance
+            of the associated base type.
 
         .. doctest::
 
@@ -413,7 +418,9 @@ class Base:
 
                     >>> Compound({"foo": ByteArray([1, 2, 3])}).unpack()
                     {'foo': array([1, 2, 3], dtype=int8)}
-                    >>> Compound({"foo": ByteArray([1, 2, 3])}).unpack(json=True)
+                    >>> Compound(
+                    >>>     {"foo": ByteArray([1, 2, 3])}
+                    >>> ).unpack(json=True)
                     {'foo': [1, 2, 3]}
         """
         return None
@@ -698,13 +705,19 @@ class Array(Base, np.ndarray):
     def parse(cls, fileobj, byteorder="big"):
         """Override :meth:`Base.parse` for array tags."""
         item_type = cls.item_type[byteorder]
-        data = fileobj.read(read_numeric(INT, fileobj, byteorder) * item_type.itemsize)
+        data = fileobj.read(
+            read_numeric(INT, fileobj, byteorder) * item_type.itemsize
+        )
+
         return cls(np.frombuffer(data, item_type), byteorder=byteorder)
 
     def write(self, fileobj, byteorder="big"):
         """Override :meth:`Base.write` for array tags."""
         write_numeric(INT, len(self), fileobj, byteorder)
-        array = self if self.item_type[byteorder] is self.dtype else self.byteswap()
+        array = (
+            self if self.item_type[byteorder] is self.dtype else self.byteswap()
+        )
+
         fileobj.write(array.tobytes())
 
     def unpack(self, json=False):
@@ -849,7 +862,9 @@ class List(Base, list):
             return cls.variants[item]
         except KeyError:
             variant = type(
-                f"List[{item.__name__}]", (List,), {"__slots__": (), "subtype": item}
+                f"List[{item.__name__}]",
+                (List,),
+                {"__slots__": (), "subtype": item}
             )
             cls.variants[item] = variant
             return variant
@@ -930,7 +945,11 @@ class List(Base, list):
             return False
         if not other:
             return not self
-        return all(any(item.match(other_item) for item in self) for other_item in other)
+        return all(
+            any(
+                item.match(other_item) for item in self
+            ) for other_item in other
+        )
 
     def unpack(self, json=False):
         """Override :meth:`Base.unpack` for list tags."""
@@ -948,7 +967,9 @@ class List(Base, list):
             Int(42)
 
         Arguments:
-            index: Can be a string, an integer, a slice or an instance of :class:`nbtlib.path.Path`.
+            index: Can be a string, an integer,
+                a slice or an instance of :class:`nbtlib.path.Path`.
+
             default: Returned when the element could not be found.
         """
         value = find_tag(key, [self])
@@ -958,7 +979,9 @@ class List(Base, list):
         """Return the element at the specified index.
 
         Arguments:
-            index: Can be an integer, a slice or an instance of :class:`nbtlib.path.Path`.
+            index: Can be an integer,
+                a slice or an instance of :class:`nbtlib.path.Path`.
+
             default: Returned when the element could not be found.
         """
         return (self.get_all(index) or [default])[0]
@@ -967,7 +990,8 @@ class List(Base, list):
         """Return all the elements matching the specified index.
 
         Arguments:
-            index: Can be an integer, a slice or an instance of :class:`nbtlib.path.Path`.
+            index: Can be an integer,
+                a slice or an instance of :class:`nbtlib.path.Path`.
         """
         try:
             return (
@@ -1004,15 +1028,18 @@ class List(Base, list):
             index.delete(self)
 
     def append(self, value):
-        """Override ``list.append`` to include ``isinstance`` check and auto conversion."""
+        """Override ``list.append`` to include ``isinstance``
+            check and auto conversion."""
         super().append(self.cast_item(value))
 
     def extend(self, iterable):
-        """Override ``list.extend`` to include ``isinstance`` check and auto conversion."""
+        """Override ``list.extend`` to include ``isinstance``
+            check and auto conversion."""
         super().extend(map(self.cast_item, iterable))
 
     def insert(self, index, value):
-        """Override ``list.insert`` to include ``isinstance`` check and auto conversion."""
+        """Override ``list.insert`` to include ``isinstance``
+            check and auto conversion."""
         super().insert(index, self.cast_item(value))
 
     @classmethod
@@ -1128,7 +1155,8 @@ class Compound(Base, dict):
             Int(42)
 
         Arguments:
-            index: Can be a string, an integer, a slice or an instance of :class:`nbtlib.path.Path`.
+            index: Can be a string, an integer,
+                a slice or an instance of :class:`nbtlib.path.Path`.
             default: Returned when the element could not be found.
         """
         value = find_tag(key, [self])
@@ -1153,7 +1181,10 @@ class Compound(Base, dict):
             index: Can be a string or an instance of :class:`nbtlib.path.Path`.
         """
         try:
-            return [super().__getitem__(key)] if isinstance(key, str) else key.get(self)
+            return (
+                [super().__getitem__(key)]
+                if isinstance(key, str) else key.get(self)
+            )
         except KeyError:
             return []
 
@@ -1194,10 +1225,13 @@ class Compound(Base, dict):
             ...     "value": {"bar": Int(-1), "hello": String("world")},
             ... })
             >>> compound["value"]
-            Compound({'foo': Int(123), 'bar': Int(-1), 'hello': String('world')})
+            Compound(
+                {'foo': Int(123), 'bar': Int(-1), 'hello': String('world')}
+            )
 
         Arguments:
-            other: Can be a builtin ``dict`` or an instance of :class:`Compound`.
+            other: Can be a builtin ``dict``
+                or an instance of :class:`Compound`.
         """
         for key, value in other.items():
             if key in self and (
@@ -1219,10 +1253,13 @@ class Compound(Base, dict):
             ...     "value": {"bar": Int(-1), "hello": String("world")},
             ... })
             >>> new_compound["value"]
-            Compound({'bar': Int(456), 'hello': String('world'), 'foo': Int(123)})
+            Compound(
+                {'bar': Int(456), 'hello': String('world'), 'foo': Int(123)}
+            )
 
         Arguments:
-            other: Can be a builtin ``dict`` or an instance of :class:`Compound`.
+            other: Can be a builtin ``dict``
+                or an instance of :class:`Compound`.
         """
         result = Compound(other)
         for key, value in self.items():

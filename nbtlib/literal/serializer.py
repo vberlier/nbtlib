@@ -113,7 +113,10 @@ class Serializer:
             quote = self.quote
         else:
             found = QUOTE_REGEX.search(string)
-            quote = STRING_QUOTES[found.group()] if found else next(iter(STRING_QUOTES))
+            quote = (
+                STRING_QUOTES[found.group()]
+                if found else next(iter(STRING_QUOTES))
+            )
 
         for match, seq in ESCAPE_SUBS.items():
             if match == quote or match not in STRING_QUOTES:
@@ -168,7 +171,8 @@ class Serializer:
 
             return fmt.format(
                 separator.join(
-                    f"{self.stringify_compound_key(key)}{self.colon}{self.serialize(value)}"
+                    f"{self.stringify_compound_key(key)}"
+                    f"{self.colon}{self.serialize(value)}"
                     for key, value in tag.items()
                 )
             )

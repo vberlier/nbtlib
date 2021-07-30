@@ -68,16 +68,20 @@ class Path(tuple):
     def __add__(self, other):
         if isinstance(other, Path):
             return self[other]
+
         elif isinstance(other, str):
             return self[Path(other)]
+
         else:
             return NotImplemented
 
     def __radd__(self, other):
         if isinstance(other, Path):
             return other[self]
+
         elif isinstance(other, str):
             return Path(other)[self]
+
         else:
             return NotImplemented
 
@@ -171,7 +175,9 @@ def parse_accessors(path):
         try:
             tag = parser.parse()
         except InvalidLiteral as exc:
-            raise InvalidPath(f"Invalid path at position {exc.args[0][0]}") from exc
+            raise InvalidPath(
+                f"Invalid path at position {exc.args[0][0]}"
+            ) from exc
 
         if isinstance(tag, String):
             if parser.current_token.type == "QUOTED_STRING":
@@ -182,13 +188,20 @@ def parse_accessors(path):
         elif isinstance(tag, List):
             if not tag:
                 yield ListIndex(index=None)
+
             elif len(tag) != 1:
                 raise InvalidPath("Brackets should only contain one element")
+
             elif issubclass(tag.subtype, Compound):
                 yield ListIndex(index=None)
                 yield CompoundMatch(tag[0])
-            elif issubclass(tag.subtype, Int) or can_be_converted_to_int(tag[0]):
+
+            elif (
+                issubclass(tag.subtype, Int)
+                    or can_be_converted_to_int(tag[0])
+            ):
                 yield ListIndex(int(tag[0]))
+
             else:
                 raise InvalidPath(
                     "Brackets should only contain an integer or a compound"
@@ -199,7 +212,8 @@ def parse_accessors(path):
 
         elif parser.current_token.type == "NUMBER":
             yield from (
-                NamedKey(key) for key in parser.current_token.value.split(".") if key
+                NamedKey(key) for key in parser.current_token.value.split(".")
+                if key
             )
 
         else:
@@ -216,12 +230,21 @@ def extend_accessors(accessors, new_accessor):
         *except_last, last_accessor = accessors
 
         if isinstance(last_accessor, CompoundMatch):
-            new_compound = new_accessor.compound.with_defaults(last_accessor.compound)
-            return tuple(except_last) + (CompoundMatch(new_compound),)
-        if isinstance(last_accessor, ListIndex) and last_accessor.index is not None:
-            raise InvalidPath(
-                f"Can't match a compound on list items selected with {last_accessor!r}"
+            new_compound = (
+                new_accessor.compound.with_defaults(last_accessor.compound)
             )
+
+            return tuple(except_last) + (CompoundMatch(new_compound),)
+
+        if (
+            isinstance(last_accessor, ListIndex)
+                and last_accessor.index is not None
+        ):
+            raise InvalidPath(
+                "Can't match a compound on list items"
+                f" selected with {last_accessor!r}"
+            )
+
     return accessors + (new_accessor,)
 
 
@@ -261,7 +284,11 @@ class ListIndex(NamedTuple):
         tags = [tag for tag in tags if isinstance(tag[1], (List, Array))]
 
         if self.index is None:
-            return [((tag, i), item) for _, tag in tags for i, item in enumerate(tag)]
+            return [
+                ((tag, i), item)
+                for _, tag in tags
+                for i, item in enumerate(tag)
+            ]
 
         return [
             ((tag, self.index), tag[self.index])
@@ -287,7 +314,11 @@ class CompoundMatch(NamedTuple):
     compound: Compound
 
     def get(self, tags):
-        return [(parent, tag) for parent, tag in tags if tag.match(self.compound)]
+        return [
+            (parent, tag)
+            for parent, tag in tags
+            if tag.match(self.compound)
+        ]
 
     def __str__(self):
         return self.compound.snbt()

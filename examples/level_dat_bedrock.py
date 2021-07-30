@@ -113,7 +113,10 @@ class BedrockLevelFile(File, CompoundSchema):
     def __init__(
         self, level_data=None, version=8, *, gzipped=False, byteorder="little"
     ):
-        super().__init__({"": level_data or {}}, gzipped=gzipped, byteorder=byteorder)
+        super().__init__(
+            {"": level_data or {}}, gzipped=gzipped, byteorder=byteorder
+        )
+
         self.version = version
 
     @classmethod
