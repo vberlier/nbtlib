@@ -4,7 +4,8 @@ Exported functions:
     serialize_tag -- Helper function that serializes nbt tags
 
 Exported classes:
-    Serializer -- Class that can turn nbt tags into their literal representation
+    Serializer -- Class that can turn nbt tags into
+                    their literal representation
 
 Exported objects:
     STRING_QUOTES    -- Maps the two types of quote to each other
@@ -101,14 +102,16 @@ class Serializer:
         )
 
     def expand(self, separator, fmt):
-        """Return the expanded version of the separator and format string."""
+        """Return the expanded version
+            of the separator and format string."""
         return (
             f"{separator}\n{self.indent}",
             fmt.replace("{}", f"\n{self.indent}{{}}\n{self.previous_indent}"),
         )
 
     def escape_string(self, string):
-        """Return the escaped literal representation of an nbt string."""
+        """Return the escaped literal representation
+            of an nbt string."""
         if self.quote:
             quote = self.quote
         else:
@@ -125,7 +128,8 @@ class Serializer:
         return f"{quote}{string}{quote}"
 
     def stringify_compound_key(self, key):
-        """Escape the compound key if it can't be represented unquoted."""
+        """Escape the compound key
+            if it can't be represented unquoted."""
         if UNQUOTED_COMPOUND_KEY.match(key):
             return key
         return self.escape_string(key)

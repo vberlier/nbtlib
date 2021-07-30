@@ -15,17 +15,19 @@ You can load nbt files with the :func:`load` function.
     >>> nbtlib.load("docs/hello_world.nbt")
     <File 'hello world': Compound({...})>
 
-The function will figure out by itself if the file is gzipped before loading
-it. You can set the ``byteorder`` parameter to ``"little"`` if the file is
-little-endian.
+The function will figure out by itself if the file is gzipped before
+    loading it.
+
+You can set the ``byteorder`` parameter to ``"little"``
+    if the file is little-endian.
 
 .. doctest::
 
     >>> nbtlib.load("docs/hello_world_little.nbt", byteorder="little")
     <File 'hello world': Compound({...})>
 
-You can create new nbt files by instantiating the :class:`File` class with
-the desired nbt data and calling the :meth:`File.save` method.
+You can create new nbt files by instantiating the :class:`File` class
+with the desired nbt data and calling the :meth:`File.save` method.
 
 
 .. doctest::
@@ -70,10 +72,12 @@ def load(filename, *, gzipped=None, byteorder="big"):
         >>> nbt_file.root["stringTest"]
         String('HELLO WORLD THIS IS A TEST STRING ÅÄÖ!')
 
-    The function returns an instance of the dict-like :class:`File` class
-    holding all the data that could be parsed from the binary file.
-    You can retrieve items from the :attr:`Root.root` property with the index
-    operator just like with regular python dictionaries.
+    The function returns an instance of the dict-like :class:`File`
+    class holding all the data that could be parsed
+        from the binary file.
+
+    You can retrieve items from the :attr:`Root.root` property with the
+    index operator just like with regular python dictionaries.
 
     Note that the :class:`File` instance can be used as a context
     manager. The :meth:`File.save` method is called automatically at the
@@ -206,8 +210,8 @@ class File(Root):
         >>> nbt_file["Data"]
         Compound({'hello': String('world')})
 
-    You can write nbt data to an already opened file-like object with the
-    inherited :meth:`nbtlib.tag.Compound.write` method.
+    You can write nbt data to an already opened file-like object with
+    the inherited :meth:`nbtlib.tag.Compound.write` method.
 
     .. doctest::
 
@@ -216,8 +220,9 @@ class File(Root):
         >>> fileobj.getvalue()
         b'\n\x00\x04Data\x08\x00\x05hello\x00\x05world\x00'
 
-    If you need to load files from an already opened file-like object, you can
-    use the inherited :meth:`nbtlib.tag.Compound.parse` classmethod.
+    If you need to load files from an already opened file-like object,
+    you can use the inherited :meth:`nbtlib.tag.Compound.parse`
+    classmethod.
 
     .. doctest::
 
@@ -282,14 +287,17 @@ class File(Root):
             fileobj:
                 Can be either a standard ``io.BufferedReader`` for
                 uncompressed nbt or a ``gzip.GzipFile`` for gzipped nbt
-                data. The function simply calls the inherited
-                :meth:`nbtlib.tag.Compound.parse` classmethod and sets the
-                :attr:`filename` and :attr:`gzipped` attributes depending
-                on the argument.
+                data.
+
+                The function simply calls the inherited
+                :meth:`nbtlib.tag.Compound.parse` classmethod and sets
+                the :attr:`filename` and :attr:`gzipped` attributes
+                depending on the argument.
 
             byteorder:
-                Can be either ``"big"`` or ``"little"``. The argument is
-                forwarded to :meth:`nbtlib.tag.Compound.parse`.
+                Can be either ``"big"`` or ``"little"``.
+                The argument is  forwarded to
+                :meth:`nbtlib.tag.Compound.parse`.
         """
         self = cls.parse(fileobj, byteorder)
         self.filename = getattr(fileobj, "name", self.filename)
@@ -303,8 +311,8 @@ class File(Root):
 
         The method is used by the :func:`load` helper function when the
         ``gzipped`` keyword-only argument is specified explicitly.
-        The function opens the file and uses :meth:`from_fileobj` to return
-        the :class:`File` instance.
+        The function opens the file and uses :meth:`from_fileobj`
+        to return the :class:`File` instance.
 
         Arguments:
             filename: The name of the file.
@@ -337,7 +345,8 @@ class File(Root):
             gzipped: Whether the file should be gzipped.
                 Defaults to the instance's :attr:`gzipped` attribute.
 
-            byteorder: Whether the file should be big-endian or little-endian.
+            byteorder: Whether the file should be big-endian
+                or little-endian.
                 Defaults to the instance's :attr:`byteorder` attribute.
         """
         if gzipped is None:

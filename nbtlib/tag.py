@@ -23,29 +23,36 @@ objects using the :meth:`Base.write` method.
     >>> fileobj.getvalue()
     b'\x03\x00\x03foo\x00\x00\x00{\x00'
 
-Each tag inherits from a closely equivalent python builtin. For instance,
-the :class:`Compound` class inherits from the builtin ``dict`` type.
+Each tag inherits from a closely equivalent python builtin.
+For instance, the :class:`Compound` class inherits from the builtin
+``dict`` type.
+
 This means that all the familiar operations available on the base type
 work out of the box on the derived tag instances.
 
-+-------------------+---------------------------------------------------------+
-|     Base type     |                   Associated nbt tags                   |
-+===================+=========================================================+
-| ``int``           | :class:`Byte` :class:`Short` :class:`Int` :class:`Long` |
-+-------------------+---------------------------------------------------------+
-| ``float``         | :class:`Float` :class:`Double`                          |
-+-------------------+---------------------------------------------------------+
-| ``str``           | :class:`String`                                         |
-+-------------------+---------------------------------------------------------+
-| ``numpy.ndarray`` | :class:`ByteArray` :class:`IntArray` :class:`LongArray` |
-+-------------------+---------------------------------------------------------+
-| ``list``          | :class:`List`                                           |
-+-------------------+---------------------------------------------------------+
-| ``dict``          | :class:`Compound`                                       |
-+-------------------+---------------------------------------------------------+
++-------------------+--------------------------------------------------+
+|     Base type     |                   Associated nbt tags            |
++===================+==================================================+
+| ``int``           | :class:`Byte`                                    |
+|                   |  :class:`Short`                                  |
+|                   |  :class:`Int`                                    |
+|                   |  :class:`Long`                                   |
++-------------------+--------------------------------------------------+
+| ``float``         | :class:`Float` :class:`Double`                   |
++-------------------+--------------------------------------------------+
+| ``str``           | :class:`String`                                  |
++-------------------+--------------------------------------------------+
+| ``numpy.ndarray`` | :class:`ByteArray`                               |
+|                   | :class:`IntArray`                                |
+|                   | :class:`LongArray`                               |
++-------------------+--------------------------------------------------+
+| ``list``          | :class:`List`                                    |
++-------------------+--------------------------------------------------+
+| ``dict``          | :class:`Compound`                                |
++-------------------+--------------------------------------------------+
 
-Operator overloading works as expected with all tag types. Note that values are
-returned unwrapped.
+Operator overloading works as expected with all tag types.
+Note that values are returned unwrapped.
 
 .. doctest::
 
@@ -137,7 +144,8 @@ class OutOfRange(ValueError):
 
 
 class IncompatibleItemType(TypeError):
-    """Raised when a list item is incompatible with the subtype of the list.
+    """Raised when a list item is incompatible
+        with the subtype of the list.
 
     Unlike builtin python lists, list tags are homogeneous so adding an
     incompatible item to the list raises an error.
@@ -157,7 +165,8 @@ class IncompatibleItemType(TypeError):
 
 
 class CastError(ValueError):
-    """Raised when an object couldn't be converted to the appropriate tag type.
+    """Raised when an object couldn't be converted to
+        the appropriate tag type.
 
     Casting occurs when adding items to list tags and nbt schema
     instances. If the item couldn't be converted to the required type,
@@ -171,8 +180,11 @@ class CastError(ValueError):
         ...
         nbtlib.tag.CastError: Couldn't cast 'foo' to Int
 
-    Note that casting only occurs when the value is an unwrapped python object.
-    Incompatible tags will raise an :class:`IncompatibleItemType` exception.
+    Note that casting only occurs when the value is
+        an unwrapped python object.
+
+    Incompatible tags will raise
+        an :class:`IncompatibleItemType` exception.
 
     .. doctest::
 
@@ -321,14 +333,16 @@ class Base:
 
     @classmethod
     def parse(cls, fileobj, byteorder="big"):
-        r"""Parse data from a file-like object and return a tag instance.
+        r"""Parse data from a file-like object
+            and return a tag instance.
 
         The default implementation does nothing. Concrete tags override
         this method.
 
         Arguments:
             fileobj: A readable file-like object.
-            byteorder: Whether the nbt data is big-endian or little-endian.
+            byteorder: Whether the nbt data is big-endian
+                or little-endian.
 
             .. doctest::
 
@@ -341,7 +355,8 @@ class Base:
         """
 
     def write(self, fileobj, byteorder="big"):
-        r"""Write the binary representation of the tag to a file-like object.
+        r"""Write the binary representation
+            of the tag to a file-like object.
 
         The default implementation does nothing. Concrete tags override
         this method.
@@ -409,10 +424,11 @@ class Base:
             {'foo': 123}
 
         Arguments:
-            json: Whether the returned value should be json-serializable.
+            json:
+                Whether the returned value should be json-serializable.
 
-                This argument will convert array tags into plain python lists
-                instead of numpy arrays.
+                This argument will convert array tags into plain python
+                lists instead of numpy arrays.
 
                 .. doctest::
 
@@ -435,8 +451,10 @@ class End(Base):
     """Nbt tag used to mark the end of compound tags.
 
     :class:`End` tags are the markers that terminate compound tags in
-    the binary format. They need to exist as a type but can't be used on
-    their own so manual instantiation raises an :class:`EndInstantiation`
+    the binary format.
+
+    They need to exist as a type but can't be used on their own so
+        manual instantiation raises an :class:`EndInstantiation`
     exception.
 
     .. doctest::
@@ -657,8 +675,8 @@ class Array(Base, np.ndarray):
     :meth:`parse` and :meth:`write` depending on a few additional
     attributes.
 
-    Derived tags will use the ``array`` serializer and can specify an array
-    prefix with the :attr:`array_prefix` attribute.
+    Derived tags will use the ``array`` serializer and can specify
+        an array prefix with the :attr:`array_prefix` attribute.
 
     Attributes:
         item_type: The numpy array data type.
@@ -770,10 +788,11 @@ class String(Base, str):
 class List(Base, list):
     """Nbt tag representing a list of other nbt tags.
 
-    Nbt lists are homogeneous and can only hold a single type of tag. This
-    constraint is enforced by requiring the :class:`List` class to be
-    subclassed and define an appropriate :attr:`subtype` attribute. The
-    ``class_getitem`` operator is defined so that
+    Nbt lists are homogeneous and can only hold a single type of tag.
+    This constraint is enforced by requiring the :class:`List` class to
+    be subclassed and define an appropriate :attr:`subtype` attribute.
+
+    The ``class_getitem`` operator is defined so that
     ``List[TagName]`` returns a subclass with the subtype ``TagName``.
 
     .. doctest::
@@ -816,7 +835,8 @@ class List(Base, list):
         >>> strings
         List[String]([String('foo'), String('bar')])
 
-    However, note that impossible conversions raise a :class:`CastError`.
+    However,
+        note that impossible conversions raise a :class:`CastError`.
 
     .. doctest::
 
@@ -878,8 +898,9 @@ class List(Base, list):
             >>> List.infer_list_subtype([Int(123)])
             <class 'nbtlib.tag.Int'>
 
-        This method is used by the base :class:`List` constructor to figure
-        out the subtype of the :class:`List` subclass that should be returned.
+        This method is used by the base :class:`List` constructor to
+            figure out the subtype of the :class:`List` subclass
+            that should be returned.
 
         Arguments:
             items:
@@ -1053,8 +1074,10 @@ class List(Base, list):
 
         Arguments:
             item:
-                Can be any object convertible to the current tag type. If the
-                conversion fails, the method raises a :class:`CastError`.
+                Can be any object convertible to the current tag type.
+
+                If the conversion fails,
+                    the method raises a :class:`CastError`.
         """
         if not isinstance(item, cls.subtype):
             incompatible = isinstance(item, Base) and not any(
@@ -1166,7 +1189,9 @@ class Compound(Base, dict):
         """Get the element with the specified key.
 
         Arguments:
-            key: Can be a string or an instance of :class:`nbtlib.path.Path`.
+            key: Can be a string
+                or an instance of :class:`nbtlib.path.Path`.
+
             default: Returned when the element could not be found.
         """
         try:
@@ -1178,7 +1203,8 @@ class Compound(Base, dict):
         """Return all the elements matching the specified key.
 
         Arguments:
-            index: Can be a string or an instance of :class:`nbtlib.path.Path`.
+            index: Can be a string
+                or an instance of :class:`nbtlib.path.Path`.
         """
         try:
             return (
@@ -1226,7 +1252,11 @@ class Compound(Base, dict):
             ... })
             >>> compound["value"]
             Compound(
-                {'foo': Int(123), 'bar': Int(-1), 'hello': String('world')}
+                {
+                    'foo': Int(123),
+                    'bar': Int(-1),
+                    'hello': String('world')
+                }
             )
 
         Arguments:
@@ -1242,7 +1272,8 @@ class Compound(Base, dict):
                 self[key] = value
 
     def with_defaults(self, other):
-        """Return a new compound with recursively applied default values.
+        """Return a new compound
+            with recursively applied default values.
 
         .. doctest::
 
@@ -1254,7 +1285,11 @@ class Compound(Base, dict):
             ... })
             >>> new_compound["value"]
             Compound(
-                {'bar': Int(456), 'hello': String('world'), 'foo': Int(123)}
+                {
+                    'bar': Int(456),
+                    'hello': String('world'),
+                    'foo': Int(123)
+                }
             )
 
         Arguments:

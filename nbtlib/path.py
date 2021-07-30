@@ -23,8 +23,8 @@ class InvalidPath(ValueError):
 class Path(tuple):
     """Represents an nbt path.
 
-    Instances of this class can be used for indexing into list and compound
-    tags for accessing deeply nested properties.
+    Instances of this class can be used for indexing into list
+    and compound tags for accessing deeply nested properties.
     """
 
     __slots__ = ()
