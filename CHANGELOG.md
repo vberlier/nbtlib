@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.12.1 (2021-08-30)
+### Fix
+* Update dependencies ([`ab4a72f`](https://github.com/vberlier/nbtlib/commit/ab4a72f2030a0d29b634535ae8628c538058de6b))
+
 ## v1.12.0 (2021-02-18)
 ### Feature
 * Make it possible to combine reading and writing/merging ([`9d5be17`](https://github.com/vberlier/nbtlib/commit/9d5be173a0b594a4077eddfe53709b78c6a67637))
