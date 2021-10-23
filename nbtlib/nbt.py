@@ -53,12 +53,12 @@ by using the ``gzipped`` and ``byteorder`` arguments respectively.
 """
 
 
-__all__ = ["load", "Root", "File"]
+__all__ = ["load", "File"]
 
 
 import gzip
 
-from .tag import Compound
+from .tag import BYTE, Compound, read_numeric, read_string, write_numeric, write_string
 
 
 def load(filename, *, gzipped=None, byteorder="big"):
@@ -67,13 +67,13 @@ def load(filename, *, gzipped=None, byteorder="big"):
     .. doctest::
 
         >>> nbt_file = nbtlib.load("docs/bigtest.nbt")
-        >>> nbt_file.root["stringTest"]
+        >>> nbt_file["stringTest"]
         String('HELLO WORLD THIS IS A TEST STRING ÅÄÖ!')
 
     The function returns an instance of the dict-like :class:`File` class
     holding all the data that could be parsed from the binary file.
-    You can retrieve items from the :attr:`Root.root` property with the index
-    operator just like with regular python dictionaries.
+    You can retrieve items with the index operator just like with regular python
+    dictionaries.
 
     Note that the :class:`File` instance can be used as a context
     manager. The :meth:`File.save` method is called automatically at the
@@ -82,7 +82,7 @@ def load(filename, *, gzipped=None, byteorder="big"):
     .. doctest::
 
         >>> with nbtlib.load("docs/demo.nbt") as demo:
-        ...     demo.root["counter"] = nbtlib.Int(demo.root["counter"] + 1)
+        ...     demo["counter"] = nbtlib.Int(demo["counter"] + 1)
 
 
     Arguments:
@@ -131,60 +131,7 @@ def load(filename, *, gzipped=None, byteorder="big"):
         return File.from_fileobj(fileobj, byteorder)
 
 
-class Root(Compound):
-    """Class representing a compound nbt root.
-
-    This class inherits from :class:`nbtlib.tag.Compound` and defines
-    properties that can be used on the root compound tag of nbt files.
-    """
-
-    @property
-    def root_name(self):
-        """The name of the root nbt tag.
-
-        Used by the :attr:`root` property to retrieve the first key of
-        the root compound tag. You can also use the property to change
-        the name of the root tag of the file.
-
-        .. doctest::
-
-            >>> compound = Root({"Data": Compound({})})
-            >>> compound.root_name
-            'Data'
-            >>> compound.root_name = "NewData"
-            >>> compound
-            <Root 'NewData': Compound({})>
-        """
-        return next(iter(self), None)
-
-    @root_name.setter
-    def root_name(self, value):
-        self[value] = self.pop(self.root_name)
-
-    @property
-    def root(self):
-        """The root nbt tag of the file.
-
-        This is a simple convenience shortcut to ``tag[tag.root_name]``.
-
-        .. doctest::
-
-            >>> compound.root
-            Compound({})
-            >>> compound['NewData']
-            Compound({})
-        """
-        return self[self.root_name]
-
-    @root.setter
-    def root(self, value):
-        self[self.root_name] = value
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} {self.root_name!r}: {self.root!r}>"
-
-
-class File(Root):
+class File(Compound):
     r"""Class representing a compound nbt file.
 
     .. doctest::
@@ -195,7 +142,7 @@ class File(Root):
         ...    })
         ... })
 
-    The class inherits from :class:`Root`, so all the builtin ``dict``
+    The class inherits from :class:`Compound`, so all the builtin ``dict``
     operations inherited by the :class:`nbtlib.tag.Compound` class are
     also available on :class:`File` instances.
 
@@ -265,11 +212,33 @@ class File(Root):
     # specified by the end of the file
     end_tag = b""
 
-    def __init__(self, *args, gzipped=False, byteorder="big", filename=None):
+    def __init__(
+        self, *args, gzipped=False, byteorder="big", filename=None, root_name=""
+    ):
         super().__init__(*args)
         self.filename = filename
         self.gzipped = gzipped
         self.byteorder = byteorder
+        self.root_name = root_name
+
+    @classmethod
+    def parse(cls, fileobj, byteorder="big"):
+        """Override :meth:`nbtlib.tag.Base.parse` for nbt files."""
+        tag_id = read_numeric(BYTE, fileobj, byteorder)
+        if not tag_id == cls.tag_id:
+            raise TypeError(
+                f"Non-Compound root tags is not supported: {cls.get_tag(tag_id)}"
+            )
+        name = read_string(fileobj, byteorder)
+        self = super().parse(fileobj, byteorder)
+        self.root_name = name
+        return self
+
+    def write(self, fileobj, byteorder="big"):
+        """Override :meth:`nbtlib.tag.Base.write` for nbt files."""
+        write_numeric(BYTE, self.tag_id, fileobj, byteorder)
+        write_string(self.root_name, fileobj, byteorder)
+        super().write(fileobj, byteorder)
 
     @classmethod
     def from_fileobj(cls, fileobj, byteorder="big"):
@@ -325,7 +294,7 @@ class File(Root):
         .. doctest::
 
             >>> with demo:
-            ...     demo.root['counter'] = nbtlib.Int(0)
+            ...     demo['counter'] = nbtlib.Int(0)
 
         This essentially overwrites the file at the end of the ``with`` statement.
 
@@ -351,3 +320,9 @@ class File(Root):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.save()
+
+    def __eq__(self, other) -> bool:
+        return super().__eq__(other) and self.root_name == other.root_name
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} {self.root_name!r}: {dict.__repr__(self)}>"

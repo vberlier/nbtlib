@@ -1,16 +1,16 @@
 from io import BytesIO
 
-from nbtlib import File, schema, CompoundSchema
+from nbtlib import CompoundSchema, File, schema
 from nbtlib.tag import (
+    INT,
     Byte,
-    Int,
-    Long,
     Float,
-    String,
+    Int,
     List,
+    Long,
+    String,
     read_numeric,
     write_numeric,
-    INT,
 )
 
 # fmt: off
@@ -141,6 +141,3 @@ class BedrockLevelFile(File, CompoundSchema):
     @classmethod
     def load(cls, filename, gzipped=False, byteorder="little"):
         return super().load(filename, gzipped, byteorder)
-
-    def __enter__(self):
-        return self.root

@@ -1,6 +1,5 @@
 from nbtlib import *
 
-
 # fmt: off
 LevelData = schema("LevelData", {
     "DataVersion": Int,
@@ -95,9 +94,7 @@ LevelData = schema("LevelData", {
 
 # fmt: off
 LevelFileSchema = schema("LevelFileSchema", {
-    "": schema("LevelFileRoot", {
-        "Data": LevelData
-    })
+    "Data": LevelData
 })
 # fmt: on
 
@@ -106,11 +103,11 @@ class LevelFile(File, LevelFileSchema):
     @property
     def data(self):
         """The level data tag."""
-        return self.root["Data"]
+        return self["Data"]
 
     @data.setter
     def data(self, value):
-        self.root["Data"] = value
+        self["Data"] = value
 
     @classmethod
     def load(cls, filename):

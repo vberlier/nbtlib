@@ -1,7 +1,5 @@
 import pytest
-
-from nbtlib import Path, parse_nbt, load
-
+from nbtlib import Path, load, parse_nbt
 
 path_strings_to_keys = [
     ("", ()),
@@ -43,30 +41,30 @@ def biglist():
 
 # fmt: off
 bigtest_path_to_items = [
-    ("Level.longTest", [9223372036854775807]),
-    ('Level."nested compound test".egg.name', ["Eggbert"]),
-    ('Level."nested compound test".ham.value', [0.75]),
-    ('Level."byteArrayTest (the first 1000 values of (n*n*255+n*7)%100, starting with n=0 (0, 62, 34, 16, 8, ...))"[1]', [62]),
-    ('Level."listTest (long)"', [[11, 12, 13, 14, 15]]),
-    ('Level."listTest (long)"[3]', [14]),
-    ('Level."listTest (long)"[]', [11, 12, 13, 14, 15]),
-    ('{Level: {byteTest: 127b}}.Level."listTest (long)"[1]', [12]),
-    ('{Level: {byteTest: 127}}.Level."listTest (long)"[1]', []),
-    ('{random: "value"}.Level."listTest (long)"[1]', []),
-    ('{}.Level."listTest (long)"[1]', [12]),
-    ('Level{intTest: 2147483647}."listTest (long)"[1]', [12]),
-    ('Level{"nested compound test": {egg: {value: 0.5f}}}."listTest (long)"[1]', [12]),
-    ('Level."listTest (compound)"', [[{"created-on": 1264099775885, "name": "Compound tag #0"}, {"created-on": 1264099775885, "name": "Compound tag #1"}]]),
-    ('Level."listTest (compound)"[]', [{"created-on": 1264099775885, "name": "Compound tag #0"}, {"created-on": 1264099775885, "name": "Compound tag #1"}]),
-    ('Level."listTest (compound)"[1]', [{"created-on": 1264099775885, "name": "Compound tag #1"}]),
-    ('Level."listTest (compound)"[-1]', [{"created-on": 1264099775885, "name": "Compound tag #1"}]),
-    ('Level."listTest (compound)"[-2]', [{"created-on": 1264099775885, "name": "Compound tag #0"}]),
-    ('Level."listTest (compound)"[-3]', []),
-    ('Level."listTest (compound)"[{name: "Compound tag #0"}]', [{"created-on": 1264099775885, "name": "Compound tag #0"}]),
-    ('Level."listTest (compound)"[{name: "Compound tag #3"}]', []),
-    ('Level."listTest (compound)"[{random: "data"}].property', []),
-    ('Level."listTest (compound)"[].name', ["Compound tag #0", "Compound tag #1"]),
-    ('Level."listTest (compound)"[]."created-on"', [1264099775885, 1264099775885]),
+    ("longTest", [9223372036854775807]),
+    ('"nested compound test".egg.name', ["Eggbert"]),
+    ('"nested compound test".ham.value', [0.75]),
+    ('"byteArrayTest (the first 1000 values of (n*n*255+n*7)%100, starting with n=0 (0, 62, 34, 16, 8, ...))"[1]', [62]),
+    ('"listTest (long)"', [[11, 12, 13, 14, 15]]),
+    ('"listTest (long)"[3]', [14]),
+    ('"listTest (long)"[]', [11, 12, 13, 14, 15]),
+    ('{byteTest: 127b}."listTest (long)"[1]', [12]),
+    ('{byteTest: 127}."listTest (long)"[1]', []),
+    ('{random: "value"}."listTest (long)"[1]', []),
+    ('{}."listTest (long)"[1]', [12]),
+    ('{intTest: 2147483647}."listTest (long)"[1]', [12]),
+    ('{"nested compound test": {egg: {value: 0.5f}}}."listTest (long)"[1]', [12]),
+    ('"listTest (compound)"', [[{"created-on": 1264099775885, "name": "Compound tag #0"}, {"created-on": 1264099775885, "name": "Compound tag #1"}]]),
+    ('"listTest (compound)"[]', [{"created-on": 1264099775885, "name": "Compound tag #0"}, {"created-on": 1264099775885, "name": "Compound tag #1"}]),
+    ('"listTest (compound)"[1]', [{"created-on": 1264099775885, "name": "Compound tag #1"}]),
+    ('"listTest (compound)"[-1]', [{"created-on": 1264099775885, "name": "Compound tag #1"}]),
+    ('"listTest (compound)"[-2]', [{"created-on": 1264099775885, "name": "Compound tag #0"}]),
+    ('"listTest (compound)"[-3]', []),
+    ('"listTest (compound)"[{name: "Compound tag #0"}]', [{"created-on": 1264099775885, "name": "Compound tag #0"}]),
+    ('"listTest (compound)"[{name: "Compound tag #3"}]', []),
+    ('"listTest (compound)"[{random: "data"}].property', []),
+    ('"listTest (compound)"[].name', ["Compound tag #0", "Compound tag #1"]),
+    ('"listTest (compound)"[]."created-on"', [1264099775885, 1264099775885]),
     ("[]", []),
     ("{}[]", []),
     ("{}[0]", []),

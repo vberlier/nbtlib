@@ -1,6 +1,6 @@
 from io import BytesIO
-import pytest
 
+import pytest
 from nbtlib import nbt
 
 
@@ -29,6 +29,6 @@ def write_parse(nbt_tag):
     ],
 )
 def test_tag_bench(benchmark, filename):
-    nbt_tag = nbt.load(f"tests/nbt_files/bench/{filename}").root
+    nbt_tag = nbt.load(f"tests/nbt_files/bench/{filename}")
     result = benchmark(write_parse, nbt_tag)
     assert result == nbt_tag

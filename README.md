@@ -43,7 +43,7 @@ its python counterpart. This means that all the builtin operations defined on th
 import nbtlib
 
 nbt_file = nbtlib.load('bigtest.nbt')
-assert nbt_file.root['intTest'] == 2147483647
+assert nbt_file['intTest'] == 2147483647
 ```
 
 For example, instances of `nbtlib.File` inherit from regular `Compound` tags, which themselves inherit from the builtin python dictionary `dict`. Similarly, instances of `Int` tags inherit from the builtin class `int`.
@@ -61,7 +61,7 @@ import nbtlib
 from nbtlib.tag import Int
 
 with nbtlib.load('demo.nbt') as demo:
-    demo.root['counter'] = Int(demo.root['counter'] + 1)
+    demo['counter'] = Int(demo['counter'] + 1)
 ```
 
 You can also call the `save` method manually.
@@ -71,7 +71,7 @@ import nbtlib
 from nbtlib.tag import Int
 
 demo = nbtlib.load('demo.nbt')
-demo.root['counter'] = Int(demo.root['counter'] + 1)
+demo['counter'] = Int(demo['counter'] + 1)
 demo.save()
 ```
 

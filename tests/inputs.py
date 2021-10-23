@@ -1,19 +1,18 @@
 from nbtlib import (
     Byte,
-    Short,
-    Int,
-    Long,
-    Float,
-    Double,
     ByteArray,
-    String,
-    List,
     Compound,
-    IntArray,
-    LongArray,
+    Double,
     File,
+    Float,
+    Int,
+    IntArray,
+    List,
+    Long,
+    LongArray,
+    Short,
+    String,
 )
-
 
 __all__ = [
     "bytes_for_valid_tags",
@@ -309,12 +308,12 @@ invalid_literals = [
 # fmt: off
 nbt_files = [
     (
-        "tests/nbt_files/hello_world.nbt", File({"hello world": Compound({
+        "tests/nbt_files/hello_world.nbt", File({
             "name": String("Bananrama")
-        })})
+        }, root_name="hello world")
     ),
     (
-        "tests/nbt_files/bigtest.nbt", File({"Level": Compound({
+        "tests/nbt_files/bigtest.nbt", File({
             "nested compound test": Compound({
                 "egg": Compound({
                     "name": String("Eggbert"), "value": Float(0.5)
@@ -344,7 +343,7 @@ nbt_files = [
                 (n**2 * 255 + n*7) % 100 for n in range(1000)
             ]),
             "shortTest": Short(32767)
-        })}, gzipped=True)
+        }, root_name="Level", gzipped=True)
     ),
 ]
 # fmt: on
