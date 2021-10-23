@@ -1,0 +1,482 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Loading and Editing Files &mdash; nbtlib 1.12.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/mystnb.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/mystnb.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Tags Reference" href="../tags/" />
+    <link rel="prev" title="Getting Started" href="../tutorial/" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../" class="icon icon-home"> nbtlib
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.12
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Loading and Editing Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tags/">Tags Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../paths/">NBT Paths</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../snbt/">Stringified NBT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/">NBT Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli/">Command-line Utility</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">nbtlib</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Loading and Editing Files</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/files.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="loading-and-editing-files">
+<h1>Loading and Editing Files<a class="headerlink" href="#loading-and-editing-files" title="Permalink to this headline">¶</a></h1>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 86%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>module</strong></p></td>
+<td><p><a class="reference external" href="https://github.com/vberlier/nbtlib/blob/main/nbtlib/nbt.py">nbtlib.nbt</a></p></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-nbtlib.nbt"></span><p>The library supports reading and writing nbt data in all its forms and
+treats everything as uncompressed big-endian nbt by default.</p>
+<p>You can load nbt files with the <a class="reference internal" href="#nbtlib.nbt.load" title="nbtlib.nbt.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">load()</span></code></a> function.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;docs/hello_world.nbt&quot;</span><span class="p">)</span>
+<span class="go">&lt;File &#39;hello world&#39;: Compound({...})&gt;</span>
+</pre></div>
+</div>
+<p>The function will figure out by itself if the file is gzipped before loading
+it. You can set the <code class="docutils literal notranslate"><span class="pre">byteorder</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">&quot;little&quot;</span></code> if the file is
+little-endian.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;docs/hello_world_little.nbt&quot;</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+<span class="go">&lt;File &#39;hello world&#39;: Compound({...})&gt;</span>
+</pre></div>
+</div>
+<p>You can create new nbt files by instantiating the <a class="reference internal" href="#nbtlib.nbt.File" title="nbtlib.nbt.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a> class with
+the desired nbt data and calling the <a class="reference internal" href="#nbtlib.nbt.File.save" title="nbtlib.nbt.File.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">File.save()</span></code></a> method.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nbt_file</span> <span class="o">=</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">File</span><span class="p">({</span><span class="s2">&quot;demo&quot;</span><span class="p">:</span> <span class="n">Compound</span><span class="p">({</span><span class="s2">&quot;counter&quot;</span><span class="p">:</span> <span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">)})})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nbt_file</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;docs/demo.nbt&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;docs/demo.nbt&quot;</span><span class="p">)</span>
+<span class="go">&lt;File &#39;demo&#39;: Compound({&#39;counter&#39;: Int(0)})&gt;</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="#nbtlib.nbt.File.save" title="nbtlib.nbt.File.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">File.save()</span></code></a> method can output gzipped or little-endian nbt
+by using the <code class="docutils literal notranslate"><span class="pre">gzipped</span></code> and <code class="docutils literal notranslate"><span class="pre">byteorder</span></code> arguments respectively.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">demo</span> <span class="o">=</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;docs/demo.nbt&quot;</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># overwrite</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">demo</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># make a gzipped copy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">demo</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;docs/demo_copy.nbt&quot;</span><span class="p">,</span> <span class="n">gzipped</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># convert the file to little-endian</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">demo</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;docs/demo_little.nbt&quot;</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt id="nbtlib.nbt.load">
+<code class="sig-prename descclassname"><span class="pre">nbtlib.nbt.</span></code><code class="sig-name descname"><span class="pre">load</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gzipped</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byteorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'big'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nbtlib.nbt.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the nbt file at the specified location.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nbt_file</span> <span class="o">=</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;docs/bigtest.nbt&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nbt_file</span><span class="p">[</span><span class="s2">&quot;stringTest&quot;</span><span class="p">]</span>
+<span class="go">String(&#39;HELLO WORLD THIS IS A TEST STRING ÅÄÖ!&#39;)</span>
+</pre></div>
+</div>
+<p>The function returns an instance of the dict-like <a class="reference internal" href="#nbtlib.nbt.File" title="nbtlib.nbt.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a> class
+holding all the data that could be parsed from the binary file.
+You can retrieve items with the index operator just like with regular python
+dictionaries.</p>
+<p>Note that the <a class="reference internal" href="#nbtlib.nbt.File" title="nbtlib.nbt.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a> instance can be used as a context
+manager. The <a class="reference internal" href="#nbtlib.nbt.File.save" title="nbtlib.nbt.File.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">File.save()</span></code></a> method is called automatically at the
+end of the <code class="docutils literal notranslate"><span class="pre">with</span></code> statement.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;docs/demo.nbt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">demo</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">demo</span><span class="p">[</span><span class="s2">&quot;counter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="n">demo</span><span class="p">[</span><span class="s2">&quot;counter&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gzipped</strong> – <p>Whether the file is gzipped or not.</p>
+<p>If the argument is not specified, the function will read the
+magic number of the file to figure out if the file is
+gzipped.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;docs/hello_world.nbt&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nbt_file</span> <span class="o">=</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">gzipped</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nbt_file</span><span class="o">.</span><span class="n">gzipped</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>The function simply delegates to <a class="reference internal" href="#nbtlib.nbt.File.load" title="nbtlib.nbt.File.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">File.load()</span></code></a>
+when the argument is specified explicitly.</p>
+</p></li>
+<li><p><strong>byteorder</strong> – <p>Whether the file is big-endian or little-endian.</p>
+<p>The default value is <code class="docutils literal notranslate"><span class="pre">&quot;big&quot;</span></code> so files are interpreted as
+big-endian if the argument is not specified. You can set the
+argument to <code class="docutils literal notranslate"><span class="pre">&quot;little&quot;</span></code> to handle little-endian nbt data.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;docs/hello_world_little.nbt&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nbt_file</span> <span class="o">=</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nbt_file</span><span class="o">.</span><span class="n">byteorder</span>
+<span class="go">&#39;little&#39;</span>
+</pre></div>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="nbtlib.nbt.File">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">nbtlib.nbt.</span></code><code class="sig-name descname"><span class="pre">File</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gzipped</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byteorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'big'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nbtlib.nbt.File" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class representing a compound nbt file.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nbt_file</span> <span class="o">=</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">File</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">Compound</span><span class="p">({</span>
+<span class="gp">... </span>        <span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s2">&quot;world&quot;</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="p">})</span>
+<span class="gp">... </span><span class="p">})</span>
+</pre></div>
+</div>
+<p>The class inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">Compound</span></code>, so all the builtin <code class="docutils literal notranslate"><span class="pre">dict</span></code>
+operations inherited by the <a class="reference internal" href="../tags/#nbtlib.tag.Compound" title="nbtlib.tag.Compound"><code class="xref py py-class docutils literal notranslate"><span class="pre">nbtlib.tag.Compound</span></code></a> class are
+also available on <a class="reference internal" href="#nbtlib.nbt.File" title="nbtlib.nbt.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a> instances.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nbt_file</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="go">dict_items([(&#39;Data&#39;, Compound({&#39;hello&#39;: String(&#39;world&#39;)}))])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nbt_file</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span>
+<span class="go">Compound({&#39;hello&#39;: String(&#39;world&#39;)})</span>
+</pre></div>
+</div>
+<p>You can write nbt data to an already opened file-like object with the
+inherited <a class="reference internal" href="../tags/#nbtlib.tag.Compound.write" title="nbtlib.tag.Compound.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nbtlib.tag.Compound.write()</span></code></a> method.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fileobj</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nbt_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fileobj</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fileobj</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+<span class="go">b&#39;\n\x00\x04Data\x08\x00\x05hello\x00\x05world\x00&#39;</span>
+</pre></div>
+</div>
+<p>If you need to load files from an already opened file-like object, you can
+use the inherited <a class="reference internal" href="../tags/#nbtlib.tag.Compound.parse" title="nbtlib.tag.Compound.parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nbtlib.tag.Compound.parse()</span></code></a> classmethod.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fileobj</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nbtlib</span><span class="o">.</span><span class="n">File</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">fileobj</span><span class="p">)</span> <span class="o">==</span> <span class="n">nbt_file</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="nbtlib.nbt.File.filename">
+<code class="sig-name descname"><span class="pre">filename</span></code><a class="headerlink" href="#nbtlib.nbt.File.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the file, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The attribute is
+set automatically when the file is returned from the
+<a class="reference internal" href="#nbtlib.nbt.load" title="nbtlib.nbt.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">load()</span></code></a> helper function and can also be set in the
+constructor.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nbt_file</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;docs/demo.nbt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filename</span>
+<span class="go">&#39;docs/demo.nbt&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="nbtlib.nbt.File.gzipped">
+<code class="sig-name descname"><span class="pre">gzipped</span></code><a class="headerlink" href="#nbtlib.nbt.File.gzipped" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean indicating if the file is gzipped. The attribute can
+also be set in the constructor. New files are uncompressed
+by default.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nbtlib</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">nbt_file</span><span class="p">,</span> <span class="n">gzipped</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">gzipped</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="nbtlib.nbt.File.byteorder">
+<code class="sig-name descname"><span class="pre">byteorder</span></code><a class="headerlink" href="#nbtlib.nbt.File.byteorder" title="Permalink to this definition">¶</a></dt>
+<dd><p>The byte order, either <code class="docutils literal notranslate"><span class="pre">&quot;big&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;little&quot;</span></code>. The
+attribute can also be set in the constructor. New files are
+big-endian by default.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nbtlib</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">nbt_file</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s2">&quot;little&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">byteorder</span>
+<span class="go">&#39;little&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nbtlib.nbt.File.parse">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">parse</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fileobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byteorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'big'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nbtlib.nbt.File.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override <a class="reference internal" href="../tags/#nbtlib.tag.Base.parse" title="nbtlib.tag.Base.parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nbtlib.tag.Base.parse()</span></code></a> for nbt files.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nbtlib.nbt.File.write">
+<code class="sig-name descname"><span class="pre">write</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fileobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byteorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'big'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nbtlib.nbt.File.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override <a class="reference internal" href="../tags/#nbtlib.tag.Base.write" title="nbtlib.tag.Base.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nbtlib.tag.Base.write()</span></code></a> for nbt files.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nbtlib.nbt.File.from_fileobj">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">from_fileobj</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fileobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byteorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'big'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nbtlib.nbt.File.from_fileobj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load an nbt file from a proper file object.</p>
+<p>The method is used by the <a class="reference internal" href="#nbtlib.nbt.load" title="nbtlib.nbt.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">load()</span></code></a> helper function when the
+<code class="docutils literal notranslate"><span class="pre">gzipped</span></code> keyword-only argument is not specified explicitly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fileobj</strong> – Can be either a standard <code class="docutils literal notranslate"><span class="pre">io.BufferedReader</span></code> for
+uncompressed nbt or a <code class="docutils literal notranslate"><span class="pre">gzip.GzipFile</span></code> for gzipped nbt
+data. The function simply calls the inherited
+<a class="reference internal" href="../tags/#nbtlib.tag.Compound.parse" title="nbtlib.tag.Compound.parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nbtlib.tag.Compound.parse()</span></code></a> classmethod and sets the
+<a class="reference internal" href="#nbtlib.nbt.File.filename" title="nbtlib.nbt.File.filename"><code class="xref py py-attr docutils literal notranslate"><span class="pre">filename</span></code></a> and <a class="reference internal" href="#nbtlib.nbt.File.gzipped" title="nbtlib.nbt.File.gzipped"><code class="xref py py-attr docutils literal notranslate"><span class="pre">gzipped</span></code></a> attributes depending
+on the argument.</p></li>
+<li><p><strong>byteorder</strong> – Can be either <code class="docutils literal notranslate"><span class="pre">&quot;big&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;little&quot;</span></code>. The argument is
+forwarded to <a class="reference internal" href="../tags/#nbtlib.tag.Compound.parse" title="nbtlib.tag.Compound.parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nbtlib.tag.Compound.parse()</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nbtlib.nbt.File.load">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">load</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gzipped</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byteorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'big'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nbtlib.nbt.File.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read, parse and return the nbt file at the specified location.</p>
+<p>The method is used by the <a class="reference internal" href="#nbtlib.nbt.load" title="nbtlib.nbt.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">load()</span></code></a> helper function when the
+<code class="docutils literal notranslate"><span class="pre">gzipped</span></code> keyword-only argument is specified explicitly.
+The function opens the file and uses <a class="reference internal" href="#nbtlib.nbt.File.from_fileobj" title="nbtlib.nbt.File.from_fileobj"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_fileobj()</span></code></a> to return
+the <a class="reference internal" href="#nbtlib.nbt.File" title="nbtlib.nbt.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a> instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – The name of the file.</p></li>
+<li><p><strong>gzipped</strong> – Whether the file is gzipped or not.</p></li>
+<li><p><strong>byteorder</strong> – Can be either <code class="docutils literal notranslate"><span class="pre">&quot;big&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;little&quot;</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nbtlib.nbt.File.save">
+<code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gzipped</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byteorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nbtlib.nbt.File.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the file at the specified location.</p>
+<p>The method is called without any argument at the end of <code class="docutils literal notranslate"><span class="pre">with</span></code>
+statements when the <a class="reference internal" href="#nbtlib.nbt.File" title="nbtlib.nbt.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a> instance is used as a
+context manager.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">demo</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">demo</span><span class="p">[</span><span class="s1">&#39;counter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This essentially overwrites the file at the end of the <code class="docutils literal notranslate"><span class="pre">with</span></code> statement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – The name of the file. Defaults to the instance’s <a class="reference internal" href="#nbtlib.nbt.File.filename" title="nbtlib.nbt.File.filename"><code class="xref py py-attr docutils literal notranslate"><span class="pre">filename</span></code></a> attribute.</p></li>
+<li><p><strong>gzipped</strong> – Whether the file should be gzipped. Defaults to the instance’s <a class="reference internal" href="#nbtlib.nbt.File.gzipped" title="nbtlib.nbt.File.gzipped"><code class="xref py py-attr docutils literal notranslate"><span class="pre">gzipped</span></code></a> attribute.</p></li>
+<li><p><strong>byteorder</strong> – Whether the file should be big-endian or little-endian. Defaults to the instance’s <a class="reference internal" href="#nbtlib.nbt.File.byteorder" title="nbtlib.nbt.File.byteorder"><code class="xref py py-attr docutils literal notranslate"><span class="pre">byteorder</span></code></a> attribute.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../tags/" class="btn btn-neutral float-right" title="Tags Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../tutorial/" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,1033 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Using nbtlib &mdash; nbtlib 1.12.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/mystnb.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/mystnb.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../" class="icon icon-home"> nbtlib
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.12
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../files/">Loading and Editing Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tags/">Tags Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../paths/">NBT Paths</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../snbt/">Stringified NBT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/">NBT Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli/">Command-line Utility</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">nbtlib</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Using nbtlib</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/Usage.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="using-nbtlib">
+<h1>Using nbtlib<a class="headerlink" href="#using-nbtlib" title="Permalink to this headline">¶</a></h1>
+<p>The Named Binary Tag (NBT) file format is a simple structured binary format that is mainly used by the game Minecraft (see the <a class="reference external" href="http://wiki.vg/NBT">official specification</a> for more details). This short documentation will show you how you can manipulate nbt data using the <code class="docutils literal notranslate"><span class="pre">nbtlib</span></code> module.</p>
+<div class="section" id="loading-a-file">
+<h2>Loading a file<a class="headerlink" href="#loading-a-file" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nbtlib</span>
+
+<span class="n">nbt_file</span> <span class="o">=</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;nbt_files/bigtest.nbt&#39;</span><span class="p">)</span>
+<span class="n">nbt_file</span><span class="p">[</span><span class="s1">&#39;stringTest&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String(&#39;HELLO WORLD THIS IS A TEST STRING ÅÄÖ!&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<p>By default <code class="docutils literal notranslate"><span class="pre">nbtlib.load</span></code> will figure out by itself if the specified file is gzipped, but you can also use the <code class="docutils literal notranslate"><span class="pre">gzipped=</span></code> keyword only argument if you know in advance whether the file is gzipped or not.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">uncompressed_file</span> <span class="o">=</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;nbt_files/hello_world.nbt&#39;</span><span class="p">,</span> <span class="n">gzipped</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">uncompressed_file</span><span class="o">.</span><span class="n">gzipped</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>False
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">nbtlib.load</span></code> function also accepts the <code class="docutils literal notranslate"><span class="pre">byteorder=</span></code> keyword only argument. It lets you specify whether the file is big-endian or little-endian. The default value is <code class="docutils literal notranslate"><span class="pre">'big'</span></code>, which means that the file is interpreted as big-endian by default. You can set it to <code class="docutils literal notranslate"><span class="pre">'little'</span></code> to use the little-endian format.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">little_endian_file</span> <span class="o">=</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;nbt_files/hello_world_little.nbt&#39;</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">)</span>
+<span class="n">little_endian_file</span><span class="o">.</span><span class="n">byteorder</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;little&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Objects returned by the <code class="docutils literal notranslate"><span class="pre">nbtlib.load</span></code> function are instances of the <code class="docutils literal notranslate"><span class="pre">nbtlib.File</span></code> class. The <code class="docutils literal notranslate"><span class="pre">nbtlib.load</span></code> function is actually a small helper around the <code class="docutils literal notranslate"><span class="pre">File.load</span></code> classmethod. If you need to load files from an already opened file-like object, you can use the <code class="docutils literal notranslate"><span class="pre">File.parse</span></code> class method.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nbtlib</span> <span class="kn">import</span> <span class="n">File</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;nbt_files/hello_world.nbt&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">hello_world</span> <span class="o">=</span> <span class="n">File</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="n">hello_world</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;File &#39;hello world&#39;: {&#39;name&#39;: String(&#39;Bananrama&#39;)}&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">File</span></code> class inherits from <code class="docutils literal notranslate"><span class="pre">Compound</span></code>, which inherits from <code class="docutils literal notranslate"><span class="pre">dict</span></code>. This means that you can use standard <code class="docutils literal notranslate"><span class="pre">dict</span></code> operations to access data inside of the file.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nbt_file</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;longTest&#39;, &#39;shortTest&#39;, &#39;stringTest&#39;, &#39;floatTest&#39;, &#39;intTest&#39;, &#39;nested compound test&#39;, &#39;listTest (long)&#39;, &#39;listTest (compound)&#39;, &#39;byteTest&#39;, &#39;byteArrayTest (the first 1000 values of (n*n*255+n*7)%100, starting with n=0 (0, 62, 34, 16, 8, ...))&#39;, &#39;doubleTest&#39;])
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="modifying-files">
+<h2>Modifying files<a class="headerlink" href="#modifying-files" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nbtlib.tag</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">with</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;nbt_files/demo.nbt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">demo</span><span class="p">:</span>
+    <span class="n">demo</span><span class="p">[</span><span class="s1">&#39;counter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="n">demo</span><span class="p">[</span><span class="s1">&#39;counter&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">demo</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;File &#39;demo&#39;: {&#39;counter&#39;: Int(10)}&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>If you don’t want to use a context manager, you can call the <code class="docutils literal notranslate"><span class="pre">.save</span></code> method manually to overwrite the original file or make a copy by specifying a different path. The <code class="docutils literal notranslate"><span class="pre">.save</span></code> method also accepts the <code class="docutils literal notranslate"><span class="pre">gzipped=</span></code> keyword only argument. By default, the copy will be gzipped if the original file is gzipped. Similarly, you can use the <code class="docutils literal notranslate"><span class="pre">byteorder=</span></code> keyword only argument to specify whether the file should be saved using the big-endian or little-endian format. By default, the copy will be saved using the same format as the original file.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">demo</span> <span class="o">=</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;nbt_files/demo.nbt&#39;</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">demo</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>  <span class="c1"># overwrite</span>
+<span class="n">demo</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;nbt_files/demo_copy.nbt&#39;</span><span class="p">,</span> <span class="n">gzipped</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># make a gzipped copy</span>
+<span class="n">demo</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;nbt_files/demo_little.nbt&#39;</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">)</span>  <span class="c1"># convert the file to little-endian</span>
+
+<span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;nbt_files/demo_copy.nbt&#39;</span><span class="p">)[</span><span class="s1">&#39;counter&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Int(10)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;nbt_files/demo_little.nbt&#39;</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">)[</span><span class="s1">&#39;counter&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Int(10)
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can also write nbt data to an already opened file-like object using the <code class="docutils literal notranslate"><span class="pre">.write</span></code> method.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;nbt_files/demo_copy.nbt&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">demo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="creating-files">
+<h2>Creating files<a class="headerlink" href="#creating-files" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_file</span> <span class="o">=</span> <span class="n">File</span><span class="p">({</span>
+    <span class="s1">&#39;foo&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;spam&#39;</span><span class="p">:</span> <span class="n">IntArray</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span>
+    <span class="s1">&#39;egg&#39;</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">String</span><span class="p">]([</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
+<span class="p">})</span>
+<span class="n">new_file</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;nbt_files/new_file.nbt&#39;</span><span class="p">)</span>
+
+<span class="n">loaded_file</span> <span class="o">=</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;nbt_files/new_file.nbt&#39;</span><span class="p">)</span>
+<span class="n">loaded_file</span><span class="o">.</span><span class="n">gzipped</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>False
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">loaded_file</span><span class="o">.</span><span class="n">byteorder</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;big&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>New files are uncompressed by default. You can use the <code class="docutils literal notranslate"><span class="pre">gzipped=</span></code> keyword only argument to create a gzipped file. New files are also big-endian by default. You can use the <code class="docutils literal notranslate"><span class="pre">byteorder=</span></code> keyword only argument to set the endianness of the file to either <code class="docutils literal notranslate"><span class="pre">'big'</span></code> or <code class="docutils literal notranslate"><span class="pre">'little'</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_file</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span>
+    <span class="p">{</span><span class="s1">&#39;thing&#39;</span><span class="p">:</span> <span class="n">LongArray</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])},</span>
+    <span class="n">gzipped</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">byteorder</span><span class="o">=</span><span class="s1">&#39;little&#39;</span>
+<span class="p">)</span>
+<span class="n">new_file</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;nbt_files/new_file_gzipped_little.nbt&#39;</span><span class="p">)</span>
+
+<span class="n">loaded_file</span> <span class="o">=</span> <span class="n">nbtlib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;nbt_files/new_file_gzipped_little.nbt&#39;</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">)</span>
+<span class="n">loaded_file</span><span class="o">.</span><span class="n">gzipped</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">loaded_file</span><span class="o">.</span><span class="n">byteorder</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;little&#39;
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="performing-operations-on-tags">
+<h2>Performing operations on tags<a class="headerlink" href="#performing-operations-on-tags" title="Permalink to this headline">¶</a></h2>
+<p>With the exception of <code class="docutils literal notranslate"><span class="pre">ByteArray</span></code>, <code class="docutils literal notranslate"><span class="pre">IntArray</span></code> and <code class="docutils literal notranslate"><span class="pre">LongArray</span></code> tags, every tag type inherits from a python builtin, allowing you to make use of their rich and familiar interfaces. <code class="docutils literal notranslate"><span class="pre">ByteArray</span></code>, <code class="docutils literal notranslate"><span class="pre">IntArray</span></code> and <code class="docutils literal notranslate"><span class="pre">LongArray</span></code> tags on the other hand, inherit from <code class="docutils literal notranslate"><span class="pre">numpy</span></code> arrays instead of the builtin <code class="docutils literal notranslate"><span class="pre">array</span></code> type in order to benefit from <code class="docutils literal notranslate"><span class="pre">numpy</span></code>’s efficiency.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Base type</p></th>
+<th class="head"><p>Associated nbt tags</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>int</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Byte</span></code>, <code class="docutils literal notranslate"><span class="pre">Short</span></code>, <code class="docutils literal notranslate"><span class="pre">Int</span></code>, <code class="docutils literal notranslate"><span class="pre">Long</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>float</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Float</span></code>, <code class="docutils literal notranslate"><span class="pre">Double</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>str</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">String</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>numpy.ndarray</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ByteArray</span></code>, <code class="docutils literal notranslate"><span class="pre">IntArray</span></code>, <code class="docutils literal notranslate"><span class="pre">LongArray</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>list</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">List</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>dict</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Compound</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>All the methods and operations that are usually available on the the base types can be used on the associated tags.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_list</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">String</span><span class="p">](</span><span class="n">char</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+<span class="n">my_list</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+<span class="n">my_list</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[String(&#39;E&#39;), String(&#39;H&#39;)]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_array</span> <span class="o">=</span> <span class="n">IntArray</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">my_array</span> <span class="o">+</span> <span class="mi">100</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>IntArray([Int(101), Int(102), Int(103)])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_pizza</span> <span class="o">=</span> <span class="n">Compound</span><span class="p">({</span>
+    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">(</span><span class="s1">&#39;Margherita&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;price&#39;</span><span class="p">:</span> <span class="n">Double</span><span class="p">(</span><span class="mf">5.7</span><span class="p">),</span>
+    <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">(</span><span class="s1">&#39;medium&#39;</span><span class="p">)</span>
+<span class="p">})</span>
+
+<span class="n">my_pizza</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">(</span><span class="s1">&#39;Calzone&#39;</span><span class="p">),</span> <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">(</span><span class="s1">&#39;large&#39;</span><span class="p">)})</span>
+<span class="n">my_pizza</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Double</span><span class="p">(</span><span class="n">my_pizza</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">2.5</span><span class="p">)</span>
+<span class="n">my_pizza</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Compound({&#39;name&#39;: String(&#39;Calzone&#39;), &#39;price&#39;: Double(8.2), &#39;size&#39;: String(&#39;large&#39;)})
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="serializing-nbt-tags-to-snbt">
+<h2>Serializing nbt tags to snbt<a class="headerlink" href="#serializing-nbt-tags-to-snbt" title="Permalink to this headline">¶</a></h2>
+<p>While using <code class="docutils literal notranslate"><span class="pre">repr()</span></code> on nbt tags outputs a python representation of the tag, calling <code class="docutils literal notranslate"><span class="pre">str()</span></code> on nbt tags (or simply printing them) will return the nbt literal representing that tag.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">example_tag</span> <span class="o">=</span> <span class="n">Compound</span><span class="p">({</span>
+    <span class="s1">&#39;numbers&#39;</span><span class="p">:</span> <span class="n">IntArray</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> 
+    <span class="s1">&#39;foo&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;syntax breaking&#39;</span><span class="p">:</span> <span class="n">Float</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span>
+    <span class="s1">&#39;spam&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">(</span><span class="s1">&#39;{&quot;text&quot;:&quot;Hello, world!</span><span class="se">\\</span><span class="s1">n&quot;}&#39;</span><span class="p">)</span>
+<span class="p">})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">example_tag</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Compound({&#39;numbers&#39;: IntArray([Int(1), Int(2), Int(3)]), &#39;foo&#39;: String(&#39;bar&#39;), &#39;syntax breaking&#39;: Float(42.0), &#39;spam&#39;: String(&#39;{&quot;text&quot;:&quot;Hello, world!\\n&quot;}&#39;)})
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">example_tag</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Compound({&#39;numbers&#39;: IntArray([Int(1), Int(2), Int(3)]), &#39;foo&#39;: String(&#39;bar&#39;), &#39;syntax breaking&#39;: Float(42.0), &#39;spam&#39;: String(&#39;{&quot;text&quot;:&quot;Hello, world!\\n&quot;}&#39;)})
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">example_tag</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Compound({&#39;numbers&#39;: IntArray([Int(1), Int(2), Int(3)]), &#39;foo&#39;: String(&#39;bar&#39;), &#39;syntax breaking&#39;: Float(42.0), &#39;spam&#39;: String(&#39;{&quot;text&quot;:&quot;Hello, world!\\n&quot;}&#39;)})
+</pre></div>
+</div>
+</div>
+</div>
+<p>Converting nbt tags to strings will serialize them to snbt. If you want more control over the way nbt tags are serialized, you can use the <code class="docutils literal notranslate"><span class="pre">nbtlib.serialize_tag</span></code> function. In fact, using <code class="docutils literal notranslate"><span class="pre">str</span></code> on nbt tags simply calls <code class="docutils literal notranslate"><span class="pre">nbtlib.serialize_tag</span></code> on the specified tag.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nbtlib</span> <span class="kn">import</span> <span class="n">serialize_tag</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">serialize_tag</span><span class="p">(</span><span class="n">example_tag</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{numbers: [I; 1, 2, 3], foo: &quot;bar&quot;, &quot;syntax breaking&quot;: 42.0f, spam: &#39;{&quot;text&quot;:&quot;Hello, world!\\n&quot;}&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">serialize_tag</span><span class="p">(</span><span class="n">example_tag</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">example_tag</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>False
+</pre></div>
+</div>
+</div>
+</div>
+<p>You might have noticed that by default, the <code class="docutils literal notranslate"><span class="pre">nbtlib.serialize_tag</span></code> function will render strings with single <code class="docutils literal notranslate"><span class="pre">'</span></code> or double <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> quotes based on their content to avoid escaping quoting characters. The string is serialized such that the type of quotes used is different from the first quoting character found in the string. If the string doesn’t contain any quoting character, the <code class="docutils literal notranslate"><span class="pre">nbtlib.serialize_tag</span></code> function will render the string as a double <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> quoted string.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="s2">&quot;contains &#39;single&#39; quotes&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>contains &#39;single&#39; quotes
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="s1">&#39;contains &quot;double&quot; quotes&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>contains &quot;double&quot; quotes
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;contains &#39;single&#39; and &quot;double&quot; quotes&#39;&#39;&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>contains &#39;single&#39; and &quot;double&quot; quotes
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can overwrite this behavior by setting the <code class="docutils literal notranslate"><span class="pre">quote=</span></code> keyword only argument to either a single <code class="docutils literal notranslate"><span class="pre">'</span></code> or a double <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> quote.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">serialize_tag</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="s1">&#39;forcing &quot;double&quot; quotes&#39;</span><span class="p">),</span> <span class="n">quote</span><span class="o">=</span><span class="s1">&#39;&quot;&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&quot;forcing \&quot;double\&quot; quotes&quot;
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">nbtlib.serialize_tag</span></code> function can be used with the <code class="docutils literal notranslate"><span class="pre">compact=</span></code> keyword only argument to remove all the extra whitespace from the output.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">serialize_tag</span><span class="p">(</span><span class="n">example_tag</span><span class="p">,</span> <span class="n">compact</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{numbers:[I;1,2,3],foo:&quot;bar&quot;,&quot;syntax breaking&quot;:42.0f,spam:&#39;{&quot;text&quot;:&quot;Hello, world!\\n&quot;}&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+<p>If you’d rather have something a bit more readable, you can use the <code class="docutils literal notranslate"><span class="pre">indent=</span></code> keyword only argument to tell the <code class="docutils literal notranslate"><span class="pre">nbtlib.serialize_tag</span></code> function to output indented snbt. The argument can be either a string or an integer and will be used to define how to render each indentation level.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nested_tag</span> <span class="o">=</span> <span class="n">Compound</span><span class="p">({</span>
+    <span class="s1">&#39;foo&#39;</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Int</span><span class="p">]([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span>
+    <span class="s1">&#39;bar&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;values&#39;</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Compound</span><span class="p">]([</span>
+        <span class="p">{</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">),</span> <span class="s1">&#39;thing&#39;</span><span class="p">:</span> <span class="n">ByteArray</span><span class="p">([</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">])},</span>
+        <span class="p">{</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">),</span> <span class="s1">&#39;thing&#39;</span><span class="p">:</span> <span class="n">ByteArray</span><span class="p">([</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">])}</span>
+    <span class="p">])</span>
+<span class="p">})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">serialize_tag</span><span class="p">(</span><span class="n">nested_tag</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{
+    foo: [1, 2, 3], 
+    bar: &quot;name&quot;, 
+    values: [
+        {
+            test: &quot;a&quot;, 
+            thing: [B; 32B, 32B, 32B]
+        }, 
+        {
+            test: &quot;b&quot;, 
+            thing: [B; 64B, 64B, 64B]
+        }
+    ]
+}
+</pre></div>
+</div>
+</div>
+</div>
+<p>If you need the output ot be indented with tabs instead, you can set the <code class="docutils literal notranslate"><span class="pre">indent=</span></code> argument to <code class="docutils literal notranslate"><span class="pre">'\t'</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">serialize_tag</span><span class="p">(</span><span class="n">nested_tag</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{
+	foo: [1, 2, 3], 
+	bar: &quot;name&quot;, 
+	values: [
+		{
+			test: &quot;a&quot;, 
+			thing: [B; 32B, 32B, 32B]
+		}, 
+		{
+			test: &quot;b&quot;, 
+			thing: [B; 64B, 64B, 64B]
+		}
+	]
+}
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that the <code class="docutils literal notranslate"><span class="pre">indent=</span></code> keyword only argument can be set to any string, not just <code class="docutils literal notranslate"><span class="pre">'\t'</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">serialize_tag</span><span class="p">(</span><span class="n">nested_tag</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="s1">&#39;.   &#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{
+.   foo: [1, 2, 3], 
+.   bar: &quot;name&quot;, 
+.   values: [
+.   .   {
+.   .   .   test: &quot;a&quot;, 
+.   .   .   thing: [B; 32B, 32B, 32B]
+.   .   }, 
+.   .   {
+.   .   .   test: &quot;b&quot;, 
+.   .   .   thing: [B; 64B, 64B, 64B]
+.   .   }
+.   ]
+}
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="creating-tags-from-nbt-literals">
+<h2>Creating tags from nbt literals<a class="headerlink" href="#creating-tags-from-nbt-literals" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">nbtlib</span></code> supports creating nbt tags from their literal representation. The <code class="docutils literal notranslate"><span class="pre">nbtlib.parse_nbt</span></code> function can parse snbt and return the appropriate tag.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nbtlib</span> <span class="kn">import</span> <span class="n">parse_nbt</span>
+
+<span class="n">parse_nbt</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String(&#39;hello&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">parse_nbt</span><span class="p">(</span><span class="s1">&#39;{foo:[{bar:[I;1,2,3]},</span><span class="si">{spam:6.7f}</span><span class="s1">]}&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Compound({&#39;foo&#39;: List[Compound]([Compound({&#39;bar&#39;: IntArray([Int(1), Int(2), Int(3)])}), Compound({&#39;spam&#39;: Float(6.7)})])})
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that the parser ignores whitespace.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">parse_nbt</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;{</span>
+<span class="s2">    foo: [1, 2, 3], </span>
+<span class="s2">    bar: &quot;name&quot;, </span>
+<span class="s2">    values: [</span>
+<span class="s2">        {</span>
+<span class="s2">            test: &quot;a&quot;, </span>
+<span class="s2">            thing: [B; 32B, 32B, 32B]</span>
+<span class="s2">        }, </span>
+<span class="s2">        {</span>
+<span class="s2">            test: &quot;b&quot;, </span>
+<span class="s2">            thing: [B; 64B, 64B, 64B]</span>
+<span class="s2">        }</span>
+<span class="s2">    ]</span>
+<span class="s2">}&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Compound({&#39;foo&#39;: List[Int]([Int(1), Int(2), Int(3)]), &#39;bar&#39;: String(&#39;name&#39;), &#39;values&#39;: List[Compound]([Compound({&#39;test&#39;: String(&#39;a&#39;), &#39;thing&#39;: ByteArray([Byte(32), Byte(32), Byte(32)])}), Compound({&#39;test&#39;: String(&#39;b&#39;), &#39;thing&#39;: ByteArray([Byte(64), Byte(64), Byte(64)])})])})
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="defining-schemas">
+<h2>Defining schemas<a class="headerlink" href="#defining-schemas" title="Permalink to this headline">¶</a></h2>
+<p>In order to avoid wrapping values manually every time you edit a compound tag, you can define a schema that will take care of converting python types to predefined nbt tags automatically.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nbtlib</span> <span class="kn">import</span> <span class="n">schema</span>
+
+<span class="n">MySchema</span> <span class="o">=</span> <span class="n">schema</span><span class="p">(</span><span class="s1">&#39;MySchema&#39;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">&#39;foo&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span> 
+    <span class="s1">&#39;bar&#39;</span><span class="p">:</span> <span class="n">Short</span>
+<span class="p">})</span>
+
+<span class="n">my_object</span> <span class="o">=</span> <span class="n">MySchema</span><span class="p">({</span><span class="s1">&#39;foo&#39;</span><span class="p">:</span> <span class="s1">&#39;hello world&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">:</span> <span class="mi">21</span><span class="p">})</span>
+<span class="n">my_object</span><span class="p">[</span><span class="s1">&#39;bar&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="mi">2</span>
+<span class="n">my_object</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>MySchema({&#39;foo&#39;: String(&#39;hello world&#39;), &#39;bar&#39;: Short(42)})
+</pre></div>
+</div>
+</div>
+</div>
+<p>By default, you can interact with keys that are not defined in the schema. However, if you use the <code class="docutils literal notranslate"><span class="pre">strict=</span></code> keyword only argument, the schema instance will raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> whenever you try to access a key that wasn’t defined in the original schema.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">MyStrictSchema</span> <span class="o">=</span> <span class="n">schema</span><span class="p">(</span><span class="s1">&#39;MyStrictSchema&#39;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">&#39;foo&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+    <span class="s1">&#39;bar&#39;</span><span class="p">:</span> <span class="n">Short</span>
+<span class="p">},</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">strict_instance</span> <span class="o">=</span> <span class="n">MyStrictSchema</span><span class="p">()</span>
+<span class="n">strict_instance</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;foo&#39;</span><span class="p">:</span> <span class="s1">&#39;hello world&#39;</span><span class="p">})</span>
+<span class="n">strict_instance</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>MyStrictSchema({&#39;foo&#39;: String(&#39;hello world&#39;)})
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">strict_instance</span><span class="p">[</span><span class="s1">&#39;something&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">String</span><span class="p">]([</span><span class="s1">&#39;this&#39;</span><span class="p">,</span> <span class="s1">&#39;raises&#39;</span><span class="p">,</span> <span class="s1">&#39;an&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">])</span>
+<span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Invalid key &#39;something&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">schema</span></code> function is a helper that creates a class that inherits from <code class="docutils literal notranslate"><span class="pre">CompoundSchema</span></code>. This means that you can also inherit from the class manually.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nbtlib</span> <span class="kn">import</span> <span class="n">CompoundSchema</span>
+
+<span class="k">class</span> <span class="nc">MySchema</span><span class="p">(</span><span class="n">CompoundSchema</span><span class="p">):</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;foo&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span> 
+        <span class="s1">&#39;bar&#39;</span><span class="p">:</span> <span class="n">Short</span>
+    <span class="p">}</span>
+
+<span class="n">MySchema</span><span class="p">({</span><span class="s1">&#39;foo&#39;</span><span class="p">:</span> <span class="s1">&#39;hello world&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">:</span> <span class="mi">42</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>MySchema({&#39;foo&#39;: String(&#39;hello world&#39;), &#39;bar&#39;: Short(42)})
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can also set the <code class="docutils literal notranslate"><span class="pre">strict</span></code> class attribute to <code class="docutils literal notranslate"><span class="pre">True</span></code> to create a strict schema type.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyStrictSchema</span><span class="p">(</span><span class="n">CompoundSchema</span><span class="p">):</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;foo&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span> 
+        <span class="s1">&#39;bar&#39;</span><span class="p">:</span> <span class="n">Short</span>
+    <span class="p">}</span>
+    <span class="n">strict</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">MyStrictSchema</span><span class="p">({</span><span class="s1">&#39;something&#39;</span><span class="p">:</span> <span class="n">Byte</span><span class="p">(</span><span class="mi">5</span><span class="p">)})</span>
+<span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Invalid key &#39;something&#39;
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="combining-schemas-and-custom-file-types">
+<h2>Combining schemas and custom file types<a class="headerlink" href="#combining-schemas-and-custom-file-types" title="Permalink to this headline">¶</a></h2>
+<p>If you need to deal with files that always have a particular structure, you can create a specialized file type by combining it with a schema. For instance, this is how you would create a file type that opens <a class="reference external" href="https://minecraft.gamepedia.com/Structure_block_file_format">minecraft structure files</a>.</p>
+<p>First, we need to define what a minecraft structure is, so we create a schema that matches the tag hierarchy.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Structure</span> <span class="o">=</span> <span class="n">schema</span><span class="p">(</span><span class="s1">&#39;Structure&#39;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">&#39;DataVersion&#39;</span><span class="p">:</span> <span class="n">Int</span><span class="p">,</span>
+    <span class="s1">&#39;author&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+    <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Int</span><span class="p">],</span>
+    <span class="s1">&#39;palette&#39;</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">schema</span><span class="p">(</span><span class="s1">&#39;State&#39;</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s1">&#39;Name&#39;</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+        <span class="s1">&#39;Properties&#39;</span><span class="p">:</span> <span class="n">Compound</span><span class="p">,</span>
+    <span class="p">})],</span>
+    <span class="s1">&#39;blocks&#39;</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">schema</span><span class="p">(</span><span class="s1">&#39;Block&#39;</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="n">Int</span><span class="p">,</span>
+        <span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Int</span><span class="p">],</span>
+        <span class="s1">&#39;nbt&#39;</span><span class="p">:</span> <span class="n">Compound</span><span class="p">,</span>
+    <span class="p">})],</span>
+    <span class="s1">&#39;entities&#39;</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">schema</span><span class="p">(</span><span class="s1">&#39;Entity&#39;</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Double</span><span class="p">],</span>
+        <span class="s1">&#39;blockPos&#39;</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Int</span><span class="p">],</span>
+        <span class="s1">&#39;nbt&#39;</span><span class="p">:</span> <span class="n">Compound</span><span class="p">,</span>
+    <span class="p">})],</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now let’s test our schema by creating a structure. We can see that all the types are automatically applied.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_structure</span> <span class="o">=</span> <span class="n">Structure</span><span class="p">({</span>
+    <span class="s1">&#39;DataVersion&#39;</span><span class="p">:</span> <span class="mi">1139</span><span class="p">,</span>
+    <span class="s1">&#39;author&#39;</span><span class="p">:</span> <span class="s1">&#39;dinnerbone&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="s1">&#39;palette&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">&#39;Name&#39;</span><span class="p">:</span> <span class="s1">&#39;minecraft:dirt&#39;</span><span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s1">&#39;blocks&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s1">&#39;entities&#39;</span><span class="p">:</span> <span class="p">[],</span>
+<span class="p">})</span>
+
+<span class="nb">type</span><span class="p">(</span><span class="n">new_structure</span><span class="p">[</span><span class="s1">&#39;blocks&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;pos&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>nbtlib.tag.List[Int]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">new_structure</span><span class="p">[</span><span class="s1">&#39;entities&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>nbtlib.tag.List[Entity]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we can create a custom file type that wraps our structure schema. Since structure files are always gzipped we can override the load method to default the <code class="docutils literal notranslate"><span class="pre">gzipped</span></code> argument to <code class="docutils literal notranslate"><span class="pre">True</span></code>. We also overwrite the constructor so that it can take directly an instance of our structure schema as argument.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">StructureFile</span><span class="p">(</span><span class="n">File</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure_data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">structure_data</span> <span class="ow">or</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gzipped</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">gzipped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">gzipped</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now use the custom file type to load, edit and save structure files without having to specify the tags manually.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">structure_file</span> <span class="o">=</span> <span class="n">StructureFile</span><span class="p">(</span><span class="n">new_structure</span><span class="p">)</span>
+<span class="n">structure_file</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;nbt_files/new_structure.nbt&#39;</span><span class="p">)</span>  <span class="c1"># you can load it in a minecraft world!</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>So now let’s try to edit the structure. We’re going to replace all the dirt blocks with stone blocks.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">StructureFile</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;nbt_files/new_structure.nbt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">structure_file</span><span class="p">:</span>
+    <span class="n">structure_file</span><span class="p">[</span><span class="s1">&#39;palette&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;minecraft:stone&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>As you can see we didn’t need to specify any tag to edit the file.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">serialize_tag</span><span class="p">(</span><span class="n">StructureFile</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;nbt_files/new_structure.nbt&#39;</span><span class="p">),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{
+    DataVersion: 1139, 
+    author: &quot;dinnerbone&quot;, 
+    size: [1, 2, 1], 
+    palette: [
+        {
+            Name: &quot;minecraft:stone&quot;
+        }
+    ], 
+    blocks: [
+        {
+            pos: [0, 0, 0], 
+            state: 0
+        }, 
+        {
+            pos: [0, 1, 0], 
+            state: 0
+        }
+    ], 
+    entities: []
+}
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

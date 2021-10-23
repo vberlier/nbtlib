@@ -1,0 +1,1291 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import sys\n",
+    "sys.path.append('..')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Using nbtlib\n",
+    "\n",
+    "The Named Binary Tag (NBT) file format is a simple structured binary format that is mainly used by the game Minecraft (see the [official specification](http://wiki.vg/NBT) for more details). This short documentation will show you how you can manipulate nbt data using the `nbtlib` module."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Loading a file"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "String('HELLO WORLD THIS IS A TEST STRING ÅÄÖ!')"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import nbtlib\n",
+    "\n",
+    "nbt_file = nbtlib.load('nbt_files/bigtest.nbt')\n",
+    "nbt_file['stringTest']"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "By default `nbtlib.load` will figure out by itself if the specified file is gzipped, but you can also use the `gzipped=` keyword only argument if you know in advance whether the file is gzipped or not."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "False"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "uncompressed_file = nbtlib.load('nbt_files/hello_world.nbt', gzipped=False)\n",
+    "uncompressed_file.gzipped"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The `nbtlib.load` function also accepts the `byteorder=` keyword only argument. It lets you specify whether the file is big-endian or little-endian. The default value is `'big'`, which means that the file is interpreted as big-endian by default. You can set it to `'little'` to use the little-endian format."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'little'"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "little_endian_file = nbtlib.load('nbt_files/hello_world_little.nbt', byteorder='little')\n",
+    "little_endian_file.byteorder"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Objects returned by the `nbtlib.load` function are instances of the `nbtlib.File` class. The `nbtlib.load` function is actually a small helper around the `File.load` classmethod. If you need to load files from an already opened file-like object, you can use the `File.parse` class method."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<File 'hello world': {'name': String('Bananrama')}>"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from nbtlib import File\n",
+    "\n",
+    "with open('nbt_files/hello_world.nbt', 'rb') as f:\n",
+    "    hello_world = File.parse(f)\n",
+    "hello_world"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The `File` class inherits from `Compound`, which inherits from `dict`. This means that you can use standard `dict` operations to access data inside of the file."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "dict_keys(['longTest', 'shortTest', 'stringTest', 'floatTest', 'intTest', 'nested compound test', 'listTest (long)', 'listTest (compound)', 'byteTest', 'byteArrayTest (the first 1000 values of (n*n*255+n*7)%100, starting with n=0 (0, 62, 34, 16, 8, ...))', 'doubleTest'])"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "nbt_file.keys()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Modifying files"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<File 'demo': {'counter': Int(9)}>"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from nbtlib.tag import *\n",
+    "\n",
+    "with nbtlib.load('nbt_files/demo.nbt') as demo:\n",
+    "    demo['counter'] = Int(demo['counter'] + 1)\n",
+    "demo"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "If you don't want to use a context manager, you can call the `.save` method manually to overwrite the original file or make a copy by specifying a different path. The `.save` method also accepts the `gzipped=` keyword only argument. By default, the copy will be gzipped if the original file is gzipped. Similarly, you can use the `byteorder=` keyword only argument to specify whether the file should be saved using the big-endian or little-endian format. By default, the copy will be saved using the same format as the original file."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Int(9)"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "demo = nbtlib.load('nbt_files/demo.nbt')\n",
+    "...\n",
+    "demo.save()  # overwrite\n",
+    "demo.save('nbt_files/demo_copy.nbt', gzipped=True)  # make a gzipped copy\n",
+    "demo.save('nbt_files/demo_little.nbt', byteorder='little')  # convert the file to little-endian\n",
+    "\n",
+    "nbtlib.load('nbt_files/demo_copy.nbt')['counter']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Int(9)"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "nbtlib.load('nbt_files/demo_little.nbt', byteorder='little')['counter']"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "You can also write nbt data to an already opened file-like object using the `.write` method."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "with open('nbt_files/demo_copy.nbt', 'wb') as f:\n",
+    "    demo.write(f)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Creating files"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "False"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "new_file = File({\n",
+    "    'foo': String('bar'),\n",
+    "    'spam': IntArray([1, 2, 3]),\n",
+    "    'egg': List[String](['hello', 'world'])\n",
+    "})\n",
+    "new_file.save('nbt_files/new_file.nbt')\n",
+    "\n",
+    "loaded_file = nbtlib.load('nbt_files/new_file.nbt')\n",
+    "loaded_file.gzipped"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'big'"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "loaded_file.byteorder"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "New files are uncompressed by default. You can use the `gzipped=` keyword only argument to create a gzipped file. New files are also big-endian by default. You can use the `byteorder=` keyword only argument to set the endianness of the file to either `'big'` or `'little'`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "new_file = File(\n",
+    "    {'thing': LongArray([1, 2, 3])},\n",
+    "    gzipped=True,\n",
+    "    byteorder='little'\n",
+    ")\n",
+    "new_file.save('nbt_files/new_file_gzipped_little.nbt')\n",
+    "\n",
+    "loaded_file = nbtlib.load('nbt_files/new_file_gzipped_little.nbt', byteorder='little')\n",
+    "loaded_file.gzipped"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'little'"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "loaded_file.byteorder"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Performing operations on tags\n",
+    "\n",
+    "With the exception of `ByteArray`, `IntArray` and `LongArray` tags, every tag type inherits from a python builtin, allowing you to make use of their rich and familiar interfaces. `ByteArray`, `IntArray` and `LongArray` tags on the other hand, inherit from `numpy` arrays instead of the builtin `array` type in order to benefit from `numpy`'s efficiency.\n",
+    "\n",
+    "| Base type           | Associated nbt tags                  |\n",
+    "| ------------------- | ------------------------------------ |\n",
+    "| **int**             | `Byte`, `Short`, `Int`, `Long`       |\n",
+    "| **float**           | `Float`, `Double`                    |\n",
+    "| **str**             | `String`                             |\n",
+    "| **numpy.ndarray**   | `ByteArray`, `IntArray`, `LongArray` |\n",
+    "| **list**            | `List`                               |\n",
+    "| **dict**            | `Compound`                           |\n",
+    "\n",
+    "All the methods and operations that are usually available on the the base types can be used on the associated tags."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[String('E'), String('H')]"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "my_list = List[String](char.upper() for char in 'hello')\n",
+    "my_list.reverse()\n",
+    "my_list[3:]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "IntArray([Int(101), Int(102), Int(103)])"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "my_array = IntArray([1, 2, 3])\n",
+    "my_array + 100"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Compound({'name': String('Calzone'), 'price': Double(8.2), 'size': String('large')})"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "my_pizza = Compound({\n",
+    "    'name': String('Margherita'),\n",
+    "    'price': Double(5.7),\n",
+    "    'size': String('medium')\n",
+    "})\n",
+    "\n",
+    "my_pizza.update({'name': String('Calzone'), 'size': String('large')})\n",
+    "my_pizza['price'] = Double(my_pizza['price'] + 2.5)\n",
+    "my_pizza"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Serializing nbt tags to snbt"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "While using `repr()` on nbt tags outputs a python representation of the tag, calling `str()` on nbt tags (or simply printing them) will return the nbt literal representing that tag."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Compound({'numbers': IntArray([Int(1), Int(2), Int(3)]), 'foo': String('bar'), 'syntax breaking': Float(42.0), 'spam': String('{\"text\":\"Hello, world!\\\\n\"}')})\n"
+     ]
+    }
+   ],
+   "source": [
+    "example_tag = Compound({\n",
+    "    'numbers': IntArray([1, 2, 3]), \n",
+    "    'foo': String('bar'),\n",
+    "    'syntax breaking': Float(42),\n",
+    "    'spam': String('{\"text\":\"Hello, world!\\\\n\"}')\n",
+    "})\n",
+    "\n",
+    "print(repr(example_tag))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Compound({'numbers': IntArray([Int(1), Int(2), Int(3)]), 'foo': String('bar'), 'syntax breaking': Float(42.0), 'spam': String('{\"text\":\"Hello, world!\\\\n\"}')})\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(str(example_tag))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Compound({'numbers': IntArray([Int(1), Int(2), Int(3)]), 'foo': String('bar'), 'syntax breaking': Float(42.0), 'spam': String('{\"text\":\"Hello, world!\\\\n\"}')})\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(example_tag)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Converting nbt tags to strings will serialize them to snbt. If you want more control over the way nbt tags are serialized, you can use the `nbtlib.serialize_tag` function. In fact, using `str` on nbt tags simply calls `nbtlib.serialize_tag` on the specified tag."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{numbers: [I; 1, 2, 3], foo: \"bar\", \"syntax breaking\": 42.0f, spam: '{\"text\":\"Hello, world!\\\\n\"}'}\n"
+     ]
+    }
+   ],
+   "source": [
+    "from nbtlib import serialize_tag\n",
+    "\n",
+    "print(serialize_tag(example_tag))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "False"
+      ]
+     },
+     "execution_count": 22,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "serialize_tag(example_tag) == str(example_tag)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "You might have noticed that by default, the `nbtlib.serialize_tag` function will render strings with single `'` or double `\"` quotes based on their content to avoid escaping quoting characters. The string is serialized such that the type of quotes used is different from the first quoting character found in the string. If the string doesn't contain any quoting character, the `nbtlib.serialize_tag` function will render the string as a double `\"` quoted string."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "contains 'single' quotes\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(String(\"contains 'single' quotes\"))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "contains \"double\" quotes\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(String('contains \"double\" quotes'))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "contains 'single' and \"double\" quotes\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(String('''contains 'single' and \"double\" quotes'''))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "You can overwrite this behavior by setting the `quote=` keyword only argument to either a single `'` or a double `\"` quote."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\"forcing \\\"double\\\" quotes\"\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(serialize_tag(String('forcing \"double\" quotes'), quote='\"'))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The `nbtlib.serialize_tag` function can be used with the `compact=` keyword only argument to remove all the extra whitespace from the output."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{numbers:[I;1,2,3],foo:\"bar\",\"syntax breaking\":42.0f,spam:'{\"text\":\"Hello, world!\\\\n\"}'}\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(serialize_tag(example_tag, compact=True))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "If you'd rather have something a bit more readable, you can use the `indent=` keyword only argument to tell the `nbtlib.serialize_tag` function to output indented snbt. The argument can be either a string or an integer and will be used to define how to render each indentation level."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{\n",
+      "    foo: [1, 2, 3], \n",
+      "    bar: \"name\", \n",
+      "    values: [\n",
+      "        {\n",
+      "            test: \"a\", \n",
+      "            thing: [B; 32B, 32B, 32B]\n",
+      "        }, \n",
+      "        {\n",
+      "            test: \"b\", \n",
+      "            thing: [B; 64B, 64B, 64B]\n",
+      "        }\n",
+      "    ]\n",
+      "}\n"
+     ]
+    }
+   ],
+   "source": [
+    "nested_tag = Compound({\n",
+    "    'foo': List[Int]([1, 2, 3]),\n",
+    "    'bar': String('name'),\n",
+    "    'values': List[Compound]([\n",
+    "        {'test': String('a'), 'thing': ByteArray([32, 32, 32])},\n",
+    "        {'test': String('b'), 'thing': ByteArray([64, 64, 64])}\n",
+    "    ])\n",
+    "})\n",
+    "\n",
+    "print(serialize_tag(nested_tag, indent=4))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "If you need the output ot be indented with tabs instead, you can set the `indent=` argument to `'\\t'`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{\n",
+      "\tfoo: [1, 2, 3], \n",
+      "\tbar: \"name\", \n",
+      "\tvalues: [\n",
+      "\t\t{\n",
+      "\t\t\ttest: \"a\", \n",
+      "\t\t\tthing: [B; 32B, 32B, 32B]\n",
+      "\t\t}, \n",
+      "\t\t{\n",
+      "\t\t\ttest: \"b\", \n",
+      "\t\t\tthing: [B; 64B, 64B, 64B]\n",
+      "\t\t}\n",
+      "\t]\n",
+      "}\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(serialize_tag(nested_tag, indent='\\t'))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Note that the `indent=` keyword only argument can be set to any string, not just `'\\t'`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{\n",
+      ".   foo: [1, 2, 3], \n",
+      ".   bar: \"name\", \n",
+      ".   values: [\n",
+      ".   .   {\n",
+      ".   .   .   test: \"a\", \n",
+      ".   .   .   thing: [B; 32B, 32B, 32B]\n",
+      ".   .   }, \n",
+      ".   .   {\n",
+      ".   .   .   test: \"b\", \n",
+      ".   .   .   thing: [B; 64B, 64B, 64B]\n",
+      ".   .   }\n",
+      ".   ]\n",
+      "}\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(serialize_tag(nested_tag, indent='.   '))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Creating tags from nbt literals\n",
+    "\n",
+    "`nbtlib` supports creating nbt tags from their literal representation. The `nbtlib.parse_nbt` function can parse snbt and return the appropriate tag."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "String('hello')"
+      ]
+     },
+     "execution_count": 31,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from nbtlib import parse_nbt\n",
+    "\n",
+    "parse_nbt('hello')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Compound({'foo': List[Compound]([Compound({'bar': IntArray([Int(1), Int(2), Int(3)])}), Compound({'spam': Float(6.7)})])})"
+      ]
+     },
+     "execution_count": 32,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "parse_nbt('{foo:[{bar:[I;1,2,3]},{spam:6.7f}]}')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Note that the parser ignores whitespace."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Compound({'foo': List[Int]([Int(1), Int(2), Int(3)]), 'bar': String('name'), 'values': List[Compound]([Compound({'test': String('a'), 'thing': ByteArray([Byte(32), Byte(32), Byte(32)])}), Compound({'test': String('b'), 'thing': ByteArray([Byte(64), Byte(64), Byte(64)])})])})"
+      ]
+     },
+     "execution_count": 33,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "parse_nbt(\"\"\"{\n",
+    "    foo: [1, 2, 3], \n",
+    "    bar: \"name\", \n",
+    "    values: [\n",
+    "        {\n",
+    "            test: \"a\", \n",
+    "            thing: [B; 32B, 32B, 32B]\n",
+    "        }, \n",
+    "        {\n",
+    "            test: \"b\", \n",
+    "            thing: [B; 64B, 64B, 64B]\n",
+    "        }\n",
+    "    ]\n",
+    "}\"\"\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Defining schemas\n",
+    "\n",
+    "In order to avoid wrapping values manually every time you edit a compound tag, you can define a schema that will take care of converting python types to predefined nbt tags automatically."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 34,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "MySchema({'foo': String('hello world'), 'bar': Short(42)})"
+      ]
+     },
+     "execution_count": 34,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from nbtlib import schema\n",
+    "\n",
+    "MySchema = schema('MySchema', {\n",
+    "    'foo': String, \n",
+    "    'bar': Short\n",
+    "})\n",
+    "\n",
+    "my_object = MySchema({'foo': 'hello world', 'bar': 21})\n",
+    "my_object['bar'] *= 2\n",
+    "my_object"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "By default, you can interact with keys that are not defined in the schema. However, if you use the `strict=` keyword only argument, the schema instance will raise a `TypeError` whenever you try to access a key that wasn't defined in the original schema."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 35,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "MyStrictSchema({'foo': String('hello world')})"
+      ]
+     },
+     "execution_count": 35,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "MyStrictSchema = schema('MyStrictSchema', {\n",
+    "    'foo': String,\n",
+    "    'bar': Short\n",
+    "}, strict=True)\n",
+    "\n",
+    "strict_instance = MyStrictSchema()\n",
+    "strict_instance.update({'foo': 'hello world'})\n",
+    "strict_instance"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 36,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Invalid key 'something'\n"
+     ]
+    }
+   ],
+   "source": [
+    "try:\n",
+    "    strict_instance['something'] = List[String](['this', 'raises', 'an', 'error'])\n",
+    "except TypeError as exc:\n",
+    "    print(exc)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The `schema` function is a helper that creates a class that inherits from `CompoundSchema`. This means that you can also inherit from the class manually."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "MySchema({'foo': String('hello world'), 'bar': Short(42)})"
+      ]
+     },
+     "execution_count": 37,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from nbtlib import CompoundSchema\n",
+    "\n",
+    "class MySchema(CompoundSchema):\n",
+    "    schema = {\n",
+    "        'foo': String, \n",
+    "        'bar': Short\n",
+    "    }\n",
+    "\n",
+    "MySchema({'foo': 'hello world', 'bar': 42})"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "You can also set the `strict` class attribute to `True` to create a strict schema type."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 38,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Invalid key 'something'\n"
+     ]
+    }
+   ],
+   "source": [
+    "class MyStrictSchema(CompoundSchema):\n",
+    "    schema = {\n",
+    "        'foo': String, \n",
+    "        'bar': Short\n",
+    "    }\n",
+    "    strict = True\n",
+    "\n",
+    "try:\n",
+    "    MyStrictSchema({'something': Byte(5)})\n",
+    "except TypeError as exc:\n",
+    "    print(exc)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Combining schemas and custom file types\n",
+    "\n",
+    "If you need to deal with files that always have a particular structure, you can create a specialized file type by combining it with a schema. For instance, this is how you would create a file type that opens [minecraft structure files](https://minecraft.gamepedia.com/Structure_block_file_format).\n",
+    "\n",
+    "First, we need to define what a minecraft structure is, so we create a schema that matches the tag hierarchy."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 39,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "Structure = schema('Structure', {\n",
+    "    'DataVersion': Int,\n",
+    "    'author': String,\n",
+    "    'size': List[Int],\n",
+    "    'palette': List[schema('State', {\n",
+    "        'Name': String,\n",
+    "        'Properties': Compound,\n",
+    "    })],\n",
+    "    'blocks': List[schema('Block', {\n",
+    "        'state': Int,\n",
+    "        'pos': List[Int],\n",
+    "        'nbt': Compound,\n",
+    "    })],\n",
+    "    'entities': List[schema('Entity', {\n",
+    "        'pos': List[Double],\n",
+    "        'blockPos': List[Int],\n",
+    "        'nbt': Compound,\n",
+    "    })],\n",
+    "})"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Now let's test our schema by creating a structure. We can see that all the types are automatically applied."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 40,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "nbtlib.tag.List[Int]"
+      ]
+     },
+     "execution_count": 40,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "new_structure = Structure({\n",
+    "    'DataVersion': 1139,\n",
+    "    'author': 'dinnerbone',\n",
+    "    'size': [1, 2, 1],\n",
+    "    'palette': [\n",
+    "        {'Name': 'minecraft:dirt'}\n",
+    "    ],\n",
+    "    'blocks': [\n",
+    "        {'pos': [0, 0, 0], 'state': 0},\n",
+    "        {'pos': [0, 1, 0], 'state': 0}\n",
+    "    ],\n",
+    "    'entities': [],\n",
+    "})\n",
+    "\n",
+    "type(new_structure['blocks'][0]['pos'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 41,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "nbtlib.tag.List[Entity]"
+      ]
+     },
+     "execution_count": 41,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "type(new_structure['entities'])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Now we can create a custom file type that wraps our structure schema. Since structure files are always gzipped we can override the load method to default the `gzipped` argument to `True`. We also overwrite the constructor so that it can take directly an instance of our structure schema as argument."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 42,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "class StructureFile(File, Structure):\n",
+    "    def __init__(self, structure_data=None):\n",
+    "        super().__init__(structure_data or {})\n",
+    "        self.gzipped = True\n",
+    "    @classmethod\n",
+    "    def load(cls, filename, gzipped=True):\n",
+    "        return super().load(filename, gzipped)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We can now use the custom file type to load, edit and save structure files without having to specify the tags manually."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 43,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "structure_file = StructureFile(new_structure)\n",
+    "structure_file.save('nbt_files/new_structure.nbt')  # you can load it in a minecraft world!"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "So now let's try to edit the structure. We're going to replace all the dirt blocks with stone blocks."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 44,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "with StructureFile.load('nbt_files/new_structure.nbt') as structure_file:\n",
+    "    structure_file['palette'][0]['Name'] = 'minecraft:stone'"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "slideshow": {
+     "slide_type": "-"
+    }
+   },
+   "source": [
+    "As you can see we didn't need to specify any tag to edit the file."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 45,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{\n",
+      "    DataVersion: 1139, \n",
+      "    author: \"dinnerbone\", \n",
+      "    size: [1, 2, 1], \n",
+      "    palette: [\n",
+      "        {\n",
+      "            Name: \"minecraft:stone\"\n",
+      "        }\n",
+      "    ], \n",
+      "    blocks: [\n",
+      "        {\n",
+      "            pos: [0, 0, 0], \n",
+      "            state: 0\n",
+      "        }, \n",
+      "        {\n",
+      "            pos: [0, 1, 0], \n",
+      "            state: 0\n",
+      "        }\n",
+      "    ], \n",
+      "    entities: []\n",
+      "}\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(serialize_tag(StructureFile.load('nbt_files/new_structure.nbt'), indent=4))"
+   ]
+  }
+ ],
+ "metadata": {
+  "interpreter": {
+   "hash": "b0976736166ccc194b1f9bb2b0e098a715f4e15d9b62636492ec48df64f84c05"
+  },
+  "kernelspec": {
+   "display_name": "Python 3.8.10 64-bit ('.venv': poetry)",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.10"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
