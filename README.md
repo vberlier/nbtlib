@@ -35,8 +35,7 @@ notebook in the docs folder.
 
 ### Reading files
 
-The `nbtlib.load` function can be used to load nbt files as `nbtlib.File` objects. The
-`root` property contains the root nbt tag. Every nbt tag inherits from
+The `nbtlib.load` function can be used to load nbt files as `nbtlib.File` objects. Every nbt tag inherits from
 its python counterpart. This means that all the builtin operations defined on the python counterpart can be used on nbt tags.
 
 ```python
