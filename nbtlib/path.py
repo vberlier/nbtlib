@@ -36,6 +36,10 @@ class Path(tuple):
         if isinstance(path, Path):
             return cls.from_accessors(path)
 
+        if isinstance(path, int):
+            # Handle an integer x as if the string "[x]" were just parsed
+            return cls.from_accessors((ListIndex(index=int(path)),))
+
         accessors = ()
         for accessor in parse_accessors(path):
             accessors = extend_accessors(accessors, accessor)
@@ -48,7 +52,7 @@ class Path(tuple):
         elif isinstance(key, str):
             new_accessors = (NamedKey(key),)
         elif isinstance(key, int):
-            new_accessors = (ListIndex(index=key),)
+            new_accessors = (ListIndex(index=int(key)),)
         elif isinstance(key, slice) and all(
             n is None for n in [key.start, key.stop, key.step]
         ):
@@ -68,7 +72,7 @@ class Path(tuple):
     def __add__(self, other):
         if isinstance(other, Path):
             return self[other]
-        elif isinstance(other, str):
+        elif isinstance(other, (str, int)):
             return self[Path(other)]
         else:
             return NotImplemented
@@ -76,7 +80,7 @@ class Path(tuple):
     def __radd__(self, other):
         if isinstance(other, Path):
             return other[self]
-        elif isinstance(other, str):
+        elif isinstance(other, (str, int)):
             return Path(other)[self]
         else:
             return NotImplemented
