@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.0 (2021-10-23)
+### Feature
+* Remove root ([`e9180a2`](https://github.com/vberlier/nbtlib/commit/e9180a2e042cdfd28c5ab1ccadaa14d05793dbb0))
+
+### Breaking
+* The Root class is gone and so is the root attribute on files ([`e9180a2`](https://github.com/vberlier/nbtlib/commit/e9180a2e042cdfd28c5ab1ccadaa14d05793dbb0))
+
 ## v1.12.1 (2021-08-30)
 ### Fix
 * Update dependencies ([`ab4a72f`](https://github.com/vberlier/nbtlib/commit/ab4a72f2030a0d29b634535ae8628c538058de6b))
