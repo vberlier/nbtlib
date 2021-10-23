@@ -70,6 +70,8 @@ class Path(tuple):
             return self[other]
         elif isinstance(other, str):
             return self[Path(other)]
+        elif isinstance(other, int):
+            return self[other]
         else:
             return NotImplemented
 
@@ -78,6 +80,8 @@ class Path(tuple):
             return other[self]
         elif isinstance(other, str):
             return Path(other)[self]
+        elif isinstance(other, int):
+            return Path()[other][self]
         else:
             return NotImplemented
 
