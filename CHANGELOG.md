@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.1 (2021-10-23)
+### Fix
+* Forgot to update README ([`2571611`](https://github.com/vberlier/nbtlib/commit/257161189f78081701dacc3007c271d19c9392c4))
+
 ## v2.0.0 (2021-10-23)
 ### Feature
 * Remove root ([`e9180a2`](https://github.com/vberlier/nbtlib/commit/e9180a2e042cdfd28c5ab1ccadaa14d05793dbb0))
