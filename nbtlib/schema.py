@@ -21,7 +21,7 @@ def schema(name, dct, *, strict=False):
     subclass the base `CompoundSchema` class.
 
     The `name` argument is the name of the class and `dct` should be a
-    dictionnary containing the actual schema. The schema should map keys
+    dictionary containing the actual schema. The schema should map keys
     to tag types or other compound schemas.
 
     If the `strict` keyword only argument is set to True, interacting
@@ -45,7 +45,7 @@ class CompoundSchema(Compound):
     predefined tag types for all of the inherited mutating operations.
 
     Class attributes:
-        schema -- Dictionnary mapping keys to tag types or other schemas
+        schema -- Dictionary mapping keys to tag types or other schemas
         strict -- Boolean enabling strict schema validation
     """
 

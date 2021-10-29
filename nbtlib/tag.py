@@ -1098,7 +1098,7 @@ class Compound(Base, dict):
         """Override :meth:`Base.match` for compound tags.
 
         The method returns ``True`` if each key-value pair in the
-        dictionnary is present in the current instance.
+        dictionary is present in the current instance.
 
         .. doctest::
 
@@ -1183,7 +1183,7 @@ class Compound(Base, dict):
             key.delete(self)
 
     def merge(self, other):
-        """Recursively merge tags from another dictionnary.
+        """Recursively merge tags from another dictionary.
 
         .. doctest::
 
