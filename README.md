@@ -20,10 +20,14 @@
 
 ## Installation
 
+> **Notice 🚧**
+>
+> Version `2.0` is actively being worked on and is not stable yet. You should probably keep using version `1.12.1` for the moment. You can check out the `2.0` roadmap in the [`nbtlib 2.0` issue](https://github.com/vberlier/nbtlib/issues/156).
+
 The package can be installed with `pip`.
 
 ```bash
-$ pip install nbtlib
+$ pip install "nbtlib==1.12.1"
 ```
 
 ## Basic usage
