@@ -5,4 +5,4 @@ from .schema import *
 from .literal.parser import *
 from .literal.serializer import *
 
-__version__ = "2.0.2"
+__version__ = "2.0.3"

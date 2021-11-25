@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.3 (2021-11-25)
+### Fix
+* Make sure the trailing End tag is written to files. Fix #153 ([#154](https://github.com/vberlier/nbtlib/issues/154)) ([`eda4d32`](https://github.com/vberlier/nbtlib/commit/eda4d32180ff638b18f0dea0b3904afd5545fd65))
+
 ## v2.0.2 (2021-11-25)
 ### Fix
 * Minor typos ([#151](https://github.com/vberlier/nbtlib/issues/151)) ([`805e4c7`](https://github.com/vberlier/nbtlib/commit/805e4c711b0a5411b495e870403e18eee7960305))
