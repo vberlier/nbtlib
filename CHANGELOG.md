@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.2 (2021-11-25)
+### Fix
+* Minor typos ([#151](https://github.com/vberlier/nbtlib/issues/151)) ([`805e4c7`](https://github.com/vberlier/nbtlib/commit/805e4c711b0a5411b495e870403e18eee7960305))
+
 ## v2.0.1 (2021-10-23)
 ### Fix
 * Forgot to update README ([`2571611`](https://github.com/vberlier/nbtlib/commit/257161189f78081701dacc3007c271d19c9392c4))
