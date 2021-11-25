@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.4 (2021-11-25)
+### Fix
+* Allow integers to create and add with Path. Fix #146 ([#148](https://github.com/vberlier/nbtlib/issues/148)) ([`061e095`](https://github.com/vberlier/nbtlib/commit/061e095ca0dcfd31b798f59e88a238e7bc2b77f6))
+
 ## v2.0.3 (2021-11-25)
 ### Fix
 * Make sure the trailing End tag is written to files. Fix #153 ([#154](https://github.com/vberlier/nbtlib/issues/154)) ([`eda4d32`](https://github.com/vberlier/nbtlib/commit/eda4d32180ff638b18f0dea0b3904afd5545fd65))
