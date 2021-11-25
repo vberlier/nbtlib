@@ -208,10 +208,6 @@ class File(Compound):
                 'little'
     """
 
-    # We remove the inherited end tag as the end of nbt files is
-    # specified by the end of the file
-    end_tag = b""
-
     def __init__(
         self, *args, gzipped=False, byteorder="big", filename=None, root_name=""
     ):
