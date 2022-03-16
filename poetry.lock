@@ -1104,19 +1104,23 @@ six = ">=1.5"
 
 [[package]]
 name = "python-gitlab"
-version = "1.15.0"
+version = "3.2.0"
 description = "Interact with GitLab API"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7.0"
 
 [package.dependencies]
-requests = ">=2.4.2"
-six = "*"
+requests = ">=2.25.0"
+requests-toolbelt = ">=0.9.1"
+
+[package.extras]
+autocompletion = ["argcomplete (>=1.10.0,<3)"]
+yaml = ["PyYaml (>=5.2)"]
 
 [[package]]
 name = "python-semantic-release"
-version = "7.19.1"
+version = "7.27.0"
 description = "Automatic Semantic Versioning for Python projects"
 category = "dev"
 optional = false
@@ -1128,7 +1132,7 @@ click-log = ">=0.3,<1"
 dotty-dict = ">=1.3.0,<2"
 gitpython = ">=3.0.8,<4"
 invoke = ">=1.4.1,<2"
-python-gitlab = ">=1.10,<3"
+python-gitlab = ">=2,<4"
 requests = ">=2.25,<3"
 semver = ">=2.10,<3"
 tomlkit = "0.7.0"
@@ -1668,7 +1672,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "123748b59c0a2461234390d63d461a7115f01f1d207a2662d8150147e180847c"
+content-hash = "f4f9167b9e910a9b773abc5c42d5a146e34d854ea603d6392c7dd4a72caf705f"
 
 [metadata.files]
 alabaster = [
@@ -2151,12 +2155,12 @@ python-dateutil = [
     {file = "python_dateutil-2.8.1-py2.py3-none-any.whl", hash = "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"},
 ]
 python-gitlab = [
-    {file = "python-gitlab-1.15.0.tar.gz", hash = "sha256:45125a0ed4d0027d4317bdbd71ca02fc52b0ac160b9d2c3c5be131b4d19f867e"},
-    {file = "python_gitlab-1.15.0-py3-none-any.whl", hash = "sha256:51ad36873b5c20cd21d9373db0936fb99c521575668320025d0fb519398d2e17"},
+    {file = "python-gitlab-3.2.0.tar.gz", hash = "sha256:8f6ee81109fec231fc2b74e2c4035bb7de0548eaf82dd119fe294df2c4a524be"},
+    {file = "python_gitlab-3.2.0-py3-none-any.whl", hash = "sha256:48f72e033c06ab1c244266af85de2cb0a175f8a3614417567e2b14254ead9b2e"},
 ]
 python-semantic-release = [
-    {file = "python-semantic-release-7.19.1.tar.gz", hash = "sha256:43f52f9a97677c029009063807f1fec9ffaabf049bd02f3fd898f0edf1ce5155"},
-    {file = "python_semantic_release-7.19.1-py3-none-any.whl", hash = "sha256:8f5bfe18e78d44dc296966376f2bae2177ea881b628473d685b46f09a75ea92b"},
+    {file = "python-semantic-release-7.27.0.tar.gz", hash = "sha256:d115360703cc66a757f650f795fc1d8cd7fdf7688cb8645a36a713f5144b01ce"},
+    {file = "python_semantic_release-7.27.0-py3-none-any.whl", hash = "sha256:dd95785719b5c04fc63c29c2e363735d4d622b713b2b99b41bb0c6ded57311de"},
 ]
 pytz = [
     {file = "pytz-2020.4-py2.py3-none-any.whl", hash = "sha256:5c55e189b682d420be27c6995ba6edce0c0a77dd67bfbe2ae6607134d5851ffd"},
