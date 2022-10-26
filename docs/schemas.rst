@@ -1,4 +1,0 @@
-NBT Schemas
-===========
-
-WIP

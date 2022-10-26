@@ -1,4 +1,0 @@
-Stringified NBT
-===============
-
-WIP

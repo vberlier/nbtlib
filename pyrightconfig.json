@@ -1,0 +1,4 @@
+{
+  "typeCheckingMode": "strict",
+  "ignore": ["build.py"]
+}

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nbtlib"
-version = "2.0.4"
+version = "2.1.0-alpha.0"
 description = "A python package to read and edit nbt data"
 authors = ["Valentin Berlier <berlier.v@gmail.com>"]
 license = "MIT"
@@ -19,20 +19,31 @@ keywords = [
   "nbtlib",
 ]
 
+include = ["nbtlib/py.typed"]
+
 [tool.poetry.dependencies]
 python = "^3.8"
-numpy = "*"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
-pytest-benchmark = "^3.4.1"
-black = "^21.8b0"
-mudkip = "^0.4.10"
-pytest-minecraft = "^0.1.1"
-python-semantic-release = "^7.19.1"
+black = "^22.1.0"
+isort = "^5.10.1"
+pytest = "^7.1.0"
+python-semantic-release = "^7.26.0"
+Cython = "^0.29.28"
 
-[tool.poetry.scripts]
-nbt = 'nbtlib.cli:main'
+[tool.poerty.build]
+script = "build.py"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "tests nbtlib --doctest-modules"
+doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ELLIPSIS"
+
+[tool.black]
+target-version = ["py38"]
+
+[tool.isort]
+profile = "black"
 
 [tool.semantic_release]
 branch = "main"
@@ -41,5 +52,5 @@ version_toml = "pyproject.toml:tool.poetry.version"
 build_command = "poetry build"
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core>=1.0.0", "wheel", "setuptools"]
+build-backend = "poetry.core.masonry.api"
