@@ -217,12 +217,12 @@ def write_numeric(fmt, value, fileobj, byteorder="big"):
 def read_string(fileobj, byteorder="big"):
     """Read a string from a file-like object."""
     length = read_numeric(USHORT, fileobj, byteorder)
-    return fileobj.read(length).decode("utf-8", "replace")
+    return _modified_utf8_decode(fileobj.read(length))
 
 
 def write_string(value, fileobj, byteorder="big"):
     """Write a string to a file-like object."""
-    data = value.encode("utf-8")
+    data = _modified_utf8_encode(value)
     write_numeric(USHORT, len(data), fileobj, byteorder)
     fileobj.write(data)
 
@@ -1252,3 +1252,83 @@ class LongArray(Array):
     item_type = get_format(np.dtype, "i8")
     array_prefix = "L"
     wrapper = Long
+
+
+def _modified_utf8_encode(string: str) -> bytes:
+    """Encode *string* with the Modified UTF-8 flavour used by Java NBT."""
+    out = bytearray()
+    for ch in string:
+        cp = ord(ch)
+
+        # U+0001 … U+007F  → identical single-byte (except U+0000).
+        if 0x0001 <= cp <= 0x007F:
+            out.append(cp)
+
+        # U+0000 or U+0080 … U+07FF  → two-byte sequence.
+        elif cp == 0 or cp <= 0x07FF:
+            out.append(0xC0 | (cp >> 6))
+            out.append(0x80 | (cp & 0x3F))
+
+        # U+0800 … U+FFFF  → three-byte sequence.
+        elif cp <= 0xFFFF:
+            out.append(0xE0 | (cp >> 12))
+            out.append(0x80 | ((cp >> 6) & 0x3F))
+            out.append(0x80 | (cp & 0x3F))
+
+        # Supplementary plane  → encode surrogate pair separately.
+        else:
+            cp -= 0x10000
+            for surrogate in (
+                0xD800 | (cp >> 10),
+                0xDC00 | (cp & 0x3FF),
+            ):
+                out.append(0xE0 | (surrogate >> 12))
+                out.append(0x80 | ((surrogate >> 6) & 0x3F))
+                out.append(0x80 | (surrogate & 0x3F))
+    return bytes(out)
+
+
+def _modified_utf8_decode(data: bytes) -> str:
+    """Decode Modified UTF-8 *data* back to a python str."""
+    i, n = 0, len(data)
+    code_units = []
+
+    while i < n:
+        a = data[i]
+
+        # 1-byte
+        if (a & 0x80) == 0:
+            code_units.append(a)
+            i += 1
+
+        # 2-bytes
+        elif (a & 0xE0) == 0xC0:
+            b = data[i + 1]
+            code_units.append(((a & 0x1F) << 6) | (b & 0x3F))
+            i += 2
+
+        # 3-bytes
+        else:  # (a & 0xF0) == 0xE0
+            b, c = data[i + 1], data[i + 2]
+            code_units.append(
+                ((a & 0x0F) << 12) | ((b & 0x3F) << 6) | (c & 0x3F)
+            )
+            i += 3
+
+    # Turn UTF-16 code units (with possible surrogates) into python str
+    chars, j = [], 0
+    while j < len(code_units):
+        cu = code_units[j]
+        # surrogate pair ?
+        if 0xD800 <= cu <= 0xDBFF and j + 1 < len(code_units):
+            cu2 = code_units[j + 1]
+            if 0xDC00 <= cu2 <= 0xDFFF:
+                chars.append(
+                    chr(((cu - 0xD800) << 10) + (cu2 - 0xDC00) + 0x10000)
+                )
+                j += 2
+                continue
+        chars.append(chr(cu))
+        j += 1
+
+    return "".join(chars)
