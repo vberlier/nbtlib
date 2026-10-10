@@ -82,6 +82,7 @@ __all__ = [
 ]
 
 
+from operator import index as _operator_index
 from struct import Struct
 from struct import error as StructError
 
@@ -970,38 +971,50 @@ class List(Base, list):
             index: Can be an integer, a slice or an instance of :class:`nbtlib.path.Path`.
         """
         try:
-            return (
-                [super().__getitem__(index)]
-                if isinstance(index, (int, slice))
-                else index.get(self)
-            )
+            if isinstance(index, slice):
+                return [super().__getitem__(index)]
+            try:
+                # Accept anything implementing __index__ (e.g. numpy
+                # integers), like plain lists and the array tags do.
+                return [super().__getitem__(_operator_index(index))]
+            except TypeError:
+                return index.get(self)
         except (IndexError, AttributeError):
             return []
 
     def __getitem__(self, index):
-        if isinstance(index, (int, slice)):
+        if isinstance(index, slice):
             return super().__getitem__(index)
+        try:
+            return super().__getitem__(_operator_index(index))
+        except TypeError:
+            pass
         values = index.get(self)
         if not values:
             raise IndexError(index)
         return values[0]
 
     def __setitem__(self, index, value):
-        if isinstance(index, (int, slice)):
-            super().__setitem__(
-                index,
-                [self.cast_item(item) for item in value]
-                if isinstance(index, slice)
-                else self.cast_item(value),
-            )
-        else:
+        if isinstance(index, slice):
+            super().__setitem__(index, [self.cast_item(item) for item in value])
+            return
+        try:
+            index = _operator_index(index)
+        except TypeError:
             index.set(self, value)
+            return
+        super().__setitem__(index, self.cast_item(value))
 
     def __delitem__(self, index):
-        if isinstance(index, (int, slice)):
+        if isinstance(index, slice):
             super().__delitem__(index)
-        else:
+            return
+        try:
+            index = _operator_index(index)
+        except TypeError:
             index.delete(self)
+            return
+        super().__delitem__(index)
 
     def append(self, value):
         """Override ``list.append`` to include ``isinstance`` check and auto conversion."""

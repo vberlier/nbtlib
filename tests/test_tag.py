@@ -1,4 +1,6 @@
 from io import BytesIO
+
+import numpy as np
 import pytest
 
 from nbtlib import (
@@ -76,3 +78,17 @@ class TestListTagEdgeCases:
     def test_casting_error_without_subtype(self):
         with pytest.raises(CastError):
             List([[5, 4], List([List([])])])
+
+    def test_index_protocol_objects(self):
+        # https://github.com/vberlier/nbtlib/issues/194
+        # Objects implementing __index__ (e.g. numpy integers) must be
+        # usable as list indices, just like plain lists and the array tags.
+        tag = List[Int]([1, 2, 3])
+        index = np.uint8(1)
+        assert tag[index] == Int(2)
+        tag[index] = 20
+        assert tag == List[Int]([1, 20, 3])
+        del tag[np.int64(0)]
+        assert tag == List[Int]([20, 3])
+        assert tag.get(np.uint8(0)) == Int(20)
+        assert tag.get_all(np.uint8(0)) == [Int(20)]
